@@ -18,7 +18,7 @@ const releases = [
     featured: true,
     title: "jacksander superstar",
     subtitle: "out july 15",
-    cover: "covers/mv-shoot.png",
+    coverHidden: true,
     mvShoot: "mv-shoot.html",
     tracks: [],
   },
@@ -174,7 +174,13 @@ function renderFeaturedRelease(release, index) {
       <summary class="release-trigger">
         ${renderCover(release)}
         <span class="release-info">
-          <span class="release-title">${release.title}</span>
+          <img
+            src="logo.png"
+            alt="#jacksandersuperstar®"
+            class="release-logo"
+            width="3284"
+            height="308"
+          />
           <span class="release-meta">${renderReleaseMeta(release)}</span>
         </span>
       </summary>
