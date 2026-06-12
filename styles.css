@@ -591,6 +591,8 @@ body.is-leaving {
 }
 
 .release--featured .release-cover:not(.release-cover--mystery) {
+  aspect-ratio: auto;
+  max-height: min(72vh, 40rem);
   object-fit: contain;
   background: #ffffff;
 }
