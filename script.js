@@ -59,4 +59,43 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  initCountdown();
 });
+
+function initCountdown() {
+  const countdown = document.getElementById("countdown");
+  if (!countdown) {
+    return;
+  }
+
+  const target = new Date(2026, 6, 15, 23, 0, 0);
+
+  const tick = () => {
+    const remaining = target.getTime() - Date.now();
+
+    if (remaining <= 0) {
+      countdown.textContent = "out now";
+      return;
+    }
+
+    const totalSeconds = Math.floor(remaining / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    const unit = (value, label) => `${value} ${label}${value === 1 ? "" : "s"}`;
+
+    countdown.textContent = [
+      days && unit(days, "day"),
+      hours && unit(hours, "hour"),
+      minutes && unit(minutes, "minute"),
+      seconds && unit(seconds, "second"),
+    ]
+      .filter(Boolean)
+      .join(" ");
+  };
+
+  tick();
+  window.setInterval(tick, 1000);
+}

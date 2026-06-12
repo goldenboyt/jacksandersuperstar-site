@@ -26,6 +26,7 @@ const releases = [
   {
     id: "prodigy-genius",
     title: "prodigy genius",
+    papyrusTitle: "prodigy-genius",
     type: "album",
     date: "april 18, 2025",
     cover: "covers/prodigy-genius.jpg",
@@ -40,6 +41,7 @@ const releases = [
     type: "single",
     date: "september 6, 2024",
     cover: "covers/cybertruck.jpg",
+    titleLogo: "covers/Cybertrucklogo.svg.png",
     apple: "https://music.apple.com/us/album/cybertruck-single/1763991815",
     spotify: "https://open.spotify.com/search/Cybertruck%20Jack%20Sander/albums",
     youtube: "https://www.youtube.com/watch?v=DV6aY2-8vew",
@@ -47,6 +49,7 @@ const releases = [
   {
     id: "designer",
     title: "designer",
+    papyrusTitle: "designer",
     type: "single",
     date: "may 3, 2024",
     cover: "covers/designer.jpg",
@@ -111,6 +114,35 @@ function renderTracklistButton(tracks) {
       <summary class="stream-link stream-link--button">tracklist</summary>
       ${renderTracklist(tracks)}
     </details>
+  `;
+}
+
+function renderPapyrusTitle(variant) {
+  if (variant === "designer") {
+    return `
+      <span class="release-title-papyrus release-title-papyrus--designer" aria-label="designer">
+        designer
+      </span>
+    `;
+  }
+
+  return `
+    <span class="release-title-papyrus release-title-papyrus--prodigy" aria-label="prodigy genius">
+      prodigy genius
+    </span>
+  `;
+}
+
+function renderTitleLogo(src, alt) {
+  return `
+    <img
+      class="release-title-logo"
+      src="${src}"
+      alt="${alt}"
+      width="640"
+      height="80"
+      loading="lazy"
+    />
   `;
 }
 
@@ -184,7 +216,13 @@ function renderStreamingRelease(release, index) {
       <summary class="release-trigger">
         ${renderCover(release)}
         <span class="release-info">
-          <span class="release-title">${release.title}</span>
+          ${
+            release.titleLogo
+              ? renderTitleLogo(release.titleLogo, `${release.title} logo`)
+              : release.papyrusTitle
+                ? renderPapyrusTitle(release.papyrusTitle)
+                : `<span class="release-title">${release.title}</span>`
+          }
           <span class="release-meta">${renderReleaseMeta(release)}</span>
         </span>
       </summary>
