@@ -659,6 +659,11 @@ body.is-leaving {
   transition: filter 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.merch-image--sticker {
+  width: 88%;
+  max-width: 31rem;
+}
+
 .merch-image--tattoo {
   width: 78%;
   max-width: 28rem;
@@ -760,6 +765,7 @@ body.is-leaving {
 .mv-shoot-flyer {
   display: block;
   width: 100%;
+  max-width: 18rem;
   height: auto;
 }
 

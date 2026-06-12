@@ -20,6 +20,7 @@ const releases = [
     subtitle: "out july 15",
     coverHidden: true,
     mvShoot: "mv-shoot.html",
+    listeningParty: "listening-party.html",
     tracks: [],
   },
   {
@@ -113,24 +114,6 @@ function renderTracklistButton(tracks) {
   `;
 }
 
-function renderListeningPartyPanel() {
-  return `
-    <details class="release-subpanel">
-      <summary class="stream-link stream-link--button">listening party</summary>
-      <p class="release-tracklist-empty">info coming soon</p>
-    </details>
-  `;
-}
-
-function renderListeningPartyLiveStreamButton() {
-  return `
-    <details class="release-subpanel">
-      <summary class="stream-link stream-link--button">listening party live stream</summary>
-      <p class="release-tracklist-empty">coming soon</p>
-    </details>
-  `;
-}
-
 function renderCover(release) {
   if (release.coverHidden) {
     return `
@@ -185,10 +168,9 @@ function renderFeaturedRelease(release, index) {
         </span>
       </summary>
       <div class="release-panel">
-        <a class="stream-link" href="${release.mvShoot}">magic (tragic) music video</a>
         ${renderTracklistButton(release.tracks)}
-        ${renderListeningPartyPanel()}
-        ${renderListeningPartyLiveStreamButton()}
+        <a class="stream-link" href="${release.mvShoot}">magic (tragic) music video</a>
+        <a class="stream-link" href="${release.listeningParty}">listening party</a>
       </div>
     </details>
   `;
