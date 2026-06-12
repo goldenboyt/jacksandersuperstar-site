@@ -60,6 +60,8 @@ const releases = [
   {
     id: "brainstorm",
     title: "brainstorm",
+    titleLogo: "covers/brainstormtxt.png",
+    titleLogoClass: "release-title-logo--brainstorm",
     type: "single",
     date: "january 21, 2022",
     cover: "covers/brainstorm.jpg",
@@ -69,7 +71,8 @@ const releases = [
   },
   {
     id: "cats-cash",
-    title: "cat's cash",
+    title: "cats cash",
+    titleFont: "cooper-black",
     type: "single",
     date: "may 13, 2020",
     cover: "covers/cats-cash.jpg",
@@ -133,10 +136,46 @@ function renderPapyrusTitle(variant) {
   `;
 }
 
-function renderTitleLogo(src, alt) {
+function renderReleaseTitle(release) {
+  if (release.titleLogo) {
+    return renderTitleLogo(
+      release.titleLogo,
+      `${release.title} logo`,
+      release.titleLogoClass
+    );
+  }
+
+  if (release.papyrusTitle) {
+    return renderPapyrusTitle(release.papyrusTitle);
+  }
+
+  if (release.titleFont === "cooper-black") {
+    return `
+      <span class="release-title-custom release-title-cooper" aria-label="${release.title}">
+        ${release.title}
+      </span>
+    `;
+  }
+
+  if (release.titleFont === "futura-black") {
+    return `
+      <span class="release-title-custom release-title-futura" aria-label="${release.title}">
+        ${release.title}
+      </span>
+    `;
+  }
+
+  return `<span class="release-title">${release.title}</span>`;
+}
+
+function renderTitleLogo(src, alt, extraClass = "") {
+  const className = extraClass
+    ? `release-title-logo ${extraClass}`
+    : "release-title-logo";
+
   return `
     <img
-      class="release-title-logo"
+      class="${className}"
       src="${src}"
       alt="${alt}"
       width="640"
@@ -216,13 +255,7 @@ function renderStreamingRelease(release, index) {
       <summary class="release-trigger">
         ${renderCover(release)}
         <span class="release-info">
-          ${
-            release.titleLogo
-              ? renderTitleLogo(release.titleLogo, `${release.title} logo`)
-              : release.papyrusTitle
-                ? renderPapyrusTitle(release.papyrusTitle)
-                : `<span class="release-title">${release.title}</span>`
-          }
+          ${renderReleaseTitle(release)}
           <span class="release-meta">${renderReleaseMeta(release)}</span>
         </span>
       </summary>
