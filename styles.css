@@ -1,0 +1,756 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+:root {
+  --page-gutter: clamp(0.625rem, 2.5vw, 1rem);
+}
+
+body {
+  background: #ffffff;
+  color: #000000;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body.is-leaving {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: var(--page-gutter);
+  position: relative;
+}
+
+.page--home {
+  align-items: center;
+  justify-content: center;
+}
+
+.nav {
+  position: fixed;
+  top: var(--page-gutter);
+  left: var(--page-gutter);
+  z-index: 10;
+}
+
+.page--menu-push .nav {
+  position: static;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.menu {
+  text-align: left;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-trigger {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  line-height: 0;
+  padding: 0;
+}
+
+.menu-trigger:hover {
+  opacity: 0.45;
+}
+
+.menu-trigger::-webkit-details-marker,
+.menu-trigger::marker {
+  display: none;
+}
+
+.menu-icon {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 20px;
+  height: 14px;
+  transition: gap 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.menu-icon span {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: #000000;
+  transform-origin: left center;
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.35s ease;
+}
+
+.menu[open] .menu-icon {
+  gap: 7px;
+}
+
+.menu[open] .menu-icon span:nth-child(1) {
+  transform: translateY(-1px) scaleX(0.55);
+}
+
+.menu[open] .menu-icon span:nth-child(2) {
+  transform: scaleX(0.8);
+}
+
+.menu[open] .menu-icon span:nth-child(3) {
+  transform: translateY(1px) scaleX(0.4);
+}
+
+.menu-list {
+  list-style: none;
+  overflow: hidden;
+  max-height: 0;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  transform: translateY(-0.75rem);
+  transform-origin: top left;
+}
+
+.menu[open] .menu-list {
+  animation: menu-drop 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.menu:not([open]) .menu-list {
+  animation: none;
+}
+
+.menu-list li {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.menu[open] .menu-list li {
+  animation: menu-item-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.menu[open] .menu-list li:nth-child(1) {
+  animation-delay: 0.12s;
+}
+
+.menu[open] .menu-list li:nth-child(2) {
+  animation-delay: 0.22s;
+}
+
+.menu[open] .menu-list li:nth-child(3) {
+  animation-delay: 0.32s;
+}
+
+@keyframes menu-drop {
+  from {
+    max-height: 0;
+    margin-top: 0;
+    opacity: 0;
+    transform: translateY(-0.75rem);
+  }
+
+  to {
+    max-height: 12rem;
+    margin-top: 1.25rem;
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes menu-item-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.menu-list a {
+  display: block;
+  color: #000000;
+  font-size: clamp(1.375rem, 3.5vw, 1.875rem);
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+
+.menu-list a:hover,
+.menu-list a:focus-visible {
+  opacity: 0.45;
+  outline: none;
+}
+
+.menu-list a[aria-current="page"] {
+  opacity: 0.45;
+}
+
+.center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 2rem 0;
+}
+
+.logo-wrap {
+  margin: 0;
+  line-height: 0;
+}
+
+.logo {
+  display: block;
+  width: min(88vw, 28rem);
+  height: auto;
+}
+
+.logo--hero {
+  width: min(92vw, 40rem);
+}
+
+.title-link {
+  display: inline-block;
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+  line-height: 0;
+}
+
+.title-link:hover,
+.title-link:focus-visible {
+  opacity: 0.45;
+  outline: none;
+}
+
+.line {
+  font-size: clamp(1.5rem, 4.5vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+  text-transform: lowercase;
+}
+
+.top .reveal,
+.merch-item.reveal {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.top .reveal {
+  animation-delay: 0.15s;
+}
+
+.merch-item.reveal:nth-child(1) {
+  animation-delay: 0.12s;
+}
+
+.merch-item.reveal:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.merch-item.reveal:nth-child(3) {
+  animation-delay: 0.28s;
+}
+
+@keyframes rise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page--releases {
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-left: clamp(0.5rem, 2vw, 0.75rem);
+}
+
+.releases-layout {
+  width: 100%;
+  padding-top: 2rem;
+}
+
+.page--releases:not(.page--merch) .releases-layout {
+  padding-top: 1.25rem;
+}
+
+.top--releases {
+  text-align: left;
+  margin-bottom: 2rem;
+}
+
+.page--releases:not(.page--merch) .top--releases {
+  margin-bottom: 1.25rem;
+}
+
+.page--releases:not(.page--merch) .top--releases .line {
+  font-size: clamp(1.125rem, 3vw, 1.5rem);
+}
+
+.merch-contact-icon {
+  display: block;
+  width: 1.35em;
+  height: 1.35em;
+  flex-shrink: 0;
+}
+
+.releases-list,
+.merch-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  width: 100%;
+}
+
+.page--releases:not(.page--merch) .releases-list {
+  align-items: flex-start;
+  gap: 1.75rem;
+}
+
+.page--releases:not(.page--merch) .release {
+  max-width: 18rem;
+}
+
+.page--releases:not(.page--merch) .release-trigger {
+  gap: 0.5rem;
+}
+
+.release {
+  text-align: left;
+  width: 100%;
+}
+
+.release-trigger {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.85rem;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  width: 100%;
+}
+
+.release-trigger::-webkit-details-marker,
+.release-trigger::marker {
+  display: none;
+}
+
+.release-cover,
+.release-cover--mystery {
+  display: block;
+  width: 100%;
+  max-height: min(72vh, 40rem);
+  aspect-ratio: 1;
+  height: auto;
+  object-fit: cover;
+  transition:
+    max-height 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.page--releases:not(.page--merch) .release-cover,
+.page--releases:not(.page--merch) .release-cover--mystery {
+  max-width: 18rem;
+  max-height: 18rem;
+  transform-origin: left center;
+}
+
+.page--releases:not(.page--merch) .release-title {
+  font-size: clamp(0.9375rem, 2vw, 1.0625rem);
+}
+
+.page--releases:not(.page--merch) .release-meta,
+.page--releases:not(.page--merch) .release-tracklist-empty,
+.page--releases:not(.page--merch) .release-tracklist li {
+  font-size: clamp(0.8125rem, 1.8vw, 0.9375rem);
+}
+
+.page--releases:not(.page--merch) .stream-link {
+  font-size: clamp(0.9375rem, 2vw, 1.0625rem);
+}
+
+.page--releases:not(.page--merch) .release-logo {
+  --logo-display-width: min(100%, 14rem);
+}
+
+.page--releases:not(.page--merch) .release-cover-mystery-text {
+  font-size: clamp(0.75rem, 1.8vw, 0.875rem);
+}
+
+@media (hover: hover) {
+  .release-trigger:hover .release-cover,
+  .release-trigger:hover .release-cover--mystery {
+    transform: scale(1.02);
+  }
+}
+
+.release-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  width: 100%;
+}
+
+.release-title {
+  font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+}
+
+.release-logo {
+  --logo-display-width: min(100%, 20rem);
+  display: block;
+  width: calc(var(--logo-display-width) * 3284 / 2989);
+  margin-left: calc(var(--logo-display-width) * -114 / 2989);
+  height: auto;
+}
+
+.release-meta {
+  font-size: clamp(1rem, 2.2vw, 1.125rem);
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+  opacity: 0.55;
+}
+
+.release-links,
+.release-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding-left: 0;
+  overflow: hidden;
+  max-height: 0;
+  margin-top: 0;
+  opacity: 0;
+  transform: translateY(-0.75rem);
+  transform-origin: top left;
+  width: 100%;
+}
+
+.release:not([open]) .release-links,
+.release:not([open]) .release-panel {
+  animation: none;
+}
+
+.release[open] .release-links {
+  animation: release-drop 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.release[open] .release-links--with-tracklist {
+  animation: release-drop-large 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.release[open] .release-panel {
+  animation: release-drop-large 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  overflow: visible;
+}
+
+.release-links > *,
+.release-panel > * {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.release:not([open]) .release-links > *,
+.release:not([open]) .release-panel > * {
+  animation: none;
+}
+
+.release[open] .release-links > *,
+.release[open] .release-panel > * {
+  animation: menu-item-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.release[open] .release-links > :nth-child(1),
+.release[open] .release-panel > :nth-child(1) {
+  animation-delay: 0.12s;
+}
+
+.release[open] .release-links > :nth-child(2),
+.release[open] .release-panel > :nth-child(2) {
+  animation-delay: 0.22s;
+}
+
+.release[open] .release-links > :nth-child(3),
+.release[open] .release-panel > :nth-child(3) {
+  animation-delay: 0.32s;
+}
+
+.release[open] .release-links > :nth-child(4),
+.release[open] .release-panel > :nth-child(4) {
+  animation-delay: 0.42s;
+}
+
+.release[open] .release-links > :nth-child(5),
+.release[open] .release-panel > :nth-child(5) {
+  animation-delay: 0.52s;
+}
+
+@keyframes release-drop {
+  from {
+    max-height: 0;
+    margin-top: 0;
+    opacity: 0;
+    transform: translateY(-0.75rem);
+  }
+
+  to {
+    max-height: 12rem;
+    margin-top: 1rem;
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes release-drop-large {
+  from {
+    max-height: 0;
+    margin-top: 0;
+    opacity: 0;
+    transform: translateY(-0.75rem);
+  }
+
+  to {
+    max-height: 48rem;
+    margin-top: 1rem;
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.release-links .release-tracklist {
+  margin-top: 0.75rem;
+}
+
+.release-subpanel > :not(summary) {
+  margin-top: 0.5rem;
+}
+
+.release-subpanel summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.release-subpanel summary::-webkit-details-marker,
+.release-subpanel summary::marker {
+  display: none;
+}
+
+.release-tracklist-empty,
+.release-tracklist li {
+  font-size: clamp(1rem, 2.2vw, 1.125rem);
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+  opacity: 0.55;
+}
+
+.release-tracklist {
+  list-style: none;
+  counter-reset: track;
+  margin-top: 0.5rem;
+  padding: 0;
+}
+
+.release-tracklist li {
+  counter-increment: track;
+}
+
+.release-tracklist li::before {
+  content: counter(track, decimal-leading-zero) " ";
+}
+
+.release--featured .release-cover:not(.release-cover--mystery) {
+  object-fit: contain;
+  background: #ffffff;
+}
+
+.release-cover--mystery {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  padding: 1rem;
+  text-align: center;
+}
+
+.release-cover-mystery-text {
+  color: #000000;
+  font-size: clamp(0.875rem, 2.2vw, 1rem);
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+  opacity: 0.55;
+}
+
+.merch-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.85rem;
+  text-align: left;
+  width: 100%;
+}
+
+.merch-expandable {
+  width: 100%;
+}
+
+.merch-trigger {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.85rem;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  width: 100%;
+}
+
+.merch-trigger::-webkit-details-marker,
+.merch-trigger::marker {
+  display: none;
+}
+
+.merch-image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.merch-image--shadow {
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.1));
+  transition: filter 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.merch-image--shadow-shirt {
+  filter: drop-shadow(0 14px 32px rgba(0, 0, 0, 0.22));
+  transition: filter 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.merch-expandable[open] .merch-image--shadow {
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.12));
+}
+
+.merch-expandable[open] .merch-image--shadow-shirt {
+  filter: drop-shadow(0 20px 48px rgba(0, 0, 0, 0.26));
+}
+
+.merch-image--shirt {
+  max-height: min(72vh, 40rem);
+  object-fit: cover;
+  aspect-ratio: 1;
+}
+
+.merch-title {
+  margin: 0;
+  font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+}
+
+.merch-meta {
+  font-size: clamp(1rem, 2.2vw, 1.125rem);
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+  opacity: 0.55;
+}
+
+.stream-link {
+  display: block;
+  color: #000000;
+  font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+
+.stream-link:hover,
+.stream-link:focus-visible {
+  opacity: 0.45;
+  outline: none;
+}
+
+.stream-link--button {
+  width: fit-content;
+}
+
+.stream-link.merch-contact {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+  font-size: clamp(1rem, 2.2vw, 1.125rem);
+  line-height: 1.35;
+  width: fit-content;
+  color: #000000;
+  opacity: 0.55;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.stream-link.merch-contact:hover,
+.stream-link.merch-contact:focus-visible {
+  color: #000000;
+  opacity: 0.35;
+}
+
+.mv-shoot-flyer {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .top .reveal,
+  .merch-item.reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
