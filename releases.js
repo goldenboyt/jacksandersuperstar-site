@@ -20,7 +20,7 @@ const releases = [
     subtitle: "out july 15",
     coverHidden: true,
     mvShoot: "mv-shoot.html",
-    listeningParty: "listening-party.html",
+    liveInDallas: "live-in-dallas.html",
     tracks: [],
   },
   {
@@ -170,7 +170,7 @@ function renderFeaturedRelease(release, index) {
       <div class="release-panel">
         ${renderTracklistButton(release.tracks)}
         <a class="stream-link" href="${release.mvShoot}">magic (tragic) music video</a>
-        <a class="stream-link" href="${release.listeningParty}">listening party</a>
+        <a class="stream-link" href="${release.liveInDallas}">live in dallas</a>
       </div>
     </details>
   `;
