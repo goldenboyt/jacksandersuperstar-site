@@ -120,15 +120,17 @@ function initRsvpForm() {
     event.preventDefault();
 
     const submitButton = form.querySelector(".rsvp-submit");
-    const name = String(new FormData(form).get("name") || "").trim();
-    const honey = String(new FormData(form).get("_honey") || "").trim();
+    const formData = new FormData(form);
+    const firstName = String(formData.get("firstName") || "").trim();
+    const lastName = String(formData.get("lastName") || "").trim();
+    const honey = String(formData.get("_honey") || "").trim();
 
     if (honey) {
       return;
     }
 
-    if (!name) {
-      showMessage("name required", true);
+    if (!firstName || !lastName) {
+      showMessage("first and last name required", true);
       return;
     }
 
@@ -142,7 +144,7 @@ function initRsvpForm() {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify({ name, _honey: honey }),
+        body: JSON.stringify({ firstName, lastName, _honey: honey }),
       });
 
       const result = await response.json().catch(() => ({}));

@@ -904,12 +904,17 @@ body.is-leaving {
   aspect-ratio: 16 / 9;
 }
 
-.rsvp {
+.rsvp,
+.livestream {
   width: 100%;
   max-width: 28rem;
+}
+
+.rsvp {
   margin: 0 0 1.5rem;
 }
 
+.livestream-heading,
 .rsvp-heading {
   font-size: clamp(1.125rem, 2.5vw, 1.375rem);
   font-weight: 400;
@@ -918,11 +923,27 @@ body.is-leaving {
   text-transform: lowercase;
 }
 
+.livestream .live-embed {
+  margin-top: 0.75rem;
+}
+
 .rsvp-form {
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
   margin-top: 0.75rem;
+}
+
+.rsvp-fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
+}
+
+@media (min-width: 480px) {
+  .rsvp-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .rsvp-field {
@@ -971,11 +992,22 @@ body.is-leaving {
 
 .rsvp-submit {
   width: fit-content;
-  margin-top: 0.15rem;
-  padding: 0;
-  background: none;
-  border: 0;
+  margin-top: 0.25rem;
+  padding: 0.55rem 1.35rem;
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  border-radius: 0;
   cursor: pointer;
+  transition:
+    border-color 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.stream-link.rsvp-submit:hover,
+.stream-link.rsvp-submit:focus-visible {
+  opacity: 1;
+  border-color: rgba(0, 0, 0, 0.55);
+  outline: none;
 }
 
 .rsvp-submit:disabled {

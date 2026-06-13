@@ -18,14 +18,24 @@ function parseBody(request) {
   return request.body;
 }
 
+function formatName(entry) {
+  if (entry.firstName || entry.lastName) {
+    return [entry.firstName, entry.lastName].filter(Boolean).join(" ");
+  }
+
+  return entry.name || "";
+}
+
 function formatRsvpList(rsvps) {
   const sorted = [...rsvps].sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
 
-  return [`total: ${sorted.length}`, "", ...sorted.map((entry) => entry.name)].join(
-    "\n"
-  );
+  return [
+    `total: ${sorted.length}`,
+    "",
+    ...sorted.map((entry) => formatName(entry)),
+  ].join("\n");
 }
 
 async function loadRsvps() {
@@ -68,12 +78,18 @@ export default async function handler(request, response) {
     return response.status(200).json({ ok: true });
   }
 
-  const name = body.name?.trim();
-  if (!name) {
-    return response.status(400).json({ error: "name required" });
+  const firstName = body.firstName?.trim();
+  const lastName = body.lastName?.trim();
+
+  if (!firstName || !lastName) {
+    return response.status(400).json({ error: "first and last name required" });
   }
 
+  const name = `${firstName} ${lastName}`;
+
   const entry = {
+    firstName,
+    lastName,
     name,
     createdAt: new Date().toISOString(),
   };
