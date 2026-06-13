@@ -1,6 +1,6 @@
 import { get, put } from "@vercel/blob";
 
-const RSVP_LIST_PATH = "rsvp/live-in-dallas/list.json";
+const RSVP_LIST_PATH = "rsvp/live-in-dallas/guests.json";
 
 function parseBody(request) {
   if (!request.body) {

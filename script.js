@@ -104,7 +104,7 @@ function initCountdown() {
 function initRsvpForm() {
   const form = document.getElementById("rsvp-form");
   const message = document.getElementById("rsvp-message");
-  const rsvpEmailEndpoint = "https://formsubmit.co/ajax/jack@sanderclan.com";
+  const rsvpEmailEndpoint = "https://formsubmit.co/ajax/jsander2004@gmail.com";
 
   if (!form || !message) {
     return;
