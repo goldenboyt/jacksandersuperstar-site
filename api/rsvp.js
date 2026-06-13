@@ -1,8 +1,6 @@
-import { list, put } from "@vercel/blob";
+import { get, put } from "@vercel/blob";
 
-const RSVP_PREFIX = "rsvp/live-in-dallas/";
 const RSVP_LIST_PATH = "rsvp/live-in-dallas/list.json";
-const NOTIFY_EMAIL = "jack@sanderclan.com";
 
 function parseBody(request) {
   if (!request.body) {
@@ -31,20 +29,15 @@ function formatRsvpList(rsvps) {
 }
 
 async function loadRsvps() {
-  const { blobs } = await list({ prefix: RSVP_PREFIX, limit: 1000 });
-  const listBlob = blobs.find((blob) => blob.pathname === RSVP_LIST_PATH);
+  const blob = await get(RSVP_LIST_PATH, { access: "private" });
 
-  if (!listBlob) {
-    return [];
-  }
-
-  const response = await fetch(listBlob.url);
-  if (!response.ok) {
+  if (!blob?.stream) {
     return [];
   }
 
   try {
-    const data = await response.json();
+    const text = await new Response(blob.stream).text();
+    const data = JSON.parse(text);
     return Array.isArray(data) ? data : [];
   } catch {
     return [];
@@ -58,36 +51,6 @@ async function saveRsvps(rsvps) {
     addRandomSuffix: false,
     allowOverwrite: true,
   });
-}
-
-async function sendRsvpEmail(name, rsvps) {
-  const response = await fetch(`https://formsubmit.co/ajax/${NOTIFY_EMAIL}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      Origin: "https://jacksandersuperstar.com",
-      Referer: "https://jacksandersuperstar.com/live-in-dallas",
-    },
-    body: JSON.stringify({
-      _subject: `${name} rsvp'd for live in dallas`,
-      message: formatRsvpList(rsvps),
-      _template: "box",
-      _captcha: "false",
-    }),
-  });
-
-  const result = await response.json().catch(() => ({}));
-
-  if (response.ok && String(result.success) === "true") {
-    return { ok: true };
-  }
-
-  if (String(result.message || "").toLowerCase().includes("activation")) {
-    return { ok: false, error: "email needs activation — check jack@sanderclan.com" };
-  }
-
-  return { ok: false, error: "could not send email" };
 }
 
 export default async function handler(request, response) {
@@ -123,13 +86,13 @@ export default async function handler(request, response) {
     const sorted = [...rsvps].sort(
       (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
     );
-    const emailed = await sendRsvpEmail(name, sorted);
 
-    if (!emailed.ok) {
-      return response.status(500).json({ error: emailed.error || "could not send email" });
-    }
-
-    return response.status(200).json({ ok: true, total: sorted.length });
+    return response.status(200).json({
+      ok: true,
+      total: sorted.length,
+      subject: `${name} rsvp'd for live in dallas`,
+      message: formatRsvpList(sorted),
+    });
   } catch (error) {
     console.error("rsvp failed", error);
     return response.status(503).json({ error: "rsvp is not available yet" });

@@ -104,6 +104,7 @@ function initCountdown() {
 function initRsvpForm() {
   const form = document.getElementById("rsvp-form");
   const message = document.getElementById("rsvp-message");
+  const rsvpEmailEndpoint = "https://formsubmit.co/ajax/jack@sanderclan.com";
 
   if (!form || !message) {
     return;
@@ -152,8 +153,27 @@ function initRsvpForm() {
         return;
       }
 
+      try {
+        await fetch(rsvpEmailEndpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            _subject: result.subject,
+            message: result.message,
+            _template: "box",
+            _captcha: "false",
+          }),
+        });
+      } catch {
+        // RSVP is saved even if the email fails.
+      }
+
       form.reset();
       showMessage("you're on the list");
+      submitButton.disabled = false;
     } catch {
       showMessage("something went wrong — try again", true);
       submitButton.disabled = false;
