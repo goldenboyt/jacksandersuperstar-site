@@ -66,6 +66,8 @@ async function sendRsvpEmail(name, rsvps) {
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
+      Origin: "https://jacksandersuperstar.com",
+      Referer: "https://jacksandersuperstar.com/live-in-dallas",
     },
     body: JSON.stringify({
       _subject: `${name} rsvp'd for live in dallas`,
@@ -76,7 +78,16 @@ async function sendRsvpEmail(name, rsvps) {
   });
 
   const result = await response.json().catch(() => ({}));
-  return response.ok && String(result.success) === "true";
+
+  if (response.ok && String(result.success) === "true") {
+    return { ok: true };
+  }
+
+  if (String(result.message || "").toLowerCase().includes("activation")) {
+    return { ok: false, error: "email needs activation — check jack@sanderclan.com" };
+  }
+
+  return { ok: false, error: "could not send email" };
 }
 
 export default async function handler(request, response) {
@@ -114,8 +125,8 @@ export default async function handler(request, response) {
     );
     const emailed = await sendRsvpEmail(name, sorted);
 
-    if (!emailed) {
-      return response.status(500).json({ error: "could not send email" });
+    if (!emailed.ok) {
+      return response.status(500).json({ error: emailed.error || "could not send email" });
     }
 
     return response.status(200).json({ ok: true, total: sorted.length });
