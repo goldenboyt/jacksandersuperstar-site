@@ -1,6 +1,7 @@
-import { get, put } from "@vercel/blob";
+import { get, list, put } from "@vercel/blob";
 
-const RSVP_LIST_PATH = "rsvp/live-in-dallas/guests.json";
+const RSVP_PREFIX = "rsvp/live-in-dallas/guests/";
+const LEGACY_LIST_PATH = "rsvp/live-in-dallas/guests.json";
 
 function parseBody(request) {
   if (!request.body) {
@@ -38,28 +39,52 @@ function formatRsvpList(rsvps) {
   ].join("\n");
 }
 
-async function loadRsvps() {
-  const blob = await get(RSVP_LIST_PATH, { access: "private" });
+async function readJsonBlob(pathname) {
+  const blob = await get(pathname, { access: "private" });
 
   if (!blob?.stream) {
-    return [];
+    return null;
   }
 
   try {
-    const text = await new Response(blob.stream).text();
-    const data = JSON.parse(text);
-    return Array.isArray(data) ? data : [];
+    return JSON.parse(await new Response(blob.stream).text());
   } catch {
-    return [];
+    return null;
   }
 }
 
-async function saveRsvps(rsvps) {
-  await put(RSVP_LIST_PATH, JSON.stringify(rsvps), {
+async function loadLegacyRsvps() {
+  const data = await readJsonBlob(LEGACY_LIST_PATH);
+  return Array.isArray(data) ? data : [];
+}
+
+async function loadGuestFiles() {
+  const { blobs } = await list({ prefix: RSVP_PREFIX, limit: 1000 });
+  const entries = [];
+
+  for (const blob of blobs) {
+    const data = await readJsonBlob(blob.pathname);
+
+    if (data && typeof data === "object" && !Array.isArray(data)) {
+      entries.push(data);
+    }
+  }
+
+  return entries;
+}
+
+async function loadRsvps() {
+  const [legacy, guests] = await Promise.all([loadLegacyRsvps(), loadGuestFiles()]);
+  return [...legacy, ...guests];
+}
+
+async function saveRsvp(entry) {
+  const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+  await put(`${RSVP_PREFIX}${id}.json`, JSON.stringify(entry), {
     access: "private",
     contentType: "application/json",
     addRandomSuffix: false,
-    allowOverwrite: true,
   });
 }
 
@@ -95,9 +120,8 @@ export default async function handler(request, response) {
   };
 
   try {
+    await saveRsvp(entry);
     const rsvps = await loadRsvps();
-    rsvps.push(entry);
-    await saveRsvps(rsvps);
 
     const sorted = [...rsvps].sort(
       (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
