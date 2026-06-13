@@ -20,23 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  const merchList = document.querySelector(".merch-list");
-  if (merchList) {
-    merchList.querySelectorAll(".merch-expandable").forEach((item) => {
-      item.addEventListener("toggle", () => {
-        if (!item.open) {
-          return;
-        }
-
-        merchList.querySelectorAll(".merch-expandable").forEach((other) => {
-          if (other !== item) {
-            other.removeAttribute("open");
-          }
-        });
-      });
-    });
-  }
-
   const currentPage = window.location.pathname.split("/").pop() || "index.html";
 
   document.querySelectorAll('a[href$=".html"]').forEach((link) => {
@@ -59,9 +42,39 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  initImageExpandables();
   initCountdown();
   initRsvpForm();
 });
+
+function initImageExpandables(root = document) {
+  const expandables = root.querySelectorAll(".image-expandable");
+
+  expandables.forEach((item) => {
+    item.addEventListener("toggle", () => {
+      if (!item.open) {
+        return;
+      }
+
+      expandables.forEach((other) => {
+        if (other !== item) {
+          other.removeAttribute("open");
+        }
+      });
+
+      const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+      window.setTimeout(() => {
+        item.scrollIntoView({
+          behavior: prefersReducedMotion ? "auto" : "smooth",
+          block: "nearest",
+        });
+      }, 200);
+    });
+  });
+}
 
 function initCountdown() {
   const countdown = document.getElementById("countdown");

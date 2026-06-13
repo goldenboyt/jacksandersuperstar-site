@@ -329,10 +329,15 @@ body.is-leaving {
 }
 
 .top .reveal,
-.merch-item.reveal {
+.merch-item.reveal,
+.image-expandable.reveal {
   opacity: 0;
   transform: translateY(10px);
   animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.image-expandable.reveal {
+  animation-delay: 0.15s;
 }
 
 .top .reveal {
@@ -756,11 +761,13 @@ body.is-leaving {
   width: 100%;
 }
 
-.merch-expandable {
+.merch-expandable,
+.image-expandable {
   width: 100%;
 }
 
-.merch-trigger {
+.merch-trigger,
+.image-expandable-trigger {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -772,54 +779,70 @@ body.is-leaving {
 }
 
 .merch-trigger::-webkit-details-marker,
-.merch-trigger::marker {
+.merch-trigger::marker,
+.image-expandable-trigger::-webkit-details-marker,
+.image-expandable-trigger::marker {
   display: none;
 }
 
-.merch-image {
+.merch-image,
+.mv-shoot-flyer {
   display: block;
   width: 100%;
   height: auto;
+  transition:
+    max-width 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .merch-image--sticker,
 .merch-image--tattoo {
   filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.1));
-  transition: filter 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .merch-image--sticker {
-  width: 88%;
-  max-width: 31rem;
+  max-width: 20rem;
 }
 
 .merch-image--tattoo {
-  width: 78%;
-  max-width: 28rem;
+  max-width: 18rem;
 }
 
 .merch-image--shadow-shirt {
   filter: drop-shadow(0 14px 32px rgba(0, 0, 0, 0.22));
-  transition: filter 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.merch-expandable[open] .merch-image--tattoo {
+.image-expandable[open] .merch-image--sticker {
+  max-width: min(92vw, 31rem);
+}
+
+.image-expandable[open] .merch-image--tattoo {
   filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.12));
+  max-width: min(92vw, 28rem);
 }
 
-.merch-expandable[open] .merch-image--shadow-shirt {
+.image-expandable[open] .merch-image--shadow-shirt {
   filter: drop-shadow(0 20px 48px rgba(0, 0, 0, 0.26));
 }
 
+.image-expandable[open] .merch-image--shirt {
+  max-width: min(92vw, 26rem);
+}
+
+.image-expandable[open] .mv-shoot-flyer {
+  max-width: min(92vw, 28rem);
+}
+
 .merch-item--shirt .merch-expandable,
-.merch-item--shirt .merch-trigger {
+.merch-item--shirt .merch-trigger,
+.merch-item--shirt .image-expandable,
+.merch-item--shirt .image-expandable-trigger {
   width: auto;
   align-self: flex-start;
 }
 
 .merch-image--shirt {
-  width: min(100%, 22rem);
-  height: auto;
+  max-width: 16rem;
   object-fit: contain;
   object-position: left top;
 }
@@ -892,10 +915,7 @@ body.is-leaving {
 }
 
 .mv-shoot-flyer {
-  display: block;
-  width: 100%;
   max-width: 18rem;
-  height: auto;
 }
 
 .live-embed {
@@ -1044,7 +1064,8 @@ body.is-leaving {
   }
 
   .top .reveal,
-  .merch-item.reveal {
+  .merch-item.reveal,
+  .image-expandable.reveal {
     opacity: 1;
     transform: none;
   }
