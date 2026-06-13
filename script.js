@@ -60,6 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   initCountdown();
+  initRsvpForm();
 });
 
 function initCountdown() {
@@ -98,4 +99,64 @@ function initCountdown() {
 
   tick();
   window.setInterval(tick, 1000);
+}
+
+function initRsvpForm() {
+  const form = document.getElementById("rsvp-form");
+  const message = document.getElementById("rsvp-message");
+
+  if (!form || !message) {
+    return;
+  }
+
+  const showMessage = (text, isError = false) => {
+    message.textContent = text;
+    message.hidden = false;
+    message.classList.toggle("rsvp-message--error", isError);
+  };
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const submitButton = form.querySelector(".rsvp-submit");
+    const name = String(new FormData(form).get("name") || "").trim();
+    const honey = String(new FormData(form).get("_honey") || "").trim();
+
+    if (honey) {
+      return;
+    }
+
+    if (!name) {
+      showMessage("name required", true);
+      return;
+    }
+
+    submitButton.disabled = true;
+    showMessage("sending…");
+
+    try {
+      const response = await fetch("/api/rsvp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ name, _honey: honey }),
+      });
+
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        showMessage(result.error || "something went wrong — try again", true);
+        submitButton.disabled = false;
+        return;
+      }
+
+      form.reset();
+      showMessage("you're on the list");
+    } catch {
+      showMessage("something went wrong — try again", true);
+      submitButton.disabled = false;
+    }
+  });
 }

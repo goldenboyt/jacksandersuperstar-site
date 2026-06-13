@@ -904,6 +904,97 @@ body.is-leaving {
   aspect-ratio: 16 / 9;
 }
 
+.rsvp {
+  width: 100%;
+  max-width: 28rem;
+  margin: 0 0 1.5rem;
+}
+
+.rsvp-heading {
+  font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+}
+
+.rsvp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 0.75rem;
+}
+
+.rsvp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.rsvp-field label {
+  font-size: clamp(0.95rem, 2vw, 1.05rem);
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+  opacity: 0.55;
+}
+
+.rsvp-field input {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.18);
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+  padding: 0.35rem 0;
+}
+
+.rsvp-field input:focus-visible {
+  outline: none;
+  border-bottom-color: rgba(0, 0, 0, 0.55);
+}
+
+.rsvp-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rsvp-submit {
+  width: fit-content;
+  margin-top: 0.15rem;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.rsvp-submit:disabled {
+  opacity: 0.35;
+  cursor: wait;
+}
+
+.rsvp-message {
+  font-size: clamp(0.95rem, 2vw, 1.05rem);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+  opacity: 0.55;
+}
+
+.rsvp-message--error {
+  opacity: 0.75;
+}
+
 .live-embed iframe {
   display: block;
   width: 100%;
