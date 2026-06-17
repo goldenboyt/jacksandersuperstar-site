@@ -306,6 +306,54 @@ body.is-leaving {
   text-align: left;
 }
 
+.event-details {
+  width: 100%;
+  max-width: 28rem;
+  margin: 0 0 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.event-detail {
+  margin: 0;
+  font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+}
+
+.event-detail strong {
+  font-weight: 700;
+}
+
+.event-map-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.65rem;
+}
+
+.event-map-link {
+  display: inline-flex;
+  line-height: 0;
+  transition: opacity 0.3s ease;
+}
+
+.event-map-link:hover,
+.event-map-link:focus-visible {
+  opacity: 0.45;
+  outline: none;
+}
+
+.event-map-wordmark {
+  display: block;
+  width: auto;
+  height: 1.25rem;
+}
+
 .title-link {
   display: inline-block;
   color: inherit;
@@ -937,7 +985,7 @@ body.is-leaving {
 .livestream-heading,
 .rsvp-heading {
   font-size: clamp(1.125rem, 2.5vw, 1.375rem);
-  font-weight: 400;
+  font-weight: 700;
   line-height: 1.35;
   letter-spacing: -0.01em;
   text-transform: lowercase;

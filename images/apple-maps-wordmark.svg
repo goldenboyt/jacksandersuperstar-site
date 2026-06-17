@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 24" role="img" aria-label="Apple Maps">
+  <path
+    fill="#FF2D55"
+    d="M8 4.5c0-2.2 1.8-4 4-4s4 1.8 4 4c0 2.8-4 7.5-4 7.5S8 7.3 8 4.5Zm4 2.2a2.2 2.2 0 1 1 0-4.4 2.2 2.2 0 0 1 0 4.4Z"
+  />
+  <text
+    x="22"
+    y="16.5"
+    fill="#1D1D1F"
+    font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif"
+    font-size="15"
+    font-weight="600"
+  >
+    Maps
+  </text>
+</svg>
