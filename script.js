@@ -82,7 +82,8 @@ function initCountdown() {
     return;
   }
 
-  const target = new Date(2026, 6, 15, 23, 0, 0);
+  const isLiveInDallas = window.location.pathname.includes("live-in-dallas");
+  const target = new Date(2026, 6, 15, isLiveInDallas ? 21 : 23, 0, 0);
 
   const tick = () => {
     const remaining = target.getTime() - Date.now();
