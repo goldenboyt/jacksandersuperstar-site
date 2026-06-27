@@ -18,7 +18,7 @@ const releases = [
     featured: true,
     title: "jacksander superstar",
     subtitle: "out july 15",
-    coverHidden: true,
+    cover: "covers/jacksander-superstar.png",
     mvShoot: "mv-shoot.html",
     liveInDallas: "live-in-dallas.html",
     tracks: [],
