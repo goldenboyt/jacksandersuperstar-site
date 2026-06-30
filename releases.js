@@ -1,3 +1,22 @@
+const jacksanderSuperstarTracks = [
+  "magic (tragic)",
+  "idgaf",
+  "supervillan",
+  "step on them (ft. o1shea)",
+  "newports",
+  "kill you",
+  "shakesphere",
+  "around the town",
+  "coco's interlude (ft. coconut titty)",
+  "want it",
+  "spend it",
+  "no wings (ft. lazer dim 700)",
+  "sexy party",
+  "fuk me",
+  "breathe (ft. sk8star)",
+  "#jacksandersuperstar®",
+];
+
 const prodigyGeniusTracks = [
   "cybertruck",
   "omg",
@@ -21,7 +40,7 @@ const releases = [
     cover: "covers/jacksander-superstar.png",
     mvShoot: "mv-shoot.html",
     liveInDallas: "live-in-dallas.html",
-    tracks: [],
+    tracks: jacksanderSuperstarTracks,
   },
   {
     id: "prodigy-genius",
