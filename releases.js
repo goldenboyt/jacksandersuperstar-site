@@ -131,15 +131,6 @@ function renderTracklist(tracks) {
   `;
 }
 
-function renderTracklistButton(tracks) {
-  return `
-    <details class="release-subpanel">
-      <summary class="stream-link stream-link--button">tracklist</summary>
-      ${renderTracklist(tracks)}
-    </details>
-  `;
-}
-
 function renderPapyrusTitle(variant) {
   if (variant === "designer") {
     return `
@@ -243,6 +234,8 @@ function renderStreamingLinks(release) {
 }
 
 function renderFeaturedRelease(release, index) {
+  const tracklistBlock = release.tracks ? renderTracklist(release.tracks) : "";
+
   return `
     <details class="release release--featured">
       <summary class="release-trigger">
@@ -258,10 +251,10 @@ function renderFeaturedRelease(release, index) {
           <span class="release-meta">${renderReleaseMeta(release)}</span>
         </span>
       </summary>
-      <div class="release-panel">
-        ${renderTracklistButton(release.tracks)}
+      <div class="release-links release-links--with-tracklist">
         <a class="stream-link" href="${release.mvShoot}">magic (tragic) music video</a>
         <a class="stream-link" href="${release.liveInDallas}">live in dallas</a>
+        ${tracklistBlock}
       </div>
     </details>
   `;
@@ -328,12 +321,6 @@ function renderReleases() {
           block: "nearest",
         });
       }, 350);
-    });
-  });
-
-  list.querySelectorAll(".release-subpanel").forEach((subpanel) => {
-    subpanel.addEventListener("toggle", (event) => {
-      event.stopPropagation();
     });
   });
 }
