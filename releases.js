@@ -2,7 +2,7 @@ const jacksanderSuperstarTracks = [
   "magic (tragic)",
   "idgaf",
   "supervillan",
-  "step on them (ft. o1shea)",
+  "step on them (ft. o1sea)",
   "newports",
   "kill you",
   "shakesphere",
