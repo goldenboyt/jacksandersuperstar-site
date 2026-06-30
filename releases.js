@@ -8,7 +8,6 @@ const jacksanderSuperstarTracks = [
   "shakesphere",
   "around the town",
   "coco's interlude (ft. coconut titty)",
-  "want it",
   "spend it",
   "no wings (ft. lazer dim 700)",
   "sexy party",
