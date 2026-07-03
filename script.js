@@ -44,6 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   initImageExpandables();
   initCountdown();
+  initMerchNewTags();
   initRsvpForm();
 });
 
@@ -113,6 +114,19 @@ function initCountdown() {
 
   tick();
   window.setInterval(tick, 1000);
+}
+
+function initMerchNewTags() {
+  const tags = document.querySelectorAll(".merch-tag");
+  if (!tags.length) {
+    return;
+  }
+
+  const cutoff = new Date(2026, 6, 10, 12, 0, 0);
+
+  if (Date.now() >= cutoff.getTime()) {
+    tags.forEach((tag) => tag.remove());
+  }
 }
 
 function initRsvpForm() {
