@@ -486,6 +486,14 @@ body.is-leaving {
   animation-delay: 0.28s;
 }
 
+.merch-item.reveal:nth-child(4) {
+  animation-delay: 0.36s;
+}
+
+.merch-item.reveal:nth-child(5) {
+  animation-delay: 0.44s;
+}
+
 @keyframes rise {
   to {
     opacity: 1;
@@ -959,6 +967,22 @@ body.is-leaving {
   filter: drop-shadow(0 14px 32px rgba(0, 0, 0, 0.22));
 }
 
+.merch-image--vinyl {
+  max-width: 22rem;
+}
+
+.merch-image--shadow-vinyl {
+  filter: drop-shadow(0 14px 32px rgba(0, 0, 0, 0.22));
+}
+
+.merch-image--cologne {
+  max-width: 11rem;
+}
+
+.merch-image--shadow-cologne {
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.18));
+}
+
 .image-expandable[open] .merch-image--sticker {
   max-width: min(92vw, 31rem);
 }
@@ -976,6 +1000,22 @@ body.is-leaving {
   max-width: min(92vw, 26rem);
 }
 
+.image-expandable[open] .merch-image--vinyl {
+  max-width: min(92vw, 30rem);
+}
+
+.image-expandable[open] .merch-image--shadow-vinyl {
+  filter: drop-shadow(0 20px 48px rgba(0, 0, 0, 0.26));
+}
+
+.image-expandable[open] .merch-image--cologne {
+  max-width: min(92vw, 18rem);
+}
+
+.image-expandable[open] .merch-image--shadow-cologne {
+  filter: drop-shadow(0 14px 32px rgba(0, 0, 0, 0.22));
+}
+
 .image-expandable[open] .mv-shoot-flyer {
   max-width: min(92vw, 28rem);
 }
@@ -984,6 +1024,18 @@ body.is-leaving {
 .merch-item--shirt .merch-trigger,
 .merch-item--shirt .image-expandable,
 .merch-item--shirt .image-expandable-trigger {
+  width: auto;
+  align-self: flex-start;
+}
+
+.merch-item--vinyl .merch-expandable,
+.merch-item--vinyl .merch-trigger,
+.merch-item--vinyl .image-expandable,
+.merch-item--vinyl .image-expandable-trigger,
+.merch-item--cologne .merch-expandable,
+.merch-item--cologne .merch-trigger,
+.merch-item--cologne .image-expandable,
+.merch-item--cologne .image-expandable-trigger {
   width: auto;
   align-self: flex-start;
 }
@@ -1017,6 +1069,34 @@ body.is-leaving {
   letter-spacing: -0.01em;
   text-transform: lowercase;
   opacity: 0.55;
+}
+
+.merch-tag {
+  font-size: clamp(1rem, 2.2vw, 1.125rem);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+}
+
+.merch-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.merch-detail {
+  margin: 0;
+  font-size: clamp(1rem, 2.2vw, 1.125rem);
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+  opacity: 0.55;
+}
+
+.merch-detail--italic {
+  font-style: italic;
 }
 
 .stream-link {
