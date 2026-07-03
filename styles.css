@@ -345,6 +345,16 @@ body.is-leaving {
   height: auto;
 }
 
+.page--home .home-links {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+
 .logo {
   display: block;
   width: min(88vw, 28rem);
