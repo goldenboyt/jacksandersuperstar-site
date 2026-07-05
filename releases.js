@@ -13,7 +13,7 @@ const jacksanderSuperstarTracks = [
   "sexy party",
   "fuk me",
   "breathe (ft. sk8star)",
-  "#jacksandersuperstar®",
+  "#jacksandersuperstar",
 ];
 
 const prodigyGeniusTracks = [
