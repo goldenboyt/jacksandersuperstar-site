@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>script</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <style>
+      body {
+        margin: 0;
+        background: #ffffff;
+        color: #111111;
+      }
+
+      pre {
+        margin: 0;
+        padding: 1rem;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", "Courier New", monospace;
+        font-size: 12px;
+        line-height: 1.45;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+    </style>
+  </head>
+  <body>
+    <pre id="script"></pre>
+    <script>
+      fetch("golden-boys-list.user.js")
+        .then((response) => response.text())
+        .then((text) => {
+          document.getElementById("script").textContent = text;
+        });
+    </script>
+  </body>
+</html>
