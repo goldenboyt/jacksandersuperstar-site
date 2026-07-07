@@ -1291,6 +1291,78 @@ body.is-leaving {
   border: 0;
 }
 
+.page--release-link {
+  align-items: center;
+  justify-content: center;
+}
+
+.release-link-layout {
+  width: 100%;
+  max-width: 18rem;
+}
+
+.release-link-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.85rem;
+  width: 100%;
+}
+
+.release-link-cover {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.release-link-cover--featured {
+  object-fit: contain;
+  background: #ffffff;
+}
+
+.release-link-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  width: 100%;
+}
+
+.page--release-link .release-logo {
+  --logo-display-width: min(100%, 14rem);
+}
+
+.page--release-link .release-title-logo--cybertruck {
+  max-width: 14rem;
+}
+
+.page--release-link .release-title-logo--brainstorm {
+  max-width: 14rem;
+}
+
+.release-link-artist,
+.release-link-date,
+.release-link-not-found {
+  font-size: clamp(1rem, 2.2vw, 1.125rem);
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+  opacity: 0.55;
+}
+
+.release-link-streams {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin-top: 0.25rem;
+  width: 100%;
+}
+
+.page--release-link .stream-link {
+  font-size: clamp(0.9375rem, 2vw, 1.0625rem);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

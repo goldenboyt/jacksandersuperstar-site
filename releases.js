@@ -232,6 +232,89 @@ function renderStreamingLinks(release) {
     .join("");
 }
 
+function getReleaseBySlug(slug) {
+  return releases.find((release) => release.id === slug);
+}
+
+function getReleaseLinkDate(release) {
+  return release.date || release.subtitle || "";
+}
+
+function renderReleaseLinkTitle(release) {
+  if (release.featured) {
+    return `
+      <img
+        src="logo.png"
+        alt="#jacksandersuperstar®"
+        class="release-logo"
+        width="3284"
+        height="308"
+      />
+    `;
+  }
+
+  return renderReleaseTitle(release);
+}
+
+function renderReleaseLinkLinks(release) {
+  const links = [
+    release.apple && { label: "apple music", href: release.apple, external: true },
+    release.spotify && { label: "spotify", href: release.spotify, external: true },
+    release.youtube && { label: "youtube", href: release.youtube, external: true },
+    release.soundcloud && {
+      label: "soundcloud",
+      href: release.soundcloud,
+      external: true,
+    },
+    release.mvShoot && {
+      label: "magic (tragic) music video",
+      href: release.mvShoot,
+      external: false,
+    },
+    release.liveInDallas && {
+      label: "live in dallas",
+      href: release.liveInDallas,
+      external: false,
+    },
+  ].filter(Boolean);
+
+  return links
+    .map(({ label, href, external }) => {
+      const externalAttrs = external
+        ? ' target="_blank" rel="noopener noreferrer"'
+        : "";
+
+      return `<a class="stream-link" href="${href}"${externalAttrs}>${label}</a>`;
+    })
+    .join("");
+}
+
+function renderReleaseLinkPage(release) {
+  const coverClass = release.featured
+    ? "release-link-cover release-link-cover--featured"
+    : "release-link-cover";
+
+  return `
+    <article class="release-link-card">
+      <img
+        class="${coverClass}"
+        src="${release.cover}"
+        alt="${release.title} cover"
+        width="512"
+        height="512"
+      />
+      <div class="release-link-info">
+        ${renderReleaseLinkTitle(release)}
+        <p class="release-link-artist">jack sander</p>
+        <p class="release-link-date">${getReleaseLinkDate(release)}</p>
+        <nav class="release-link-streams" aria-label="streaming links">
+          ${renderReleaseLinkLinks(release)}
+        </nav>
+      </div>
+    </article>
+  `;
+}
+
 function renderFeaturedRelease(release, index) {
   const tracklistBlock = release.tracks ? renderTracklist(release.tracks) : "";
 
