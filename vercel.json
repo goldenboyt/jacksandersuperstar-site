@@ -3,31 +3,5 @@
   "github": {
     "silent": true
   },
-  "trailingSlash": false,
-  "rewrites": [
-    {
-      "source": "/jacksandersuperstar",
-      "destination": "/release.html?slug=jacksandersuperstar"
-    },
-    {
-      "source": "/prodigygenius",
-      "destination": "/release.html?slug=prodigygenius"
-    },
-    {
-      "source": "/cybertruck",
-      "destination": "/release.html?slug=cybertruck"
-    },
-    {
-      "source": "/designer",
-      "destination": "/release.html?slug=designer"
-    },
-    {
-      "source": "/brainstorm",
-      "destination": "/release.html?slug=brainstorm"
-    },
-    {
-      "source": "/catscash",
-      "destination": "/release.html?slug=catscash"
-    }
-  ]
+  "trailingSlash": false
 }
