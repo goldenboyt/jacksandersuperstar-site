@@ -1389,19 +1389,21 @@ body.release-link-body {
   width: 100%;
 }
 
-.page--release-link .stream-link {
+.page--release-link .release-link-streams .stream-link {
   font-size: clamp(0.9375rem, 2vw, 1.0625rem);
   color: #ffffff;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
 }
 
-.page--release-link .stream-link:hover,
-.page--release-link .stream-link:focus-visible {
+.page--release-link .release-link-streams .stream-link:hover,
+.page--release-link .release-link-streams .stream-link:focus-visible {
   color: #ffffff;
   opacity: 0.45;
 }
 
 .release-link-share {
-  margin-top: 0.35rem;
+  margin-top: 1.25rem;
   background: none;
   border: 0;
   padding: 0;
