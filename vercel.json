@@ -6,12 +6,12 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/jacksander-superstar",
-      "destination": "/release.html?slug=jacksander-superstar"
+      "source": "/jacksandersuperstar",
+      "destination": "/release.html?slug=jacksandersuperstar"
     },
     {
-      "source": "/prodigy-genius",
-      "destination": "/release.html?slug=prodigy-genius"
+      "source": "/prodigygenius",
+      "destination": "/release.html?slug=prodigygenius"
     },
     {
       "source": "/cybertruck",
@@ -26,8 +26,8 @@
       "destination": "/release.html?slug=brainstorm"
     },
     {
-      "source": "/cats-cash",
-      "destination": "/release.html?slug=cats-cash"
+      "source": "/catscash",
+      "destination": "/release.html?slug=catscash"
     }
   ]
 }

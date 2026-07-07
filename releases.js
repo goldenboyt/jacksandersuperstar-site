@@ -232,8 +232,12 @@ function renderStreamingLinks(release) {
     .join("");
 }
 
+function getReleaseSlug(release) {
+  return release.id.replace(/-/g, "");
+}
+
 function getReleaseBySlug(slug) {
-  return releases.find((release) => release.id === slug);
+  return releases.find((release) => getReleaseSlug(release) === slug);
 }
 
 function getReleaseLinkDate(release) {
