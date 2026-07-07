@@ -1314,7 +1314,7 @@ body.release-link-body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
+  gap: 0.3rem;
   width: 100%;
   text-align: center;
 }
@@ -1334,7 +1334,6 @@ body.release-link-body {
   align-items: center;
   gap: 0.05rem;
   width: 100%;
-  margin-top: -0.75rem;
 }
 
 .page--release-link .release-logo,
