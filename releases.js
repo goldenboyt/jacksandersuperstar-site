@@ -295,14 +295,10 @@ function renderReleaseLinkLinks(release) {
 }
 
 function renderReleaseLinkPage(release) {
-  const coverClass = release.featured
-    ? "release-link-cover release-link-cover--featured"
-    : "release-link-cover";
-
   return `
     <article class="release-link-card">
       <img
-        class="${coverClass}"
+        class="release-link-cover"
         src="${release.cover}"
         alt="${release.title} cover"
         width="512"
