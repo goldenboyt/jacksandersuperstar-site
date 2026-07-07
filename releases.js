@@ -63,7 +63,7 @@ const releases = [
     titleLogo: "covers/Cybertrucklogo.svg.png",
     titleLogoClass: "release-title-logo--cybertruck",
     apple: "https://music.apple.com/us/album/cybertruck-single/1763991815",
-    spotify: "https://open.spotify.com/search/Cybertruck%20Jack%20Sander/albums",
+    spotify: "https://open.spotify.com/album/7G8xrs0hsvWJkF6lqQLqCE",
     youtube: "https://www.youtube.com/watch?v=DV6aY2-8vew",
   },
   {
