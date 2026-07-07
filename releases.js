@@ -306,8 +306,7 @@ function renderReleaseLinkPage(release) {
       />
       <div class="release-link-info">
         ${renderReleaseLinkTitle(release)}
-        <p class="release-link-artist">jack sander</p>
-        <p class="release-link-date">${getReleaseLinkDate(release)}</p>
+        <p class="release-link-meta">jack sander • ${getReleaseLinkDate(release)}</p>
         <nav class="release-link-streams" aria-label="streaming links">
           ${renderReleaseLinkLinks(release)}
         </nav>
