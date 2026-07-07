@@ -8,6 +8,8 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   exit 1
 fi
 
+./generate-release-pages.sh
+
 git add .
 
 if git diff --staged --quiet; then

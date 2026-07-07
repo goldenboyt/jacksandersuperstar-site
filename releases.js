@@ -217,20 +217,49 @@ function renderCover(release) {
   `;
 }
 
-function renderStreamingLinks(release) {
-  const links = [
-    release.apple && { label: "apple music", href: release.apple },
-    release.spotify && { label: "spotify", href: release.spotify },
-    release.youtube && { label: "youtube", href: release.youtube },
-    release.soundcloud && { label: "soundcloud", href: release.soundcloud },
+function getStreamingPlatformLinks(release) {
+  return [
+    release.apple && { label: "apple music", href: release.apple, external: true },
+    release.spotify && { label: "spotify", href: release.spotify, external: true },
+    release.youtube && { label: "youtube", href: release.youtube, external: true },
+    release.soundcloud && {
+      label: "soundcloud",
+      href: release.soundcloud,
+      external: true,
+    },
   ].filter(Boolean);
+}
 
+function renderLinkItems(links) {
   return links
-    .map(
-      ({ label, href }) =>
-        `<a class="stream-link" href="${href}" target="_blank" rel="noopener noreferrer">${label}</a>`
-    )
+    .map(({ label, href, external }) => {
+      const externalAttrs = external
+        ? ' target="_blank" rel="noopener noreferrer"'
+        : "";
+
+      return `<a class="stream-link" href="${href}"${externalAttrs}>${label}</a>`;
+    })
     .join("");
+}
+
+function renderStreamingLinks(release) {
+  return renderLinkItems(getStreamingPlatformLinks(release));
+}
+
+function getReleaseLinkPageLinks(release) {
+  return [
+    ...getStreamingPlatformLinks(release),
+    release.mvShoot && {
+      label: "magic (tragic) music video",
+      href: release.mvShoot,
+      external: false,
+    },
+    release.liveInDallas && {
+      label: "live in dallas",
+      href: release.liveInDallas,
+      external: false,
+    },
+  ].filter(Boolean);
 }
 
 function getReleaseSlug(release) {
@@ -262,36 +291,7 @@ function renderReleaseLinkTitle(release) {
 }
 
 function renderReleaseLinkLinks(release) {
-  const links = [
-    release.apple && { label: "apple music", href: release.apple, external: true },
-    release.spotify && { label: "spotify", href: release.spotify, external: true },
-    release.youtube && { label: "youtube", href: release.youtube, external: true },
-    release.soundcloud && {
-      label: "soundcloud",
-      href: release.soundcloud,
-      external: true,
-    },
-    release.mvShoot && {
-      label: "magic (tragic) music video",
-      href: release.mvShoot,
-      external: false,
-    },
-    release.liveInDallas && {
-      label: "live in dallas",
-      href: release.liveInDallas,
-      external: false,
-    },
-  ].filter(Boolean);
-
-  return links
-    .map(({ label, href, external }) => {
-      const externalAttrs = external
-        ? ' target="_blank" rel="noopener noreferrer"'
-        : "";
-
-      return `<a class="stream-link" href="${href}"${externalAttrs}>${label}</a>`;
-    })
-    .join("");
+  return renderLinkItems(getReleaseLinkPageLinks(release));
 }
 
 function renderReleaseLinkPage(release) {
@@ -311,6 +311,9 @@ function renderReleaseLinkPage(release) {
         <nav class="release-link-streams" aria-label="streaming links">
           ${renderReleaseLinkLinks(release)}
         </nav>
+        <button type="button" class="stream-link stream-link--button release-link-share" id="release-link-share">
+          share
+        </button>
       </div>
     </article>
   `;

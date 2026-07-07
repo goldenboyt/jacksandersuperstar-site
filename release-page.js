@@ -12,6 +12,45 @@ function getReleaseSlugFromUrl() {
   return segment.replace(/\.html$/, "");
 }
 
+function initReleaseLinkShare(release) {
+  const button = document.getElementById("release-link-share");
+  if (!button) {
+    return;
+  }
+
+  const shareUrl = `${window.location.origin}/${getReleaseSlug(release)}`;
+  const shareTitle = `${release.title} — jack sander`;
+
+  button.addEventListener("click", async () => {
+    const originalLabel = button.textContent;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: shareTitle,
+          url: shareUrl,
+        });
+        return;
+      }
+
+      await navigator.clipboard.writeText(shareUrl);
+      button.textContent = "copied";
+      window.setTimeout(() => {
+        button.textContent = originalLabel;
+      }, 2000);
+    } catch (error) {
+      if (error?.name === "AbortError") {
+        return;
+      }
+
+      button.textContent = "copy failed";
+      window.setTimeout(() => {
+        button.textContent = originalLabel;
+      }, 2000);
+    }
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("release-link");
   if (!container) {
@@ -29,4 +68,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.title = `${release.title} — jack sander`;
   container.innerHTML = renderReleaseLinkPage(release);
+  initReleaseLinkShare(release);
 });
