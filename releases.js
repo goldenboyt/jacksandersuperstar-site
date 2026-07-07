@@ -242,7 +242,7 @@ function getReleaseBySlug(slug) {
 }
 
 function getReleaseLinkDate(release) {
-  return release.date || release.subtitle || "";
+  return releaseYear(release);
 }
 
 function renderReleaseLinkTitle(release) {
