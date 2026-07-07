@@ -50,7 +50,7 @@ const releases = [
     date: "april 18, 2025",
     cover: "covers/prodigy-genius.jpg",
     apple: "https://music.apple.com/us/album/prodigy-genius/1807497988",
-    spotify: "https://open.spotify.com/search/Prodigy%20Genius%20Jack%20Sander/albums",
+    spotify: "https://open.spotify.com/album/34xsZoIvBvUADQh4esp5WI",
     youtube: "https://www.youtube.com/playlist?list=PL0bEx_EOu-iBSMiRRqbVZ__gmXUxIKsR1",
     tracks: prodigyGeniusTracks,
   },
