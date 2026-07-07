@@ -1313,10 +1313,6 @@ body.is-leaving {
   display: block;
   width: 100%;
   aspect-ratio: 1;
-  object-fit: cover;
-}
-
-.release-link-cover--featured {
   object-fit: contain;
   background: #ffffff;
 }
