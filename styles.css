@@ -1306,19 +1306,23 @@ body.release-link-body {
 .release-link-layout {
   width: 100%;
   max-width: 18rem;
+  display: flex;
+  justify-content: center;
 }
 
 .release-link-card {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 0.35rem;
+  align-items: center;
+  gap: 0.1rem;
   width: 100%;
+  text-align: center;
 }
 
 .release-link-cover {
   display: block;
   width: 100%;
+  max-width: 16rem;
   aspect-ratio: 1;
   object-fit: contain;
   background: #000000;
@@ -1327,24 +1331,33 @@ body.release-link-body {
 .release-link-info {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.05rem;
   width: 100%;
-  margin-top: -0.15rem;
+  margin-top: -0.5rem;
 }
 
 .page--release-link .release-logo,
 .page--release-link .release-title-logo {
   filter: invert(1);
+  align-self: center;
 }
 
 .page--release-link .release-title,
 .page--release-link .release-title-papyrus,
 .page--release-link .release-title-custom {
   color: #ffffff;
+  text-align: center;
+  align-self: center;
 }
 
 .page--release-link .release-logo {
   --logo-display-width: min(100%, 14rem);
+  margin-left: 0;
+}
+
+.page--release-link .release-title-logo {
+  margin-inline: auto;
 }
 
 .page--release-link .release-title-logo--cybertruck {
@@ -1365,13 +1378,15 @@ body.release-link-body {
   text-transform: lowercase;
   color: #ffffff;
   opacity: 0.55;
+  text-align: center;
 }
 
 .release-link-streams {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.1rem;
-  margin-top: 0.15rem;
+  margin-top: 0.1rem;
   width: 100%;
 }
 
@@ -1384,6 +1399,15 @@ body.release-link-body {
 .page--release-link .stream-link:focus-visible {
   color: #ffffff;
   opacity: 0.45;
+}
+
+.release-link-share {
+  margin-top: 0.35rem;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
 }
 
 @media (prefers-reduced-motion: reduce) {
