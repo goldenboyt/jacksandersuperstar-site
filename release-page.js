@@ -1,10 +1,24 @@
+function getReleaseSlugFromUrl() {
+  const querySlug = new URLSearchParams(window.location.search).get("slug");
+  if (querySlug) {
+    return querySlug;
+  }
+
+  const segment = window.location.pathname.split("/").filter(Boolean).pop() || "";
+  if (!segment || segment === "release") {
+    return null;
+  }
+
+  return segment.replace(/\.html$/, "");
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("release-link");
   if (!container) {
     return;
   }
 
-  const slug = new URLSearchParams(window.location.search).get("slug");
+  const slug = getReleaseSlugFromUrl();
   const release = slug ? getReleaseBySlug(slug) : null;
 
   if (!release) {
