@@ -74,7 +74,7 @@ const releases = [
     date: "may 3, 2024",
     cover: "covers/designer.jpg",
     apple: "https://music.apple.com/us/album/designer-single/1741535831",
-    spotify: "https://open.spotify.com/search/Designer%20Jack%20Sander/albums",
+    spotify: "https://open.spotify.com/album/7jD7ughrCDuo3lSd7wB5Si",
     youtube: "https://www.youtube.com/watch?v=hsM1qfrtq28",
   },
   {
