@@ -68,5 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.title = `${release.title} — jack sander`;
   container.innerHTML = renderReleaseLinkPage(release);
+  initComingSoonLinks(container);
   initReleaseLinkShare(release);
 });

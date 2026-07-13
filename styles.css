@@ -1127,8 +1127,19 @@ body.is-leaving {
   outline: none;
 }
 
-.stream-link--button {
+.stream-link--button,
+.stream-link--coming-soon {
   width: fit-content;
+}
+
+.stream-link--coming-soon {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
 }
 
 .stream-link.merch-contact {
@@ -1400,6 +1411,10 @@ body.release-link-body {
 .page--release-link .release-link-streams .stream-link:focus-visible {
   color: #ffffff;
   opacity: 0.45;
+}
+
+.page--release-link .stream-link--coming-soon {
+  text-decoration: none;
 }
 
 .release-link-share {

@@ -38,7 +38,6 @@ const releases = [
     subtitle: "out july 15",
     year: "2026",
     cover: "covers/jacksander-superstar.png",
-    mvShoot: "mv-shoot.html",
     liveInDallas: "live-in-dallas.html",
     tracks: jacksanderSuperstarTracks,
   },
@@ -230,6 +229,14 @@ function getStreamingPlatformLinks(release) {
   ].filter(Boolean);
 }
 
+function renderComingSoonLink(label) {
+  return `<button type="button" class="stream-link stream-link--coming-soon">${label}</button>`;
+}
+
+function renderMagicTragicMvLink() {
+  return renderComingSoonLink("magic (tragic) music video");
+}
+
 function renderLinkItems(links) {
   return links
     .map(({ label, href, external }) => {
@@ -249,17 +256,41 @@ function renderStreamingLinks(release) {
 function getReleaseLinkPageLinks(release) {
   return [
     ...getStreamingPlatformLinks(release),
-    release.mvShoot && {
-      label: "magic (tragic) music video",
-      href: release.mvShoot,
-      external: false,
-    },
     release.liveInDallas && {
       label: "live in dallas",
       href: release.liveInDallas,
       external: false,
     },
   ].filter(Boolean);
+}
+
+function renderReleaseLinkExtras(release) {
+  if (!release.featured) {
+    return "";
+  }
+
+  const extras = [renderMagicTragicMvLink()];
+
+  if (release.liveInDallas) {
+    extras.push(
+      `<a class="stream-link" href="${release.liveInDallas}">live in dallas</a>`
+    );
+  }
+
+  return extras.join("");
+}
+
+function initComingSoonLinks(root = document) {
+  root.querySelectorAll(".stream-link--coming-soon").forEach((button) => {
+    if (button.dataset.ready) {
+      return;
+    }
+
+    button.dataset.ready = "true";
+    button.addEventListener("click", () => {
+      button.textContent = "coming soon";
+    });
+  });
 }
 
 function getReleaseSlug(release) {
@@ -291,7 +322,7 @@ function renderReleaseLinkTitle(release) {
 }
 
 function renderReleaseLinkLinks(release) {
-  return renderLinkItems(getReleaseLinkPageLinks(release));
+  return `${renderLinkItems(getReleaseLinkPageLinks(release))}${renderReleaseLinkExtras(release)}`;
 }
 
 function renderReleaseLinkPage(release) {
@@ -337,7 +368,7 @@ function renderFeaturedRelease(release, index) {
         </span>
       </summary>
       <div class="release-links release-links--with-tracklist">
-        <a class="stream-link" href="${release.mvShoot}">magic (tragic) music video</a>
+        ${renderMagicTragicMvLink()}
         <a class="stream-link" href="${release.liveInDallas}">live in dallas</a>
         ${tracklistBlock}
       </div>
@@ -408,6 +439,8 @@ function renderReleases() {
       }, 350);
     });
   });
+
+  initComingSoonLinks(list);
 }
 
 document.addEventListener("DOMContentLoaded", renderReleases);
