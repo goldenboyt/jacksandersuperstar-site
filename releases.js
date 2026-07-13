@@ -230,7 +230,12 @@ function getStreamingPlatformLinks(release) {
 }
 
 function renderComingSoonLink(label) {
-  return `<button type="button" class="stream-link stream-link--coming-soon">${label}</button>`;
+  return `
+    <details class="release-subpanel">
+      <summary class="stream-link stream-link--button">${label}</summary>
+      <p class="release-tracklist-empty">coming soon</p>
+    </details>
+  `;
 }
 
 function renderMagicTragicMvLink() {

@@ -1127,19 +1127,8 @@ body.is-leaving {
   outline: none;
 }
 
-.stream-link--button,
-.stream-link--coming-soon {
+.stream-link--button {
   width: fit-content;
-}
-
-.stream-link--coming-soon {
-  display: block;
-  padding: 0;
-  border: 0;
-  background: none;
-  cursor: pointer;
-  text-align: left;
-  font: inherit;
 }
 
 .stream-link.merch-contact {
