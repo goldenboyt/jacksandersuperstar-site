@@ -1121,8 +1121,8 @@ body.is-leaving {
   transition: opacity 0.3s ease;
 }
 
-.stream-link:hover,
-.stream-link:focus-visible {
+a.stream-link:hover,
+a.stream-link:focus-visible {
   opacity: 0.45;
   outline: none;
 }
@@ -1396,8 +1396,8 @@ body.release-link-body {
   text-underline-offset: 0.15em;
 }
 
-.page--release-link .release-link-streams .stream-link:hover,
-.page--release-link .release-link-streams .stream-link:focus-visible {
+.page--release-link .release-link-streams a.stream-link:hover,
+.page--release-link .release-link-streams a.stream-link:focus-visible {
   color: #ffffff;
   opacity: 0.45;
 }
