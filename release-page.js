@@ -69,11 +69,5 @@ document.addEventListener("DOMContentLoaded", () => {
   document.title = `${release.title} — jack sander`;
   container.innerHTML = renderReleaseLinkPage(release);
 
-  container.querySelectorAll(".release-subpanel").forEach((subpanel) => {
-    subpanel.addEventListener("toggle", (event) => {
-      event.stopPropagation();
-    });
-  });
-
   initReleaseLinkShare(release);
 });

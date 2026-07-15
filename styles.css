@@ -793,20 +793,6 @@ body.is-leaving {
   margin-top: 0.75rem;
 }
 
-.release-subpanel > :not(summary) {
-  margin-top: 0.5rem;
-}
-
-.release-subpanel summary {
-  list-style: none;
-  cursor: pointer;
-}
-
-.release-subpanel summary::-webkit-details-marker,
-.release-subpanel summary::marker {
-  display: none;
-}
-
 .release-tracklist-empty,
 .release-tracklist li {
   font-size: clamp(1rem, 2.2vw, 1.125rem);
@@ -1400,10 +1386,6 @@ body.release-link-body {
 .page--release-link .release-link-streams .stream-link:focus-visible {
   color: #ffffff;
   opacity: 0.45;
-}
-
-.page--release-link .stream-link--coming-soon {
-  text-decoration: none;
 }
 
 .release-link-share {

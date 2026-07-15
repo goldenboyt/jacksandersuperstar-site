@@ -38,6 +38,8 @@ const releases = [
     subtitle: "out july 15",
     year: "2026",
     cover: "covers/jacksander-superstar.png",
+    apple: "https://music.apple.com/us/album/jacksandersuperstar/6787361171",
+    youtube: "https://www.youtube.com/playlist?list=PLEoIsNgKzgdo",
     liveInDallas: "live-in-dallas.html",
     tracks: jacksanderSuperstarTracks,
   },
@@ -229,19 +231,6 @@ function getStreamingPlatformLinks(release) {
   ].filter(Boolean);
 }
 
-function renderComingSoonLink(label) {
-  return `
-    <details class="release-subpanel">
-      <summary class="stream-link stream-link--button">${label}</summary>
-      <p class="release-tracklist-empty">coming soon</p>
-    </details>
-  `;
-}
-
-function renderMagicTragicMvLink() {
-  return renderComingSoonLink("magic (tragic) music video");
-}
-
 function renderLinkItems(links) {
   return links
     .map(({ label, href, external }) => {
@@ -267,35 +256,6 @@ function getReleaseLinkPageLinks(release) {
       external: false,
     },
   ].filter(Boolean);
-}
-
-function renderReleaseLinkExtras(release) {
-  if (!release.featured) {
-    return "";
-  }
-
-  const extras = [renderMagicTragicMvLink()];
-
-  if (release.liveInDallas) {
-    extras.push(
-      `<a class="stream-link" href="${release.liveInDallas}">live in dallas</a>`
-    );
-  }
-
-  return extras.join("");
-}
-
-function initComingSoonLinks(root = document) {
-  root.querySelectorAll(".stream-link--coming-soon").forEach((button) => {
-    if (button.dataset.ready) {
-      return;
-    }
-
-    button.dataset.ready = "true";
-    button.addEventListener("click", () => {
-      button.textContent = "coming soon";
-    });
-  });
 }
 
 function getReleaseSlug(release) {
@@ -327,7 +287,7 @@ function renderReleaseLinkTitle(release) {
 }
 
 function renderReleaseLinkLinks(release) {
-  return `${renderLinkItems(getReleaseLinkPageLinks(release))}${renderReleaseLinkExtras(release)}`;
+  return renderLinkItems(getReleaseLinkPageLinks(release));
 }
 
 function renderReleaseLinkPage(release) {
@@ -373,7 +333,7 @@ function renderFeaturedRelease(release, index) {
         </span>
       </summary>
       <div class="release-links release-links--with-tracklist">
-        ${renderMagicTragicMvLink()}
+        ${renderStreamingLinks(release)}
         <a class="stream-link" href="${release.liveInDallas}">live in dallas</a>
         ${tracklistBlock}
       </div>
@@ -444,8 +404,6 @@ function renderReleases() {
       }, 350);
     });
   });
-
-  initComingSoonLinks(list);
 }
 
 document.addEventListener("DOMContentLoaded", renderReleases);
