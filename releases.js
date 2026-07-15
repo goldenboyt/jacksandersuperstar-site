@@ -39,6 +39,7 @@ const releases = [
     year: "2026",
     cover: "covers/jacksander-superstar.png",
     apple: "https://music.apple.com/us/album/jacksandersuperstar/6787361171",
+    youtube: "https://www.youtube.com/playlist?list=PLEoIsNgKzgdo",
     liveInDallas: "live-in-dallas.html",
     tracks: jacksanderSuperstarTracks,
   },
@@ -374,6 +375,7 @@ function renderFeaturedRelease(release, index) {
         </span>
       </summary>
       <div class="release-links release-links--with-tracklist">
+        ${renderStreamingLinks(release)}
         ${renderMagicTragicMvLink()}
         <a class="stream-link" href="${release.liveInDallas}">live in dallas</a>
         ${tracklistBlock}
