@@ -38,6 +38,7 @@ const releases = [
     subtitle: "out july 15",
     year: "2026",
     cover: "covers/jacksander-superstar.png",
+    apple: "https://music.apple.com/us/album/jacksandersuperstar/6787361171",
     liveInDallas: "live-in-dallas.html",
     tracks: jacksanderSuperstarTracks,
   },
