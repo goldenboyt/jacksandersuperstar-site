@@ -623,23 +623,6 @@ body.is-leaving {
   font-size: clamp(0.9375rem, 2vw, 1.0625rem);
 }
 
-.page--releases:not(.page--merch) .release-logo {
-  --logo-display-width: min(100%, 14rem);
-}
-
-.releases-layout:has(.live-page-logo) .line {
-  font-weight: 400;
-}
-
-.page--releases:not(.page--merch) .release-logo.live-page-logo {
-  --live-title-height: calc(clamp(1.5rem, 4.5vw, 2.25rem) * 1.35 * 1.15);
-  height: var(--live-title-height);
-  width: calc(var(--live-title-height) * 3284 / 308);
-  max-width: 100%;
-  margin: 0 0 0.35rem;
-  margin-left: calc(var(--live-title-height) * 3284 / 308 * -114 / 2989);
-}
-
 .page--releases:not(.page--merch) .release-cover-mystery-text {
   font-size: clamp(0.75rem, 1.8vw, 0.875rem);
 }
@@ -664,14 +647,6 @@ body.is-leaving {
   line-height: 1.35;
   letter-spacing: -0.01em;
   text-transform: lowercase;
-}
-
-.release-logo {
-  --logo-display-width: min(100%, 20rem);
-  display: block;
-  width: calc(var(--logo-display-width) * 3284 / 2989);
-  margin-left: calc(var(--logo-display-width) * -114 / 2989);
-  height: auto;
 }
 
 .release-meta {
@@ -816,11 +791,6 @@ body.is-leaving {
 
 .release-tracklist li::before {
   content: counter(track, decimal-leading-zero) " ";
-}
-
-.release--featured .release-cover:not(.release-cover--mystery) {
-  object-fit: contain;
-  background: #ffffff;
 }
 
 .release-cover--mystery {
@@ -1141,142 +1111,6 @@ body.is-leaving {
   max-width: 18rem;
 }
 
-.live-embed {
-  width: 100%;
-  max-width: 28rem;
-  aspect-ratio: 16 / 9;
-}
-
-.rsvp,
-.livestream {
-  width: 100%;
-  max-width: 28rem;
-}
-
-.rsvp {
-  margin: 0 0 1.5rem;
-}
-
-.livestream-heading,
-.rsvp-heading {
-  font-size: clamp(1.125rem, 2.5vw, 1.375rem);
-  font-weight: 700;
-  line-height: 1.35;
-  letter-spacing: -0.01em;
-  text-transform: lowercase;
-}
-
-.livestream .live-embed {
-  margin-top: 0.75rem;
-}
-
-.rsvp-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-  margin-top: 0.75rem;
-}
-
-.rsvp-fields {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.85rem;
-}
-
-@media (min-width: 480px) {
-  .rsvp-fields {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-.rsvp-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.rsvp-field label {
-  font-size: clamp(0.95rem, 2vw, 1.05rem);
-  font-weight: 400;
-  line-height: 1.35;
-  letter-spacing: -0.01em;
-  text-transform: lowercase;
-  opacity: 0.55;
-}
-
-.rsvp-field input {
-  width: 100%;
-  border: 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.18);
-  background: transparent;
-  color: inherit;
-  font-family: inherit;
-  font-size: clamp(1.125rem, 2.5vw, 1.375rem);
-  font-weight: 400;
-  line-height: 1.35;
-  letter-spacing: -0.01em;
-  text-transform: lowercase;
-  padding: 0.35rem 0;
-}
-
-.rsvp-field input:focus-visible {
-  outline: none;
-  border-bottom-color: rgba(0, 0, 0, 0.55);
-}
-
-.rsvp-honeypot {
-  position: absolute;
-  left: -9999px;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.rsvp-submit {
-  width: fit-content;
-  margin-top: 0.25rem;
-  padding: 0.55rem 1.35rem;
-  background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.22);
-  border-radius: 0;
-  cursor: pointer;
-  transition:
-    border-color 0.3s ease,
-    opacity 0.3s ease;
-}
-
-.stream-link.rsvp-submit:hover,
-.stream-link.rsvp-submit:focus-visible {
-  opacity: 1;
-  border-color: rgba(0, 0, 0, 0.55);
-  outline: none;
-}
-
-.rsvp-submit:disabled {
-  opacity: 0.35;
-  cursor: wait;
-}
-
-.rsvp-message {
-  font-size: clamp(0.95rem, 2vw, 1.05rem);
-  line-height: 1.35;
-  letter-spacing: -0.01em;
-  text-transform: lowercase;
-  opacity: 0.55;
-}
-
-.rsvp-message--error {
-  opacity: 0.75;
-}
-
-.live-embed iframe {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-
 .page--release-link {
   align-items: center;
   justify-content: center;
@@ -1322,7 +1156,6 @@ body.release-link-body {
   width: 100%;
 }
 
-.page--release-link .release-logo,
 .page--release-link .release-title-logo {
   filter: invert(1);
   align-self: center;
@@ -1334,11 +1167,6 @@ body.release-link-body {
   color: #ffffff;
   text-align: center;
   align-self: center;
-}
-
-.page--release-link .release-logo {
-  --logo-display-width: min(100%, 14rem);
-  margin-left: 0;
 }
 
 .page--release-link .release-title-logo {
