@@ -33,15 +33,13 @@ const prodigyGeniusTracks = [
 const releases = [
   {
     id: "jacksander-superstar",
-    featured: true,
-    title: "jacksander superstar",
-    subtitle: "out july 15",
-    year: "2026",
+    title: "jacksandersuperstar",
+    type: "album",
+    date: "july 15, 2026",
     cover: "covers/jacksander-superstar.png",
     apple: "https://music.apple.com/us/album/jacksandersuperstar/6787361171",
     spotify: "https://open.spotify.com/album/0Kg7F6T2gReUAx5563lJ5K",
     youtube: "https://www.youtube.com/playlist?list=PLEoIsNgKzgdo",
-    liveInDallas: "live-in-dallas.html",
     tracks: jacksanderSuperstarTracks,
   },
   {
@@ -113,11 +111,6 @@ function releaseYear(release) {
 
 function renderReleaseMeta(release) {
   const year = releaseYear(release);
-
-  if (release.featured) {
-    return release.subtitle;
-  }
-
   return year ? `${release.type} · ${year}` : release.type;
 }
 
@@ -249,14 +242,7 @@ function renderStreamingLinks(release) {
 }
 
 function getReleaseLinkPageLinks(release) {
-  return [
-    ...getStreamingPlatformLinks(release),
-    release.liveInDallas && {
-      label: "live in dallas",
-      href: release.liveInDallas,
-      external: false,
-    },
-  ].filter(Boolean);
+  return getStreamingPlatformLinks(release);
 }
 
 function getReleaseSlug(release) {
@@ -272,18 +258,6 @@ function getReleaseLinkDate(release) {
 }
 
 function renderReleaseLinkTitle(release) {
-  if (release.featured) {
-    return `
-      <img
-        src="logo.png"
-        alt="#jacksandersuperstar®"
-        class="release-logo"
-        width="3284"
-        height="308"
-      />
-    `;
-  }
-
   return renderReleaseTitle(release);
 }
 
@@ -315,33 +289,6 @@ function renderReleaseLinkPage(release) {
   `;
 }
 
-function renderFeaturedRelease(release, index) {
-  const tracklistBlock = release.tracks ? renderTracklist(release.tracks) : "";
-
-  return `
-    <details class="release release--featured">
-      <summary class="release-trigger">
-        ${renderCover(release)}
-        <span class="release-info">
-          <img
-            src="logo.png"
-            alt="#jacksandersuperstar®"
-            class="release-logo"
-            width="3284"
-            height="308"
-          />
-          <span class="release-meta">${renderReleaseMeta(release)}</span>
-        </span>
-      </summary>
-      <div class="release-links release-links--with-tracklist">
-        ${renderStreamingLinks(release)}
-        <a class="stream-link" href="${release.liveInDallas}">live in dallas</a>
-        ${tracklistBlock}
-      </div>
-    </details>
-  `;
-}
-
 function renderStreamingRelease(release, index) {
   const tracklistBlock = release.tracks ? renderTracklist(release.tracks) : "";
 
@@ -369,11 +316,7 @@ function renderReleases() {
   }
 
   list.innerHTML = releases
-    .map((release, index) =>
-      release.featured
-        ? renderFeaturedRelease(release, index)
-        : renderStreamingRelease(release, index)
-    )
+    .map((release, index) => renderStreamingRelease(release, index))
     .join("");
 
   list.querySelectorAll(".release").forEach((item) => {
