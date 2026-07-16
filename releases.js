@@ -39,6 +39,7 @@ const releases = [
     year: "2026",
     cover: "covers/jacksander-superstar.png",
     apple: "https://music.apple.com/us/album/jacksandersuperstar/6787361171",
+    spotify: "https://open.spotify.com/album/0Kg7F6T2gReUAx5563lJ5K",
     youtube: "https://www.youtube.com/playlist?list=PLEoIsNgKzgdo",
     liveInDallas: "live-in-dallas.html",
     tracks: jacksanderSuperstarTracks,
