@@ -37,9 +37,11 @@ const releases = [
     type: "album",
     date: "july 15, 2026",
     cover: "covers/jacksander-superstar.png",
+    brandLogo: true,
     apple: "https://music.apple.com/us/album/jacksandersuperstar/6787361171",
     spotify: "https://open.spotify.com/album/0Kg7F6T2gReUAx5563lJ5K",
     youtube: "https://www.youtube.com/playlist?list=PLEoIsNgKzgdo",
+    liveInDallas: "live.html",
     tracks: jacksanderSuperstarTracks,
   },
   {
@@ -143,6 +145,18 @@ function renderPapyrusTitle(variant) {
 }
 
 function renderReleaseTitle(release) {
+  if (release.brandLogo) {
+    return `
+      <img
+        src="logo.png"
+        alt="#jacksandersuperstar®"
+        class="release-logo"
+        width="3284"
+        height="308"
+      />
+    `;
+  }
+
   if (release.titleLogo) {
     return renderTitleLogo(
       release.titleLogo,
@@ -237,12 +251,23 @@ function renderLinkItems(links) {
     .join("");
 }
 
+function getReleasePanelLinks(release) {
+  return [
+    ...getStreamingPlatformLinks(release),
+    release.liveInDallas && {
+      label: "live in dallas",
+      href: release.liveInDallas,
+      external: false,
+    },
+  ].filter(Boolean);
+}
+
 function renderStreamingLinks(release) {
-  return renderLinkItems(getStreamingPlatformLinks(release));
+  return renderLinkItems(getReleasePanelLinks(release));
 }
 
 function getReleaseLinkPageLinks(release) {
-  return getStreamingPlatformLinks(release);
+  return getReleasePanelLinks(release);
 }
 
 function getReleaseSlug(release) {

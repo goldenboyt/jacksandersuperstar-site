@@ -623,6 +623,10 @@ body.is-leaving {
   font-size: clamp(0.9375rem, 2vw, 1.0625rem);
 }
 
+.page--releases:not(.page--merch) .release-logo {
+  --logo-display-width: min(100%, 14rem);
+}
+
 .page--releases:not(.page--merch) .release-cover-mystery-text {
   font-size: clamp(0.75rem, 1.8vw, 0.875rem);
 }
@@ -647,6 +651,14 @@ body.is-leaving {
   line-height: 1.35;
   letter-spacing: -0.01em;
   text-transform: lowercase;
+}
+
+.release-logo {
+  --logo-display-width: min(100%, 20rem);
+  display: block;
+  width: calc(var(--logo-display-width) * 3284 / 2989);
+  margin-left: calc(var(--logo-display-width) * -114 / 2989);
+  height: auto;
 }
 
 .release-meta {
@@ -1156,6 +1168,7 @@ body.release-link-body {
   width: 100%;
 }
 
+.page--release-link .release-logo,
 .page--release-link .release-title-logo {
   filter: invert(1);
   align-self: center;
@@ -1167,6 +1180,11 @@ body.release-link-body {
   color: #ffffff;
   text-align: center;
   align-self: center;
+}
+
+.page--release-link .release-logo {
+  --logo-display-width: min(100%, 14rem);
+  margin-left: 0;
 }
 
 .page--release-link .release-title-logo {
