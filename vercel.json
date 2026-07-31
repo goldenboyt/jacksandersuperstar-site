@@ -3,5 +3,12 @@
   "github": {
     "silent": true
   },
-  "trailingSlash": false
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/superstar",
+      "destination": "/jacksandersuperstar",
+      "permanent": true
+    }
+  ]
 }
