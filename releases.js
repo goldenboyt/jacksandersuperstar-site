@@ -41,6 +41,7 @@ const releases = [
     apple: "https://music.apple.com/us/album/jacksandersuperstar/6787361171",
     spotify: "https://open.spotify.com/album/0Kg7F6T2gReUAx5563lJ5K",
     youtube: "https://www.youtube.com/playlist?list=PLEoIsNgKzgdo",
+    musicVideo: "https://www.youtube.com/watch?v=a4_ZlWzaq2s",
     liveInDallas: "live.html",
     tracks: jacksanderSuperstarTracks,
   },
@@ -254,6 +255,11 @@ function renderLinkItems(links) {
 function getReleasePanelLinks(release) {
   return [
     ...getStreamingPlatformLinks(release),
+    release.musicVideo && {
+      label: "magic (tragic) music video",
+      href: release.musicVideo,
+      external: true,
+    },
     release.liveInDallas && {
       label: "live in dallas",
       href: release.liveInDallas,
