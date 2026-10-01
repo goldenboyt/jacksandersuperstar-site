@@ -2,7 +2,7 @@
 :root{--motion-state:cubic-bezier(.2,.7,.3,1);--motion-arrive:cubic-bezier(.16,1,.3,1)}
 html,body{overflow-x:clip}
 html.intro-pending,html.intro-pending body{overflow:hidden;overflow:clip}
-.site-intro{position:fixed;inset:0;z-index:90;overflow:hidden;color-scheme:light;cursor:pointer}
+.site-intro{position:fixed;inset:0;width:100%;height:100vh;height:100lvh;min-height:100dvh;z-index:90;overflow:hidden;color-scheme:light;cursor:pointer}
 .site-intro[hidden]{display:none}
 .intro-pending .site-intro[hidden]{display:block}
 .intro-stage{position:absolute;inset:0;display:block;width:100%;height:100%;overflow:hidden;contain:layout paint}

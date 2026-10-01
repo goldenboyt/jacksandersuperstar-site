@@ -42,21 +42,27 @@
   function fitZoom() {
     const intro = document.getElementById('site-intro');
     if (!intro) return;
-    const width = innerWidth, height = innerHeight;
+    // Cover the largest viewport while centering the logo in the visible area.
+    const { width, height } = intro.getBoundingClientRect();
+    const viewport = window.visualViewport;
+    const center = {
+      x: (viewport?.offsetLeft || 0) + (viewport?.width || innerWidth) / 2,
+      y: (viewport?.offsetTop || 0) + (viewport?.height || innerHeight) / 2
+    };
     // Coordinates match the upper counter of the e in the original logo.
     const focus = { x: 1505, y: 103 };
-    const scale = Math.min(width * .66, 760) / 1710;
-    const left = (width - 1710 * scale) / 2;
-    const top = (height - 657 * scale) / 2;
+    const scale = Math.min((viewport?.width || innerWidth) * .66, 760) / 1710;
+    const left = center.x - 1710 * scale / 2;
+    const top = center.y - 657 * scale / 2;
     const opening = { x: left + focus.x * scale, y: top + focus.y * scale };
     const anticipation = scale * .97;
     // A 14-unit circle fits inside the counter. Expand it past every corner.
-    const through = (Math.hypot(width, height) / 2 + 16) / 14 * 1.15;
+    const through = (Math.hypot(Math.max(center.x, width - center.x), Math.max(center.y, height - center.y)) + 16) / 14 * 1.15;
     const matrix = (size, x, y) => `matrix(${size},0,0,${size},${x},${y})`;
     intro.querySelector('.intro-stage').setAttribute('viewBox', `0 0 ${width} ${height}`);
     intro.style.setProperty('--intro-from', matrix(scale, left, top));
     intro.style.setProperty('--intro-anticipation', matrix(anticipation, opening.x - focus.x * anticipation, opening.y - focus.y * anticipation));
-    intro.style.setProperty('--intro-through', matrix(through, width / 2 - focus.x * through, height / 2 - focus.y * through));
+    intro.style.setProperty('--intro-through', matrix(through, center.x - focus.x * through, center.y - focus.y * through));
     intro.classList.add('intro-fitted');
   }
   function finish(immediate = false) {
@@ -64,6 +70,7 @@
     finished = true;
     clearTimeout(ceiling);
     window.removeEventListener('resize', fitZoom);
+    window.visualViewport?.removeEventListener('resize', fitZoom);
     const intro = document.getElementById('site-intro');
     intro?.classList.add('intro-out');
     root.classList.remove('intro-pending', 'intro-revealing');
@@ -100,6 +107,7 @@
     });
     fitZoom();
     window.addEventListener('resize', fitZoom);
+    window.visualViewport?.addEventListener('resize', fitZoom);
     logoElement.addEventListener('animationend', event => {
       if (event.animationName === 'superstar-portal') finish();
     });
