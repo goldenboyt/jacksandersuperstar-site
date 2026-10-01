@@ -1,73 +1,14 @@
-function getReleaseSlugFromUrl() {
-  const querySlug = new URLSearchParams(window.location.search).get("slug");
-  if (querySlug) {
-    return querySlug;
-  }
-
-  const segment = window.location.pathname.split("/").filter(Boolean).pop() || "";
-  if (!segment || segment === "release") {
-    return null;
-  }
-
-  return segment.replace(/\.html$/, "");
-}
-
-function initReleaseLinkShare(release) {
-  const button = document.getElementById("release-link-share");
-  if (!button) {
+(() => {
+  const releases = window.SuperstarCatalog.releases;
+  const current = document.body.dataset.release;
+  if (current === 'catalog') {
+    const slug = new URL(location.href).searchParams.get('slug');
+    const release = releases.find(item => item.aliases.includes(slug));
+    if (release) location.replace(window.SuperstarReleaseUI.releaseUrl(release));
     return;
   }
-
-  const shareUrl = `${window.location.origin}/${getReleaseSlug(release)}`;
-  const shareTitle = `${release.title} — jack sander`;
-
-  button.addEventListener("click", async () => {
-    const originalLabel = button.textContent;
-
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: shareTitle,
-          url: shareUrl,
-        });
-        return;
-      }
-
-      await navigator.clipboard.writeText(shareUrl);
-      button.textContent = "copied";
-      window.setTimeout(() => {
-        button.textContent = originalLabel;
-      }, 2000);
-    } catch (error) {
-      if (error?.name === "AbortError") {
-        return;
-      }
-
-      button.textContent = "copy failed";
-      window.setTimeout(() => {
-        button.textContent = originalLabel;
-      }, 2000);
-    }
-  });
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  const container = document.getElementById("release-link");
-  if (!container) {
-    return;
-  }
-
-  const slug = getReleaseSlugFromUrl();
-  const release = slug ? getReleaseBySlug(slug) : null;
-
-  if (!release) {
-    container.innerHTML = `<p class="release-link-not-found">not found</p>`;
-    document.title = "not found — jack sander";
-    return;
-  }
-
-  document.title = `${release.title} — jack sander`;
-  container.innerHTML = renderReleaseLinkPage(release);
-
-  initReleaseLinkShare(release);
-});
+  const release = releases.find(item => item.page === current);
+  if (!release) return;
+  document.getElementById('release-page-streams').replaceChildren(window.SuperstarReleaseUI.streamingLinks(release, 'release-page'));
+  document.getElementById('release-page-sharing').append(window.SuperstarReleaseUI.releaseSharing(release, {pageLink:false, nativeShare:true}));
+})();
