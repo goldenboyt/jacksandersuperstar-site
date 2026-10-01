@@ -48,6 +48,7 @@ def document(release=None):
     image = f"{ORIGIN}/assets/{release['image']}.webp" if release else f'{ORIGIN}/assets/album.webp'
     page_title = f'{title} — #jacksandersuperstar®' if release and release['image'] != 'album' else '#jacksandersuperstar®'
     robots = '' if release else '<meta name="robots" content="noindex">'
+    transition_style = '' if release else '<style>@view-transition{navigation:none}</style>'
     if release:
         track_count = len(release['tracks'])
         tracks = ''
@@ -69,7 +70,7 @@ def document(release=None):
 <title>{esc(page_title)}</title><link rel="canonical" href="{ORIGIN}/{slug}">
 <meta property="og:type" content="website"><meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(description)}"><meta property="og:url" content="{ORIGIN}/{slug}"><meta property="og:image" content="{image}"><meta property="og:image:alt" content="{esc(title)} cover"><meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="preload" href="assets/{release['image'] if release else 'album'}.webp" as="image" fetchpriority="high">
-<link rel="stylesheet" href="style.css"><link rel="stylesheet" href="motion.css"><link rel="stylesheet" href="refinements.css"><link rel="stylesheet" href="release-branding.css"><link rel="stylesheet" href="site-motion.css"><link rel="stylesheet" href="reference-motion.css?v=24"><link rel="stylesheet" href="release-pages.css?v=1">
+<link rel="stylesheet" href="style.css"><link rel="stylesheet" href="motion.css"><link rel="stylesheet" href="refinements.css"><link rel="stylesheet" href="release-branding.css"><link rel="stylesheet" href="site-motion.css"><link rel="stylesheet" href="reference-motion.css?v=24"><link rel="stylesheet" href="release-pages.css?v=1">{transition_style}
 </head><body class="release-page intro-complete" data-release="{release['page'] if release else 'catalog'}">
 <a class="skip" href="#release-content">Skip to release</a>
 <header class="header scrolled" id="header"><a class="wordmark" href="/" aria-label="Home"><img src="assets/brand-logo.png" alt="#jacksandersuperstar®" width="3284" height="308"></a><nav class="desktop-nav" aria-label="Main navigation"><a href="/#music">music</a><a href="/#live">live</a><a href="/merch">merch</a><a href="/#soboda">soboda</a></nav><button class="menu-toggle" id="menu-open" aria-haspopup="dialog" aria-controls="menu" aria-expanded="false"><span class="menu-lines" aria-hidden="true"></span><span>menu</span></button></header>

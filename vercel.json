@@ -19,6 +19,78 @@
       "source": "/music.html",
       "destination": "/#music",
       "permanent": false
+    },
+    {
+      "source": "/release",
+      "has": [
+        {
+          "type": "query",
+          "key": "slug",
+          "value": "jacksandersuperstar"
+        }
+      ],
+      "destination": "/jacksandersuperstar",
+      "permanent": false
+    },
+    {
+      "source": "/release",
+      "has": [
+        {
+          "type": "query",
+          "key": "slug",
+          "value": "(?:prodigygenius|prodigy-genius)"
+        }
+      ],
+      "destination": "/prodigygenius",
+      "permanent": false
+    },
+    {
+      "source": "/release",
+      "has": [
+        {
+          "type": "query",
+          "key": "slug",
+          "value": "cybertruck"
+        }
+      ],
+      "destination": "/cybertruck",
+      "permanent": false
+    },
+    {
+      "source": "/release",
+      "has": [
+        {
+          "type": "query",
+          "key": "slug",
+          "value": "designer"
+        }
+      ],
+      "destination": "/designer",
+      "permanent": false
+    },
+    {
+      "source": "/release",
+      "has": [
+        {
+          "type": "query",
+          "key": "slug",
+          "value": "brainstorm"
+        }
+      ],
+      "destination": "/brainstorm",
+      "permanent": false
+    },
+    {
+      "source": "/release",
+      "has": [
+        {
+          "type": "query",
+          "key": "slug",
+          "value": "(?:catscash|cats-cash)"
+        }
+      ],
+      "destination": "/catscash",
+      "permanent": false
     }
   ]
 }
