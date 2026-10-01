@@ -1,9 +1,36 @@
 (() => {
   const root = document.documentElement;
+  // Restore the browser's saved position immediately before resuming smooth links.
+  const scrollBehavior = root.style.scrollBehavior;
+  root.style.scrollBehavior = 'auto';
+  window.addEventListener('pageshow', async () => {
+    await document.fonts?.ready;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      root.style.scrollBehavior = scrollBehavior;
+    }));
+  }, { once: true });
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const address = new URL(location.href);
-  // Replay on each homepage visit, including refreshes in an existing tab.
-  const play = !reduced.matches && !navigator.connection?.saveData && !address.searchParams.has('release') && (!address.hash || address.hash === '#top');
+  const introKey = 'superstar:intro:last-shown';
+  const cooldown = 60 * 60 * 1000;
+  // Keep the cooldown across refreshes and tabs, with a session fallback.
+  function introIsDue() {
+    const now = Date.now();
+    let lastShown = 0;
+    for (const name of ['localStorage', 'sessionStorage']) {
+      try {
+        const saved = Number(window[name].getItem(introKey));
+        if (Number.isFinite(saved) && saved > lastShown && saved <= now) lastShown = saved;
+      } catch {}
+    }
+    return now - lastShown >= cooldown;
+  }
+  const play = introIsDue() && !reduced.matches && !navigator.connection?.saveData && !address.searchParams.has('release') && (!address.hash || address.hash === '#top');
+  function rememberIntro() {
+    for (const name of ['localStorage', 'sessionStorage']) {
+      try { window[name].setItem(introKey, String(Date.now())); return; } catch {}
+    }
+  }
   if (play) root.classList.add('intro-pending');
 
   const pageLoaded = new Promise(resolve => {
@@ -63,10 +90,11 @@
   }
   document.addEventListener('DOMContentLoaded', async () => {
     const intro = document.getElementById('site-intro');
-    if (!play || finished) { finish(true); intro?.remove(); return; }
+    if (!play || finished || !introIsDue()) { finish(true); intro?.remove(); return; }
     const logoElement = intro?.querySelector('.intro-logo');
     if (!logoElement) { finish(true); return; }
     intro.hidden = false;
+    rememberIntro();
     document.querySelectorAll('.header, main, footer, .skip').forEach(element => {
       if (!element.inert) { element.inert = true; locked.push(element); }
     });
