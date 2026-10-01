@@ -1,0 +1,22 @@
+/* Two windows onto the original artwork keep its lettering exact. */
+.hero h1>.title-mask{padding:0;margin:0;overflow:hidden}
+.hero h1>.title-mask+.title-mask{margin-top:12px}
+.hero h1 svg{display:block;height:auto;max-width:100%;filter:brightness(0) invert(1);overflow:hidden}
+.hero h1 .logo-jack{width:100%}
+.hero h1 .logo-superstar{width:84%}
+.hero-index{margin-left:auto}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.tee-slideshow{background:#fff;border:1px solid #e6e6e6;touch-action:pan-y}
+.tee-slideshow:focus-visible{outline:3px solid var(--red);outline-offset:5px}
+.tee-slides{position:relative;aspect-ratio:1.2;overflow:hidden;background:#fff}
+.tee-slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .65s ease,visibility .65s;pointer-events:none}
+.tee-slide.is-active{opacity:1;visibility:visible}
+.tee-slideshow .tee-slide img{display:block;width:100%;height:100%;object-fit:contain;object-position:center;scale:1;transform:none;transition:none}
+.tee-controls{display:flex;align-items:center;gap:18px;min-height:55px;border-top:1px solid #e6e6e6;padding:0 18px;font-size:14px}
+.tee-control{min-height:44px;padding:8px 0;font-size:14px}
+.tee-control:hover,.tee-shop:hover{color:var(--red)}
+.tee-count{font-variant-numeric:tabular-nums;font-size:13px;color:#777}
+.tee-pause{margin-left:auto}
+.tee-shop{font-size:14px;border-bottom:1px solid currentColor;padding:5px 0}
+@media(max-width:640px){.hero h1>.title-mask+.title-mask{margin-top:6px}.hero-index{justify-content:flex-end}.tee-slides{aspect-ratio:4/5}.tee-controls{gap:16px;padding-inline:14px}}
+@media(prefers-reduced-motion:reduce){.tee-slide{transition:none}}

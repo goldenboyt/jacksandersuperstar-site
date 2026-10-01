@@ -1,108 +1,127 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>#jacksandersuperstar®</title>
-    <meta name="description" content="#jacksandersuperstar®" />
-    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css" />
-    <style>
-      .soboda-link {
-        display: inline-flex;
-        flex-direction: column;
-        gap: 3px;
-        padding: 9px 14px 8px;
-        border: 1px solid #20231e;
-        background: #f2f2ec;
-        color: #20231e;
-        text-decoration: none;
-        transform: rotate(-2deg);
-        transition: transform .2s ease, box-shadow .2s ease;
-      }
-      .soboda-link__title {
-        font-family: Impact, "Arial Narrow", Arial, sans-serif;
-        font-size: 28px;
-        font-weight: 900;
-        line-height: 1;
-        letter-spacing: -.045em;
-      }
-      .soboda-link__dot { color: #ae3425; }
-      .soboda-link__caption {
-        font: 8px/1.3 "Courier New", monospace;
-        letter-spacing: .08em;
-      }
-      .soboda-link:hover { transform: rotate(0); box-shadow: 3px 3px 0 #ae3425; }
-      .soboda-link:focus-visible { outline: 3px solid #ae3425; outline-offset: 4px; }
-      .menu-list a.soboda-menu-link {
-        margin-top: 8px;
-        padding: 5px 9px;
-        background: #f2f2ec;
-        border-left: 3px solid #ae3425;
-        color: #20231e;
-        font-family: Impact, "Arial Narrow", Arial, sans-serif;
-        font-weight: 900;
-        letter-spacing: -.045em;
-        text-transform: uppercase;
-      }
-      .menu-list a.soboda-menu-link:focus-visible { outline: 2px solid #ae3425; outline-offset: 3px; }
-      .menu[open] .menu-list li:nth-child(4) { animation-delay: .42s; }
-      @media (prefers-reduced-motion: reduce) {
-        .soboda-link { transition: none; }
-      }
-    </style>
-  </head>
-  <body class="home">
-    <main class="page page--home">
-      <nav class="nav">
-        <details class="menu">
-          <summary class="menu-trigger" aria-label="menu">
-            <span class="menu-icon" aria-hidden="true">
-              <span></span>
-              <span></span>
-              <span></span>
-            </span>
-          </summary>
-          <ul class="menu-list">
-            <li><a href="index.html" aria-current="page">home</a></li>
-            <li><a href="music.html">music</a></li>
-            <li><a href="merch.html">merch</a></li>
-            <li><a class="soboda-menu-link" href="/soboda">SOBODA<span class="soboda-link__dot" aria-hidden="true">.</span></a></li>
-          </ul>
-        </details>
-      </nav>
-
-      <div class="center">
-        <header class="top top--home">
-          <h1 class="logo-wrap">
-            <a href="music.html" class="title-link">
-              <img
-                src="logo.png"
-                alt="#jacksandersuperstar®"
-                class="logo logo--hero"
-                width="3284"
-                height="308"
-              />
-            </a>
-          </h1>
-          <p class="countdown" id="countdown" aria-live="polite"></p>
-          <nav class="home-links" aria-label="site links">
-            <a class="stream-link" href="live.html">live in dallas</a>
-            <a class="stream-link" href="merch.html">merch</a>
-            <a class="stream-link" href="music.html">music</a>
-            <a class="soboda-link" href="/soboda" aria-label="Soboda Discovery Center">
-              <span class="soboda-link__title">SOBODA<span class="soboda-link__dot" aria-hidden="true">.</span></span>
-              <span class="soboda-link__caption">DISCOVERY CENTER ↗</span>
-            </a>
-          </nav>
-        </header>
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#131313"><meta name="description" content="Music, live performances, merch, and #jacksandersuperstar®.">
+  <title>#jacksandersuperstar®</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23e32122'/%3E%3Ctext x='16' y='26' text-anchor='middle' font-family='Arial' font-size='32' fill='white'%3E*%3C/text%3E%3C/svg%3E">
+  <link rel="preload" href="assets/brand-logo.png" as="image" fetchpriority="high">
+  <script src="intro.js?v=5"></script>
+  <link rel="preload" href="assets/hero-stage-v2.webp" as="image" fetchpriority="high"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="motion.css"><link rel="stylesheet" href="video.css"><link rel="stylesheet" href="refinements.css"><link rel="stylesheet" href="tees.css"><link rel="stylesheet" href="release-branding.css"><link rel="stylesheet" href="soboda-model.css"><link rel="stylesheet" href="site-motion.css"><link rel="stylesheet" href="reference-motion.css?v=24">
+  <link rel="stylesheet" href="soboda-discovery.css">
+</head>
+<body>
+<div class="site-intro" id="site-intro" aria-hidden="true" hidden>
+  <svg class="intro-stage" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" preserveAspectRatio="none">
+    <defs>
+      <mask id="intro-portal-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%" style="mask-type:luminance">
+        <rect width="100%" height="100%" fill="#fff"/>
+        <g class="intro-portal-motion"><path class="intro-opening" fill="#000" d="M1472 121C1473 96 1485 84 1508 84C1531 84 1542 97 1543 121Z"/></g>
+      </mask>
+    </defs>
+    <g class="intro-surface" mask="url(#intro-portal-mask)">
+      <rect width="100%" height="100%" fill="#fff"/>
+      <g class="intro-logo">
+        <svg x="0" y="0" viewBox="114 19 1710 270" width="1710" height="270"><image href="assets/brand-logo.png" width="3284" height="308"/></svg>
+        <svg x="0" y="296" viewBox="1824 19 1279 270" width="1710" height="361"><image href="assets/brand-logo.png" width="3284" height="308"/></svg>
+      </g>
+    </g>
+  </svg>
+</div>
+<a class="skip" href="#music">Skip to music</a>
+<header class="header" id="header">
+  <a class="wordmark" href="#top" aria-label="Home"><img src="assets/brand-logo.png" alt="#jacksandersuperstar®" width="3284" height="308"></a>
+  <nav class="desktop-nav" aria-label="Main navigation"><a href="#music">music</a><a href="#live">live</a><a href="#merch">merch</a><a href="#soboda">soboda</a></nav>
+  <button class="menu-toggle" id="menu-open" aria-haspopup="dialog" aria-controls="menu" aria-expanded="false"><span class="menu-lines" aria-hidden="true"></span><span>menu</span></button>
+</header>
+<main>
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <div class="hero-photo hero-depth"><img class="hero-image" src="assets/hero-stage-v2.webp" alt="Black-and-white onstage photograph, microphone in hand" fetchpriority="high" width="1152" height="1536"></div>
+  <div class="hero-copy"><h1 id="hero-title" aria-label="#jacksandersuperstar®">
+    <span class="title-mask"><span class="title-line"><svg class="logo-jack" viewBox="114 19 1710 270" width="1710" height="270" aria-hidden="true"><image href="assets/brand-logo.png" width="3284" height="308"/></svg></span></span>
+    <span class="title-mask"><span class="title-line"><svg class="logo-superstar" viewBox="1824 19 1279 270" width="1279" height="270" aria-hidden="true"><image href="assets/brand-logo.png" width="3284" height="308"/></svg></span></span>
+  </h1></div>
+  <div class="hero-cut hero-depth" aria-hidden="true"><div class="subject-canvas"><img src="assets/hero-stage-v2.webp" alt="" width="1152" height="1536" fetchpriority="high"></div></div>
+  <div class="hero-shade" aria-hidden="true"></div>
+  <div class="hero-bottom"><a class="button button-outline" href="#music">explore the music </a><div class="hero-index"><a href="#music" class="scroll-label">scroll to explore <span class="scroll-line" aria-hidden="true"></span></a></div></div>
+</section>
+<section class="section music" id="music" aria-labelledby="music-title">
+  <div class="section-heading"><h2 id="music-title">music<span class="asterisk" aria-hidden="true">*</span></h2><span class="rule"></span><span class="section-number">01 / discography</span></div>
+  <div class="featured-release">
+    <button class="cover-button" data-release="0" aria-label="View jacksandersuperstar album details"><img src="assets/album.webp" alt="Full #jacksandersuperstar album cover" width="1024" height="1024" loading="lazy"><span class="image-action">15 tracks / view tracklist <span aria-hidden="true">+</span></span></button>
+    <div class="release-copy"><p class="eyebrow red">out now, everywhere.</p><h3 class="album-title"><img src="assets/brand-logo.png" alt="#jacksandersuperstar®" width="3284" height="308"></h3><p class="release-meta">album / july 15, 2026 / 15 tracks</p><div class="release-actions"><a class="button button-red" href="https://music.apple.com/us/album/jacksandersuperstar/6787361171" target="_blank" rel="noopener">apple music</a><a class="button button-black" href="https://open.spotify.com/album/0Kg7F6T2gReUAx5563lJ5K" target="_blank" rel="noopener">spotify</a><button class="button streaming-more" type="button" aria-label="More streaming services" aria-expanded="false" aria-controls="featured-streaming-extra">+</button><div class="streaming-extra" id="featured-streaming-extra" hidden><a class="button button-black" href="https://www.youtube.com/playlist?list=PLEoIsNgKzgdo" target="_blank" rel="noopener">youtube</a></div></div><button class="text-button" data-release="0">view tracklist <span aria-hidden="true">+</span></button></div>
+  </div>
+  <div class="catalog-header"><h3>the catalog</h3><span>2020 — 2026</span></div>
+  <div class="catalog" id="catalog"></div>
+</section>
+<section class="music-video-section" id="video" aria-labelledby="music-video-title">
+  <div class="music-video-stage" id="music-video-stage">
+    <img class="video-poster" src="assets/magic-tragic-poster.webp" alt="Still from the magic (tragic) music video" width="1006" height="720" loading="lazy">
+    <div class="preview-player-wrap" aria-hidden="true"><video id="magic-preview-player" data-src="assets/magic-tragic-loop.mp4" muted loop playsinline preload="none" disablepictureinpicture disableremoteplayback tabindex="-1" width="1006" height="720"></video></div>
+    <div class="video-treatment" aria-hidden="true"></div>
+    <div class="video-panel-copy">
+      <div class="video-top"><p class="eyebrow">official music video</p></div>
+      <div class="video-bottom">
+        <div class="video-heading"><h2 id="music-video-title">magic <span>(tragic)</span></h2></div>
+        <div class="music-video-links"><a class="button button-white video-full-link" href="https://www.youtube.com/watch?v=a4_ZlWzaq2s" target="_blank" rel="noopener">watch full video <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a class="video-library-link" href="https://www.youtube.com/@jacksander1" target="_blank" rel="noopener">all videos &amp; clips <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
       </div>
-
-    </main>
-    <script>
-      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-    </script>
-    <script defer src="/_vercel/insights/script.js"></script>
-    <script src="script.js"></script>
-  </body>
+    </div>
+    <button class="preview-toggle" id="preview-toggle" type="button" hidden aria-label="Pause video preview"><span class="preview-pause-icon" aria-hidden="true">Ⅱ</span></button>
+  </div>
+</section>
+<section class="live-section" id="live" aria-labelledby="live-title"><div class="live-photo" aria-hidden="true"><img src="assets/live-dallas.webp" alt="" width="1200" height="1600" loading="lazy" decoding="async"></div><div class="live-top"><span class="eyebrow">02 / live</span></div><div class="live-heading"><h2 id="live-title">live in<br><span>dallas.</span></h2><div class="live-side"><p>turn up.</p><button class="button button-white" id="watch-live">watch the performance <span class="play" aria-hidden="true">▶</span></button></div></div><div class="live-bottom"><span>the full performance</span><span>sound on.</span></div></section>
+<section class="section merch" id="merch" aria-labelledby="merch-title"><div class="section-heading"><h2 id="merch-title">merch<span class="asterisk" aria-hidden="true">*</span></h2><span class="rule"></span><span class="section-number">03 / take it with you</span></div><div class="merch-grid"><article class="product tee-product" aria-labelledby="tee-title">
+  <div class="tee-slideshow" role="region" aria-roledescription="carousel" aria-label="Superstar tees photos" tabindex="0">
+    <div class="tee-slides" id="tee-slides">
+      <div class="tee-slide is-active" role="group" aria-roledescription="slide" aria-label="1 of 11" aria-hidden="false"><img src="assets/tees/tee-01.webp" alt="Front portrait in a black jacksandersuperstar tee, with tousled hair and arms relaxed." width="1086" height="1448" loading="lazy" decoding="async"></div>
+      <div class="tee-slide" role="group" aria-roledescription="slide" aria-label="2 of 11" aria-hidden="true"><img data-src="assets/tees/tee-02.webp" alt="Three-quarter portrait in a black jacksandersuperstar tee, looking to the right." width="1086" height="1448"  decoding="async"></div>
+      <div class="tee-slide" role="group" aria-roledescription="slide" aria-label="3 of 11" aria-hidden="true"><img data-src="assets/tees/tee-03.webp" alt="Curly-haired model in a black jacksandersuperstar tee, looking to the right." width="1086" height="1448"  decoding="async"></div>
+      <div class="tee-slide" role="group" aria-roledescription="slide" aria-label="4 of 11" aria-hidden="true"><img data-src="assets/tees/tee-04.webp" alt="Model in a black jacksandersuperstar tee, holding the shirt hem and looking upward." width="1086" height="1448"  decoding="async"></div>
+      <div class="tee-slide" role="group" aria-roledescription="slide" aria-label="5 of 11" aria-hidden="true"><img data-src="assets/tees/tee-06.webp" alt="Model smiling while holding up a black jacksandersuperstar tee by its shoulders." width="1086" height="1448"  decoding="async"></div>
+      <div class="tee-slide" role="group" aria-roledescription="slide" aria-label="6 of 11" aria-hidden="true"><img data-src="assets/tees/tee-07.webp" alt="Model with glasses in a black jacksandersuperstar tee, showing the matching lettering along an outstretched forearm." width="1086" height="1448"  decoding="async"></div>
+      <div class="tee-slide" role="group" aria-roledescription="slide" aria-label="7 of 11" aria-hidden="true"><img data-src="assets/tees/tee-08.webp" alt="Smiling model with glasses and shoulder-length hair in a black jacksandersuperstar tee." width="1086" height="1448"  decoding="async"></div>
+      <div class="tee-slide" role="group" aria-roledescription="slide" aria-label="8 of 11" aria-hidden="true"><img data-src="assets/tees/tee-09.webp" alt="Model in a black jacksandersuperstar tee with a raised forearm across the face, showing matching lettering." width="1086" height="1448"  decoding="async"></div>
+      <div class="tee-slide" role="group" aria-roledescription="slide" aria-label="9 of 11" aria-hidden="true"><img data-src="assets/tees/tee-10.webp" alt="Model in a black jacksandersuperstar tee with one hand in the hair, showing matching forearm lettering." width="1086" height="1448"  decoding="async"></div>
+      <div class="tee-slide" role="group" aria-roledescription="slide" aria-label="10 of 11" aria-hidden="true"><img data-src="assets/tees/tee-11.webp" alt="Model with glasses and a braid wearing a black cropped jacksandersuperstar tee and jeans, showing forearm lettering." width="1086" height="1448"  decoding="async"></div>
+      <div class="tee-slide" role="group" aria-roledescription="slide" aria-label="11 of 11" aria-hidden="true"><img data-src="assets/tees/tee-12.webp" alt="Front portrait of a smiling model with a ponytail and necklace wearing a black jacksandersuperstar tee." width="1086" height="1448"  decoding="async"></div>
+    </div>
+    <div class="tee-controls">
+      <button class="tee-control" type="button" id="tee-prev" aria-label="Previous tee photo">previous</button>
+      <span class="tee-count" id="tee-count">01 / 11</span>
+      <button class="tee-control" type="button" id="tee-next" aria-label="Next tee photo">next</button>
+      <button class="tee-control tee-pause" type="button" id="tee-pause" aria-label="Pause slideshow">pause</button>
+    </div>
+    <span class="sr-only" id="tee-status" aria-live="polite" aria-atomic="true"></span>
+  </div>
+  <div class="product-info"><div><h3 id="tee-title">superstar tees</h3><p class="merch-price">$25</p></div><a class="tee-shop" href="merch.html">view merch</a></div>
+</article><a class="product" href="merch.html"><div class="product-image"><img src="assets/vinyl.webp" alt="Jacksandersuperstar vinyl record" loading="lazy" width="800" height="800"></div><div class="product-info"><div><h3>on vinyl</h3><p class="merch-price">$100</p></div><span>view merch</span></div></a></div><div class="merch-footer"><span>from the world of #jacksandersuperstar®</span><a class="text-button" href="merch.html">all merch <span aria-hidden="true">+</span></a></div></section>
+<section class="soboda-section soboda-feature" id="soboda" aria-labelledby="soboda-title">
+  <div class="soboda-copy"><span class="discovery-kicker">04 / discovery center</span><h2 id="soboda-title">SOBODA<span>.</span></h2><p class="soboda-feature-intro">A rarely seen omnivore of the Taiga.</p>
+    <dl class="soboda-feature-record"><div><dt>first encounter</dt><dd>Alaska, 1960s</dd></div><div><dt>recorded</dt><dd>40</dd></div><div><dt>habitat</dt><dd>the Taiga</dd></div></dl>
+    <a class="button button-red" href="soboda.html">explore the discovery center</a><span class="soboda-footnote">field notes / visual records / the specimen</span>
+  </div>
+  <div class="soboda-image soboda-model specimen-frame">
+    <div class="specimen-label"><span>specimen / SDC–001</span><span class="specimen-tag">interactive</span></div>
+    <model-viewer id="soboda-viewer" data-src="assets/soboda/soboda.glb" poster="assets/soboda/iconic.webp" alt="Textured Soboda specimen. Drag to rotate and pinch or scroll to zoom." camera-controls interaction-prompt="none" touch-action="pan-y" camera-orbit="0deg 75deg auto" auto-rotate-delay="800" rotation-per-second="12deg" shadow-intensity="1" shadow-softness=".8" environment-image="neutral" exposure="1.1" loading="eager" reveal="auto"></model-viewer>
+    <img class="specimen-fallback" id="soboda-fallback-image" src="assets/soboda/iconic.webp" alt="Soboda from the original archive" loading="lazy" hidden>
+    <p class="soboda-model-status" id="soboda-model-status" role="status">Loading specimen…</p>
+    <a class="soboda-model-fallback" id="soboda-model-fallback" href="soboda.html#image-archive" hidden>view the image archive</a>
+    <div class="soboda-model-controls"><span>drag to rotate · pinch to zoom</span><div><button type="button" id="soboda-spin" aria-label="Pause Soboda rotation" disabled>pause rotation</button><button type="button" id="soboda-reset" disabled>reset view</button></div></div>
+  </div>
+</section>
+</main>
+<footer><div class="footer-top"><a class="wordmark" href="#top"><img src="assets/brand-logo.png" alt="#jacksandersuperstar®" width="3284" height="308"></a><a href="https://instagram.com/jack_sanderr" target="_blank" rel="noopener">instagram</a><a href="#top">back to top</a></div><div class="footer-bottom"><span>© 2026</span></div></footer>
+<dialog class="menu-dialog" id="menu" aria-labelledby="menu-title"><div class="menu-head"><span id="menu-title" class="wordmark"><img src="assets/brand-logo.png" alt="#jacksandersuperstar®" width="3284" height="308"></span><button class="close-button" data-close="menu" aria-label="Close menu">close <span aria-hidden="true">×</span></button></div><nav aria-label="Expanded navigation"><a href="#music"><span>01</span>music</a><a href="#live"><span>02</span>live in dallas</a><a href="#merch"><span>03</span>merch</a><a href="#soboda"><span>04</span>soboda</a></nav><div class="menu-footer"><a href="https://instagram.com/jack_sanderr" target="_blank" rel="noopener">instagram</a></div></dialog>
+<dialog class="release-dialog" id="release-dialog" aria-labelledby="release-dialog-title"><div class="dialog-toolbar"><span>the catalog</span><button class="close-button" data-close="release-dialog" aria-label="Close album details">close <span aria-hidden="true">×</span></button></div><div id="release-content"></div></dialog>
+<dialog class="video-dialog" id="video-dialog" aria-labelledby="video-title"><div class="dialog-toolbar"><h2 id="video-title">live in dallas</h2><button class="close-button" data-close="video-dialog" aria-label="Close video">close <span aria-hidden="true">×</span></button></div><div class="video-frame" id="video-frame"></div><a href="https://www.youtube.com/watch?v=pZm5ldOVBnI" target="_blank" rel="noopener">watch on youtube</a></dialog>
+<script src="assets/lenis.min.js" defer></script>
+<script src="site-motion.js?v=21" defer></script>
+<script src="app.js" defer></script>
+<script src="motion.js?v=22" defer></script>
+<script src="video.js" defer></script>
+<script src="tees.js" defer></script>
+<script src="soboda-model.js" defer></script>
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
 </html>

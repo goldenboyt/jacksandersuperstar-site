@@ -9,6 +9,16 @@
       "source": "/superstar",
       "destination": "/jacksandersuperstar",
       "permanent": true
+    },
+    {
+      "source": "/music",
+      "destination": "/#music",
+      "permanent": false
+    },
+    {
+      "source": "/music.html",
+      "destination": "/#music",
+      "permanent": false
     }
   ]
 }

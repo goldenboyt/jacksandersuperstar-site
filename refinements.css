@@ -1,0 +1,25 @@
+.wordmark{width:clamp(210px,24vw,310px);flex-shrink:0;max-width:100%}
+.wordmark>img{display:block;width:100%;height:auto;max-width:100%;object-fit:contain;filter:brightness(0)}
+.header:not(.scrolled) .wordmark>img,footer .wordmark>img{filter:brightness(0) invert(1)}
+.hero h1>.title-mask{padding:.04em 0;margin:0;overflow:visible}
+.hero h1 .title-line{width:100%}
+.hero h1 img{width:100%;height:auto;object-fit:contain;filter:brightness(0) invert(1)}
+.album-title>img{width:100%;height:auto;object-fit:contain}
+.section-heading h2{line-height:1.2;padding-block:.08em}
+.letter-word{overflow:visible;vertical-align:baseline;padding:0;margin:0}
+.letter{opacity:0;transform:translateY(.55em);transition:transform .78s cubic-bezier(.16,1,.3,1),opacity .5s ease;transition-delay:calc(var(--letter-index)*26ms)}
+.section-heading.is-visible .letter,.motion-heading.is-visible .letter{opacity:1;transform:none}
+@media(max-width:640px){.header .wordmark{width:min(59vw,240px)}.menu-head .wordmark{width:min(58vw,220px)}.footer-top>.wordmark{width:min(100%,310px)}.hero h1{left:4vw;right:4vw}.section-heading h2{padding-block:.1em}.live-side p{grid-column:1/3}}
+@media(prefers-reduced-motion:reduce){.letter{opacity:1;transform:none}}
+
+/* Light monochrome film grain across the layered hero photograph. */
+.hero-shade::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.04;mix-blend-mode:soft-light;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)' opacity='1'/%3E%3C/svg%3E");background-size:180px 180px}
+
+/* Keep the performance photo behind the type while it drifts on scroll. */
+.live-section{position:relative;isolation:isolate;background:#190e21;min-height:640px;display:flex;flex-direction:column;justify-content:space-between}
+.live-photo{position:absolute;inset:-18% 0;z-index:-2;pointer-events:none;transform:translate3d(0,var(--live-parallax,0px),0);will-change:transform}
+.live-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 43%}
+.live-section::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,rgba(10,5,17,.62),rgba(10,5,17,.22) 60%,rgba(10,5,17,.38)),linear-gradient(0deg,rgba(10,5,17,.46),transparent 35%,transparent 75%,rgba(10,5,17,.3))}
+.live-heading h2{text-shadow:0 2px 22px rgba(0,0,0,.16)}
+@media(max-width:640px){.live-section{min-height:650px}.live-photo img{object-position:44% 40%}.live-section::before{background:linear-gradient(0deg,rgba(10,5,17,.7),rgba(10,5,17,.15) 60%,rgba(10,5,17,.36))}}
+@media(prefers-reduced-motion:reduce){.live-photo{transform:none;will-change:auto}}
