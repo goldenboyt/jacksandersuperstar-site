@@ -16,7 +16,7 @@
   function controls(){toggle.textContent=paused?'play':'pause';toggle.setAttribute('aria-label',paused?'Play slideshow':'Pause slideshow')}
   function sync(){
     clearTimeout(timer);timer=null;
-    if(visible&&!paused&&(!hovered||interactionPlayback)&&(!focused||interactionPlayback)&&!document.hidden&&!document.querySelector('dialog[open]'))timer=setTimeout(()=>show(index+1),4500);
+    if(visible&&!paused&&(!hovered||interactionPlayback)&&(!focused||interactionPlayback)&&!document.hidden&&!document.querySelector('dialog[open]'))timer=setTimeout(()=>show(index+1),2500);
   }
   async function show(next,manual=false){
     const request=++changeId;
