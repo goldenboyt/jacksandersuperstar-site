@@ -44,10 +44,10 @@
       offsetY=Math.min(0,Math.max(height-renderedHeight,offsetY,130+titleHeight-headAnchor));
     }
     const headDip=headAnchor+offsetY;
-    // Keep the title in place while lifting the shared desktop photo and cutout.
+    // Frame the body on desktop, keeping the head clear of the header.
     if(width>640){
-      const lift=Math.min(80,Math.max(48,height*.07));
-      offsetY=Math.max(height-renderedHeight,offsetY-lift);
+      const headTop=Math.max(120,Math.min(180,height*.15));
+      offsetY=Math.max(height-renderedHeight,Math.min(offsetY,headTop-HEAD_TOP*scale));
     }
     const coverY=height===renderedHeight?positionY:offsetY/(height-renderedHeight);
     hero.style.setProperty('--photo-cover-y',`${coverY*100}%`);
