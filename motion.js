@@ -43,6 +43,12 @@
       // Move both copies of the photo together when the title hits its top limit.
       offsetY=Math.min(0,Math.max(height-renderedHeight,offsetY,130+titleHeight-headAnchor));
     }
+    const headDip=headAnchor+offsetY;
+    // Keep the title in place while lifting the shared desktop photo and cutout.
+    if(width>640){
+      const lift=Math.min(80,Math.max(48,height*.07));
+      offsetY=Math.max(height-renderedHeight,offsetY-lift);
+    }
     const coverY=height===renderedHeight?positionY:offsetY/(height-renderedHeight);
     hero.style.setProperty('--photo-cover-y',`${coverY*100}%`);
     hero.style.setProperty('--photo-width',`${renderedWidth}px`);
@@ -50,7 +56,6 @@
     hero.style.setProperty('--photo-left',`${(width-renderedWidth)*positionX}px`);
     hero.style.setProperty('--photo-top',`${offsetY}px`);
     heroHeight=height;
-    const headDip=headAnchor+offsetY;
     const top=Math.max(width<=640?150:130,Math.min(headDip-titleHeight,height*.7-titleHeight));
     hero.style.setProperty('--title-top',`${top.toFixed(1)}px`);
   }
