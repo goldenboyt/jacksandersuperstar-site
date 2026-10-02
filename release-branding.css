@@ -1,5 +1,6 @@
 @font-face{font-family:'Cooper Black';font-style:italic;font-weight:400;font-display:swap;src:url('assets/fonts/cooper-black-italic.woff2') format('woff2')}
 .release-card h3.title-papyrus,.dialog-release-title.title-papyrus{font-family:Papyrus,fantasy;font-weight:400;letter-spacing:.02em;line-height:1.35}
+.release-card h3.title-papyrus{font-size:clamp(26px,2.4vw,34px)}
 .title-designer{text-transform:uppercase}
 .release-card h3.title-designer{font-size:clamp(26px,2.4vw,34px);line-height:1.1}
 .dialog-release-title.title-designer{font-size:clamp(38px,4.5vw,60px);line-height:1.15}
@@ -20,4 +21,4 @@
 .release-share-url{width:100%;min-width:0;border:1px solid #aaa;border-radius:0;background:#fff;color:#111;padding:12px;font:inherit;font-size:16px}
 .release-share-url[hidden]{display:none}
 .release-share-url:focus-visible{outline:3px solid var(--red);outline-offset:3px}
-@media(max-width:640px){.release-actions{gap:8px}.release-actions>.button:not(.streaming-more){flex:1 1 0;padding-inline:10px}.streaming-extra .button{flex:0 1 auto}.product-info{align-items:flex-start}.release-card h3.title-designer{font-size:30px}}
+@media(max-width:640px){.release-actions{gap:8px}.release-actions>.button:not(.streaming-more){flex:1 1 0;padding-inline:10px}.streaming-extra .button{flex:0 1 auto}.product-info{align-items:flex-start}.release-card h3.title-papyrus{font-size:30px}}

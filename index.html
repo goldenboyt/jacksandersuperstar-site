@@ -7,7 +7,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23e32122'/%3E%3Ctext x='16' y='26' text-anchor='middle' font-family='Arial' font-size='32' fill='white'%3E*%3C/text%3E%3C/svg%3E">
   <link rel="preload" href="assets/brand-logo.png" as="image" fetchpriority="high">
   <script src="intro.js?v=7"></script>
-  <link rel="preload" href="assets/hero-stage-v2.webp" as="image" fetchpriority="high"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="motion.css"><link rel="stylesheet" href="video.css"><link rel="stylesheet" href="refinements.css"><link rel="stylesheet" href="tees.css"><link rel="stylesheet" href="release-branding.css"><link rel="stylesheet" href="soboda-model.css"><link rel="stylesheet" href="site-motion.css"><link rel="stylesheet" href="reference-motion.css?v=25">
+  <link rel="preload" href="assets/hero-stage-v2.webp" as="image" fetchpriority="high"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="motion.css"><link rel="stylesheet" href="video.css?v=2"><link rel="stylesheet" href="refinements.css"><link rel="stylesheet" href="tees.css"><link rel="stylesheet" href="release-branding.css?v=2"><link rel="stylesheet" href="soboda-model.css"><link rel="stylesheet" href="site-motion.css"><link rel="stylesheet" href="reference-motion.css?v=25">
   <link rel="stylesheet" href="soboda-discovery.css">
   <link rel="stylesheet" href="release-pages.css?v=1">
 </head>
@@ -58,7 +58,7 @@
 <section class="music-video-section" id="video" aria-labelledby="music-video-title">
   <div class="music-video-stage" id="music-video-stage">
     <img class="video-poster" src="assets/magic-tragic-poster-1440p.webp" alt="Still from the magic (tragic) music video" width="2012" height="1440" loading="lazy">
-    <div class="preview-player-wrap" aria-hidden="true"><video id="magic-preview-player" data-src="assets/magic-tragic-loop-1440p.mp4" muted loop playsinline preload="none" disablepictureinpicture disableremoteplayback tabindex="-1" width="2012" height="1440"></video></div>
+    <div class="preview-player-wrap" aria-hidden="true"><video id="magic-preview-player" data-src="assets/magic-tragic-loop-1440p-sound.mp4" muted loop playsinline preload="none" disablepictureinpicture disableremoteplayback tabindex="-1" width="2012" height="1440"></video></div>
     <div class="video-treatment" aria-hidden="true"></div>
     <div class="video-panel-copy">
       <div class="video-top"><p class="eyebrow">official music video</p></div>
@@ -68,6 +68,7 @@
       </div>
     </div>
     <button class="preview-toggle" id="preview-toggle" type="button" hidden aria-label="Pause video preview"><span class="preview-pause-icon" aria-hidden="true">Ⅱ</span></button>
+    <button class="preview-sound is-muted" id="preview-sound" type="button" hidden aria-label="Turn on video sound" aria-pressed="false"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m11 5-5 4H3v6h3l5 4Z"/><path class="preview-mute-mark" d="m16 9 5 6m0-6-5 6"/><path class="preview-sound-waves" d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></svg><span class="preview-sound-label">sound on</span></button>
   </div>
 </section>
 <section class="live-section" id="live" aria-labelledby="live-title"><div class="live-photo" aria-hidden="true"><img src="assets/live-dallas.webp" alt="" width="1200" height="1600" loading="lazy" decoding="async"></div><div class="live-top"><span class="eyebrow">02 / live</span></div><div class="live-heading"><h2 id="live-title">live in<br><span>dallas.</span></h2><div class="live-side"><p>turn up.</p><button class="button button-white" id="watch-live">watch the performance <span class="play" aria-hidden="true">▶</span></button></div></div><div class="live-bottom"><span>the full performance</span><span>sound on.</span></div></section>
@@ -122,7 +123,7 @@
 <script src="release-ui.js?v=1" defer></script>
 <script src="app.js?v=2" defer></script>
 <script src="motion.js?v=22" defer></script>
-<script src="video.js" defer></script>
+<script src="video.js?v=2" defer></script>
 <script src="tees.js?v=2" defer></script>
 <script src="soboda-model.js" defer></script>
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
