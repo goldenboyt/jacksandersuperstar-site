@@ -6,9 +6,9 @@
 .dialog-art{height:auto;aspect-ratio:auto;object-fit:contain}
 .release-card img{height:auto;object-fit:contain}
 .music-video-section{color:#fff;background:#111}
-.music-video-stage{position:relative;isolation:isolate;width:100%;height:82svh;min-height:640px;max-height:900px;background:#111;overflow:hidden}
-.video-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 45%;z-index:0}
-.preview-player-wrap{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;transition:opacity .45s ease}
+.music-video-stage{--video-parallax:0px;--video-overscan:40px;position:relative;isolation:isolate;width:100%;height:82svh;min-height:640px;max-height:900px;background:#111;overflow:hidden}
+.video-poster{position:absolute;inset:calc(-1 * var(--video-overscan)) 0;width:100%;height:calc(100% + 2 * var(--video-overscan));object-fit:cover;object-position:50% 45%;z-index:0;transform:translate3d(0,var(--video-parallax),0)}
+.preview-player-wrap{position:absolute;inset:calc(-1 * var(--video-overscan)) 0;z-index:1;pointer-events:none;opacity:0;transition:opacity .45s ease;transform:translate3d(0,var(--video-parallax),0)}
 .preview-player-wrap>video{width:100%;height:100%;border:0;display:block;object-fit:cover;object-position:50% 45%;background:#111}
 .music-video-stage.preview-playing .preview-player-wrap{opacity:1}
 .video-treatment{position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.55),transparent 25%),linear-gradient(0deg,rgba(0,0,0,.86),rgba(0,0,0,.32) 38%,transparent 65%)}
@@ -39,7 +39,7 @@
 .preview-toggle.is-paused .preview-pause-icon{width:0;height:0;border-left:11px solid currentColor;border-right:0;border-top:7px solid transparent;border-bottom:7px solid transparent;translate:1px 0}
 @media(max-width:900px){.video-heading h2{font-size:12vw}.video-bottom{gap:24px}.video-full-link{min-width:190px}}
 @media(max-width:640px){
-  .music-video-stage{height:82svh;min-height:650px;max-height:850px}
+  .music-video-stage{--video-overscan:24px;height:82svh;min-height:650px;max-height:850px}
   .video-panel-copy{padding:30px var(--pad) 32px}
   .video-top{padding:14px 124px 26px 0}
   .video-top .eyebrow{font-size:11px;gap:10px}
@@ -53,4 +53,4 @@
   .preview-sound{top:30px;width:48px;padding:0}
   .preview-sound-label{display:none}
 }
-@media(prefers-reduced-motion:reduce){.preview-player-wrap{transition:none}}
+@media(prefers-reduced-motion:reduce){.music-video-stage{--video-overscan:0px}.video-poster,.preview-player-wrap{transform:none}.preview-player-wrap{transition:none}}
