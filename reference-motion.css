@@ -21,15 +21,13 @@ html.intro-pending,html.intro-pending body{overflow:hidden;overflow:clip}
   0%,28%{opacity:0;animation-timing-function:cubic-bezier(.4,0,.2,1)}
   62%,100%{opacity:1}
 }
-.intro-pending:not(.intro-revealing) .hero-depth>img,.intro-pending:not(.intro-revealing) .hero-cut{animation:none;transform:scale(1.06)}
+.intro-pending:not(.intro-revealing) .hero-depth{animation:none;transform:translate3d(0,var(--hero-parallax),0) scale(1.06)}
 .intro-pending:not(.intro-revealing) .title-line{animation:none;transform:translateY(106%)}
 .intro-pending:not(.intro-revealing) .header,.intro-pending:not(.intro-revealing) .hero-bottom>.button,.intro-pending:not(.intro-revealing) .hero-index{animation:none;opacity:0}
 .hero h1>.title-mask{overflow:hidden;padding:.04em .01em .08em 0;margin:0 0 -.08em}
-@keyframes photo-arrive{from{transform:scale(1.06)}to{transform:scale(1)}}
-@keyframes cut-arrive{from{transform:translate3d(0,var(--hero-parallax),0) scale(1.06)}to{transform:translate3d(0,var(--hero-parallax),0) scale(1)}}
 .header{animation-delay:.3s;animation-duration:.5s}
 .hero-bottom>.button,.hero-index{animation-delay:.16s}
-.intro-complete .hero-depth>img,.intro-complete .hero-cut,.intro-complete .title-line,.intro-complete .header,.intro-complete .hero-bottom>.button,.intro-complete .hero-index{animation:none}
+.intro-complete .hero-depth,.intro-complete .title-line,.intro-complete .header,.intro-complete .hero-bottom>.button,.intro-complete .hero-index{animation:none}
 .letter-word{overflow:hidden;vertical-align:bottom;padding:.05em .1em .14em 0;margin:0 -.1em -.14em 0}
 .letter-word.revealed{overflow:visible}
 .letter{opacity:1;transform:translateY(108%);transition:transform .78s var(--motion-arrive);transition-delay:calc(var(--letter-index)*26ms)}

@@ -18,7 +18,8 @@
 
   // Anchor the lower title line to the subject's face using cover geometry.
   function placeTitle(){
-    const width=hero.clientWidth,height=hero.clientHeight;
+    // Preserve fractional CSS sizes used by browser zoom and display scaling.
+    const {width,height}=hero.getBoundingClientRect();
     const styles=getComputedStyle(hero);
     const positionY=parseFloat(styles.getPropertyValue('--photo-y'))/100;
     const positionX=parseFloat(styles.getPropertyValue('--photo-x'))/100;
@@ -49,8 +50,6 @@
       const headTop=Math.max(120,Math.min(180,height*.15));
       offsetY=Math.max(height-renderedHeight,Math.min(offsetY,headTop-HEAD_TOP*scale));
     }
-    const coverY=height===renderedHeight?positionY:offsetY/(height-renderedHeight);
-    hero.style.setProperty('--photo-cover-y',`${coverY*100}%`);
     hero.style.setProperty('--photo-width',`${renderedWidth}px`);
     hero.style.setProperty('--photo-height',`${renderedHeight}px`);
     hero.style.setProperty('--photo-left',`${(width-renderedWidth)*positionX}px`);
@@ -90,8 +89,6 @@
   window.addEventListener('resize',()=>{cancelAnimationFrame(resizeTick);resizeTick=requestAnimationFrame(()=>{placeTitle();frame()})});
   preference.addEventListener('change',()=>{placeTitle();frame()});
   placeTitle();frame();
-  // Release the entrance animation so it cannot override live parallax.
-  document.querySelector('.hero-cut').addEventListener('animationend',()=>hero.classList.add('arrived'),{once:true});
   if(document.fonts)document.fonts.ready.then(placeTitle);
 
   // Keep the original text for assistive technology; animate visual copies.
