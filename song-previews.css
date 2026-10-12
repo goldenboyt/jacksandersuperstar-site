@@ -1,0 +1,27 @@
+.song-preview-button{display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:0;background:none;border:0;font:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;text-align:left;cursor:pointer}
+.song-preview-name,.song-preview-track{min-width:0;flex:1;overflow-wrap:anywhere}
+.song-preview-icon{width:17px;height:17px;flex:0 0 17px;fill:currentColor;color:#777}
+.song-preview-pause{display:none}
+.song-preview-button.is-playing .song-preview-play{display:none}
+.song-preview-button.is-playing .song-preview-pause{display:block}
+.song-preview-button:hover,.song-preview-button.is-playing,.song-preview-button:hover .song-preview-icon,.song-preview-button.is-playing .song-preview-icon{color:var(--red)}
+.song-preview-button:focus-visible,.release-cover-button:focus-visible,.release-open-title:focus-visible{outline:2px solid var(--red);outline-offset:4px}
+.song-preview-panel{display:flex;align-items:center;gap:12px;min-height:20px;font:11px/1.5 Arial,sans-serif;letter-spacing:0;color:#666}
+.song-preview-panel[hidden],.song-preview-panel [hidden]{display:none}
+.song-preview-progress{height:2px;flex:1;min-width:25px;background:#ddd;position:relative;overflow:hidden}
+.song-preview-progress::after{content:'';position:absolute;inset:0;background:var(--red);transform:scaleX(var(--preview-progress,0));transform-origin:left}
+.song-preview-time{white-space:nowrap;font-variant-numeric:tabular-nums}
+.song-preview-message:empty{display:none}
+.single-preview-title{width:100%;gap:20px;font:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;text-align:left}
+.single-preview-title .release-title-art{min-width:0;flex:1;max-width:calc(100% - 42px)}
+.single-preview-title .song-preview-icon{width:22px;height:22px;flex-basis:22px}
+.tracklist:has(.song-preview-track) li,.release-page-tracklist:has(.song-preview-track) li{padding-block:4px;align-items:start}
+.tracklist:has(.song-preview-track) li::before,.release-page-tracklist:has(.song-preview-track) li::before{padding-top:14px}
+.catalog .release-card{cursor:default}
+.catalog .release-cover-button{display:block;width:100%;padding:0;text-align:left}
+.catalog .release-open-title{width:100%;padding:0;font:inherit;line-height:inherit;letter-spacing:inherit;text-align:left;cursor:pointer}
+.catalog .single-preview-title{gap:10px;min-height:28px}
+.catalog .single-preview-title .song-preview-icon{width:15px;height:15px;flex-basis:15px}
+.catalog .single-preview-title .release-title-art{max-width:calc(100% - 25px)}
+.song-preview-announcement{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media(pointer:coarse){.catalog .single-preview-title,.catalog .release-open-title{min-height:44px}}
