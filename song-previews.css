@@ -22,6 +22,6 @@
 .catalog .release-open-title{width:100%;padding:0;font:inherit;line-height:inherit;letter-spacing:inherit;text-align:left;cursor:pointer}
 .catalog .single-preview-title{gap:10px;min-height:28px}
 .catalog .single-preview-title .song-preview-icon{width:15px;height:15px;flex-basis:15px}
-.catalog .single-preview-title .release-title-art{max-width:calc(100% - 25px)}
+.catalog .single-preview-title .release-title-art{flex:0 1 auto;max-width:calc(100% - 25px)}
 .song-preview-announcement{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 @media(pointer:coarse){.catalog .single-preview-title,.catalog .release-open-title{min-height:44px}}
