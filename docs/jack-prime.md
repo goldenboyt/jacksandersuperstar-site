@@ -6,7 +6,8 @@ does not invent the artist's real memories, private facts, or upcoming plans.
 
 The backend uses AI SDK 7.0.140 with Vercel OIDC authentication; no provider API
 key is needed. Instructions and current release facts live in `lib/jack-prime.js`.
-Replies are limited to 280 output tokens, with at most 12 submitted messages and
+Replies aim for one sentence and 25 words, with a server-enforced maximum of two
+sentences. Generation is limited to 96 output tokens, with at most 12 submitted messages and
 12,000 characters of conversational context. Automatic retries are disabled.
 
 ## Spending constraint

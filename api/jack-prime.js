@@ -1,6 +1,7 @@
 import {generateText} from 'ai';
 import {instructions,model,validateMessages} from '../lib/jack-prime.js';
 import {PaidModelBlocked,verifyFreeModel} from '../lib/jack-prime-cost.js';
+import {shortReply} from '../lib/jack-prime-reply.js';
 
 const headers = {'Cache-Control':'no-store'};
 export async function POST(request) {
@@ -13,10 +14,11 @@ export async function POST(request) {
   if (!messages) return Response.json({error:'Please shorten your message or start a new conversation.'},{status:400,headers});
   try {
     await verifyFreeModel(request.signal);
-    const result = await generateText({model, instructions, messages, reasoning:'none', maxOutputTokens:280, maxRetries:0, abortSignal:AbortSignal.any([request.signal,AbortSignal.timeout(25000)])});
-    if (!result.text.trim()) throw new Error('Empty reply');
+    const result = await generateText({model, instructions, messages, reasoning:'none', maxOutputTokens:96, maxRetries:0, abortSignal:AbortSignal.any([request.signal,AbortSignal.timeout(25000)])});
+    const text=shortReply(result.text,result.finishReason);
+    if (!text) throw new Error('Empty reply');
     console.info('Jack Prime reply', {model, generationId:result.finalStep.providerMetadata?.gateway?.generationId ?? result.finalStep.response.id, inputTokens:result.usage.inputTokens, outputTokens:result.usage.outputTokens, pricing:'verified-zero'});
-    return Response.json({text:result.text.trim()},{headers});
+    return Response.json({text},{headers});
   } catch (error) {
     if (error instanceof PaidModelBlocked) return Response.json({error:'Jack Prime is taking a break. Please check back later.'},{status:402,headers});
     if (error.statusCode === 429) {
