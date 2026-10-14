@@ -1,7 +1,7 @@
 # Jack Prime
 
-Jack Prime is the site's conversational AI alter ego at `/jackprime`. Its voice
-is casual and direct, with short replies. It can have creative opinions, but
+Jack Prime is the site's conversational voice at `/jackprime`. Its voice uses
+natural conversational AAVE, with short replies. It can have creative opinions, but
 does not invent the artist's real memories, private facts, or upcoming plans.
 
 The backend uses AI SDK 7.0.140 with Vercel OIDC authentication; no provider API
@@ -36,7 +36,10 @@ Model: https://vercel.com/ai-gateway/models/nemotron-3.5-lightning-free
 
 The browser keeps this tab's conversation in session storage. It supports
 follow-ups, Enter to send, Shift+Enter for a new line, stop, retry, and reset.
-Only known site paths become links. Visiting the page does not call the AI.
+Only known site paths become links. Assistant replies render bold emphasis with
+safe DOM text nodes, including conversations restored after refresh. Visiting the
+page does not call the AI. The page has no character or alter-ego labels; explicit
+questions about AI identity still receive honest answers.
 
 The activated backend passed real introductions, follow-ups, and merch questions
 on the production domain. Runtime logs confirm the selected model and successful

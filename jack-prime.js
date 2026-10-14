@@ -5,7 +5,7 @@
   const intro=document.getElementById('prime-intro'),scroll=document.getElementById('prime-conversation');
   const storage='superstar:jack-prime:conversation';
   let history=[],controller=null,turn=0;
-  const idle='jack prime is a character. make it a conversation.';
+  const idle='';
   const paths=new Set(['/merch','/jacksandersuperstar','/prodigygenius','/cybertruck','/designer','/brainstorm','/catscash','/#music','/#live']);
   function save(){try{sessionStorage.setItem(storage,JSON.stringify(history.slice(-12)))}catch{}}
   function textWithLinks(text,element){
@@ -17,11 +17,20 @@
     }
     element.append(document.createTextNode(text.slice(position)));
   }
+  function formattedText(text,element){
+    const bold=/\*\*([^*\n]+)\*\*|__([^_\n]+)__/g;let position=0;
+    for(const match of text.matchAll(bold)){
+      textWithLinks(text.slice(position,match.index),element);
+      const strong=document.createElement('strong');textWithLinks(match[1]??match[2],strong);element.append(strong);
+      position=match.index+match[0].length;
+    }
+    textWithLinks(text.slice(position),element);
+  }
   function message(role,text){
     intro.hidden=true;intro.style.display='none';
     const node=document.createElement('div');node.className=`prime-message prime-message--${role}`;
     const label=document.createElement('span');label.className='prime-message-label';label.textContent=role==='user'?'you':'jack prime';
-    const body=document.createElement('div');textWithLinks(text,body);node.append(label,body);log.append(node);
+    const body=document.createElement('div');(role==='assistant'?formattedText:textWithLinks)(text,body);node.append(label,body);log.append(node);
     scroll.scrollTop=scroll.scrollHeight;
     return node;
   }
