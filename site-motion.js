@@ -17,6 +17,10 @@
   });
   const menu=document.getElementById('menu');
   const menuOpen=document.getElementById('menu-open');
+  const primeLink=document.createElement('a');primeLink.href='/jackprime';primeLink.textContent='jack prime';primeLink.style.whiteSpace='nowrap';
+  if(location.pathname==='/jackprime'||location.pathname==='/jackprime.html')primeLink.setAttribute('aria-current','page');
+  document.querySelector('.desktop-nav')?.append(primeLink);
+  const primeMenuLink=primeLink.cloneNode(true);primeMenuLink.insertAdjacentHTML('afterbegin','<span>05</span>');menu.querySelector('nav').append(primeMenuLink);
   let menuTimer=null;
   menu.querySelectorAll('nav a').forEach((link,index)=>link.style.setProperty('--menu-index',index));
   const menuArt=document.createElement('img');

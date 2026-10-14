@@ -15,7 +15,7 @@ export async function POST(request) {
     await verifyFreeModel(request.signal);
     const result = await generateText({model, instructions, messages, reasoning:'none', maxOutputTokens:280, maxRetries:0, abortSignal:AbortSignal.any([request.signal,AbortSignal.timeout(25000)])});
     if (!result.text.trim()) throw new Error('Empty reply');
-    console.info('Jack Prime reply', {model, generationId:result.finalStep.response.id, inputTokens:result.usage.inputTokens, outputTokens:result.usage.outputTokens, pricing:'verified-zero'});
+    console.info('Jack Prime reply', {model, generationId:result.finalStep.providerMetadata?.gateway?.generationId ?? result.finalStep.response.id, inputTokens:result.usage.inputTokens, outputTokens:result.usage.outputTokens, pricing:'verified-zero'});
     return Response.json({text:result.text.trim()},{headers});
   } catch (error) {
     if (error instanceof PaidModelBlocked) return Response.json({error:'Jack Prime is taking a break. Please check back later.'},{status:402,headers});
