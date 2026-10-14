@@ -42,6 +42,12 @@ safe DOM text nodes, including conversations restored after refresh. Visiting th
 page does not call the AI. The page has no character or alter-ego labels; explicit
 questions about AI identity still receive honest answers.
 
+The page has a red canvas, locally hosted condensed italic lettering, and a
+rounded cream conversation panel. Messages use left and right bubbles. On small
+screens, the title contracts after the first message and makes room for the
+composer when the keyboard reduces the visible viewport. The visual style is
+scoped to Jack Prime; the rest of the site uses its existing layout.
+
 The current free provider allows five requests per minute per region. A rate
 limit returns HTTP 429 with a short retry message and a `Retry-After` header;
 it never triggers an automatic retry or a paid model fallback.

@@ -28,6 +28,7 @@
   }
   function message(role,text){
     intro.hidden=true;intro.style.display='none';
+    document.body.classList.add('prime-has-messages');
     const node=document.createElement('div');node.className=`prime-message prime-message--${role}`;
     const label=document.createElement('span');label.className='prime-message-label';label.textContent=role==='user'?'you':'jack prime';
     const body=document.createElement('div');(role==='assistant'?formattedText:textWithLinks)(text,body);node.append(label,body);log.append(node);
@@ -52,7 +53,7 @@
     }catch(error){
       if(request!==turn)return;
       pendingMessage.remove();history=before;input.value=text;resize();
-      if(!history.length){intro.hidden=false;intro.style.removeProperty('display');}
+      if(!history.length){intro.hidden=false;intro.style.removeProperty('display');document.body.classList.remove('prime-has-messages');}
       status.textContent=error.name==='AbortError'?'stopped. your message is ready to try again.':error.message;
     }finally{
       if(request===turn){controller=null;send.disabled=false;stop.hidden=true;form.setAttribute('aria-busy','false');if(answered)status.textContent=idle;}
@@ -64,10 +65,15 @@
   document.querySelectorAll('[data-prime-prompt]').forEach(button=>button.addEventListener('click',()=>ask(button.dataset.primePrompt)));
   stop.addEventListener('click',()=>controller?.abort());
   document.getElementById('prime-reset').addEventListener('click',()=>{
-    turn++;controller?.abort();controller=null;history=[];save();log.replaceChildren();intro.hidden=false;intro.style.removeProperty('display');busy(false);input.value='';resize();input.focus();
+    turn++;controller?.abort();controller=null;history=[];save();log.replaceChildren();intro.hidden=false;intro.style.removeProperty('display');document.body.classList.remove('prime-has-messages');busy(false);input.value='';resize();input.focus();
   });
   try{const saved=JSON.parse(sessionStorage.getItem(storage)||'[]');if(Array.isArray(saved)&&saved.length<=12&&saved.every(m=>['user','assistant'].includes(m.role)&&typeof m.content==='string'&&m.content.length<=2400)){history=saved;history.forEach(m=>message(m.role,m.content));}}catch{}
-  function viewport(){const view=window.visualViewport;if(!view||view.scale===1)document.documentElement.style.setProperty('--prime-height',`${view?.height||innerHeight}px`)}
+  function viewport(){
+    const view=window.visualViewport;if(view&&view.scale!==1)return;
+    const height=view?.height||innerHeight;
+    document.documentElement.style.setProperty('--prime-height',`${height}px`);
+    document.body.classList.toggle('prime-compact-viewport',height<480);
+  }
   window.visualViewport?.addEventListener('resize',viewport);window.addEventListener('resize',viewport);viewport();
   window.addEventListener('pagehide',()=>controller?.abort());resize();
 })();
