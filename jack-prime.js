@@ -65,15 +65,28 @@
   document.querySelectorAll('[data-prime-prompt]').forEach(button=>button.addEventListener('click',()=>ask(button.dataset.primePrompt)));
   stop.addEventListener('click',()=>controller?.abort());
   document.getElementById('prime-reset').addEventListener('click',()=>{
-    turn++;controller?.abort();controller=null;history=[];save();log.replaceChildren();intro.hidden=false;intro.style.removeProperty('display');document.body.classList.remove('prime-has-messages');busy(false);input.value='';resize();input.focus();
+    turn++;controller?.abort();controller=null;history=[];save();log.replaceChildren();intro.hidden=false;intro.style.removeProperty('display');document.body.classList.remove('prime-has-messages');busy(false);input.value='';resize();input.focus({preventScroll:true});
   });
   try{const saved=JSON.parse(sessionStorage.getItem(storage)||'[]');if(Array.isArray(saved)&&saved.length<=12&&saved.every(m=>['user','assistant'].includes(m.role)&&typeof m.content==='string'&&m.content.length<=2400)){history=saved;history.forEach(m=>message(m.role,m.content));}}catch{}
-  function viewport(){
+  let viewportFrame=0;
+  function updateViewport(){
+    viewportFrame=0;
     const view=window.visualViewport;if(view&&view.scale!==1)return;
+    const atBottom=scroll.scrollHeight-scroll.scrollTop-scroll.clientHeight<24;
     const height=view?.height||innerHeight;
+    document.documentElement.style.setProperty('--prime-top',`${Math.max(0,view?.offsetTop||0)}px`);
     document.documentElement.style.setProperty('--prime-height',`${height}px`);
     document.body.classList.toggle('prime-compact-viewport',height<480);
+    document.body.classList.toggle('prime-tight-viewport',height<320);
+    if(atBottom)scroll.scrollTop=scroll.scrollHeight;
   }
-  window.visualViewport?.addEventListener('resize',viewport);window.addEventListener('resize',viewport);viewport();
+  function viewport(){if(!viewportFrame)viewportFrame=requestAnimationFrame(updateViewport)}
+  window.visualViewport?.addEventListener('resize',viewport);
+  window.visualViewport?.addEventListener('scroll',viewport);
+  window.addEventListener('resize',viewport);window.addEventListener('scroll',viewport,{passive:true});
+  window.addEventListener('pageshow',viewport);
+  input.addEventListener('focus',viewport);input.addEventListener('blur',viewport);
+  document.getElementById('menu-open').addEventListener('click',()=>input.blur());
+  updateViewport();
   window.addEventListener('pagehide',()=>controller?.abort());resize();
 })();

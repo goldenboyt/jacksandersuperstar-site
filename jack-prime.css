@@ -1,9 +1,11 @@
-.prime-page{--prime-header:90px;height:var(--prime-height,100dvh);display:flow-root;overflow:hidden;background:#fff;color:var(--black)}
-.prime-page .header{z-index:20;background:#fff;color:var(--black);border-color:var(--line);animation:none}
+.prime-root{height:100%;overflow:hidden;overscroll-behavior:none}
+.prime-page{--prime-header:90px;position:fixed;inset:0;width:100%;height:100%;overflow:hidden;background:#fff;color:var(--black)}
+.prime-page .header{top:var(--prime-top,0px);z-index:20;background:#fff;color:var(--black);border-color:var(--line);animation:none}
 .prime-page .header .wordmark>img{filter:brightness(0)}
 .prime-page .menu-toggle{min-height:44px}
 .prime-page .desktop-nav [aria-current=page]{color:var(--red)}
-.prime-main{width:100%;height:calc(var(--prime-height,100dvh) - var(--prime-header));margin:var(--prime-header) auto 0;padding:0 var(--pad);display:flex;flex-direction:column}
+.prime-main{position:fixed;top:calc(var(--prime-top,0px) + var(--prime-header));left:0;right:0;width:100%;height:calc(var(--prime-height,100dvh) - var(--prime-header));min-height:0;margin:0;padding:0 var(--pad);display:flex;flex-direction:column;overflow:hidden}
+.prime-page .menu-dialog{top:var(--prime-top,0px);bottom:auto;height:var(--prime-height,100dvh)}
 .prime-toolbar{display:flex;align-items:center;gap:24px;min-height:72px;flex-shrink:0}
 .prime-toolbar .text-button{min-height:44px;font-size:12px;gap:20px}
 .prime-toolbar button{margin-left:auto}
@@ -40,6 +42,15 @@
 .prime-has-messages .prime-heading{padding:8px 0 18px;border-bottom:1px solid var(--line)}
 .prime-has-messages .prime-heading h1{font-size:32px;letter-spacing:-.045em}
 .prime-has-messages .prime-heading .rule{display:none}
+.prime-compact-viewport .prime-heading{display:none}
+.prime-compact-viewport .prime-toolbar{min-height:52px}
+.prime-compact-viewport .prime-composer textarea{max-height:clamp(44px,calc(var(--prime-height,100dvh) - 260px),76px)}
+.prime-page.prime-tight-viewport{--prime-header:0px}
+.prime-tight-viewport .header,.prime-tight-viewport .prime-toolbar,.prime-tight-viewport .prime-heading{display:none}
+.prime-tight-viewport .prime-conversation{padding-block:8px}
+.prime-tight-viewport .prime-form{padding-block:8px}
+.prime-tight-viewport .prime-form-bottom{min-height:0;padding-top:4px}
+.prime-tight-viewport .prime-composer textarea{max-height:44px}
 .prime-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 @media(max-width:1000px){.prime-page .desktop-nav{display:none}.prime-page .menu-toggle{margin-left:auto}}
 @media(max-width:640px){
@@ -62,9 +73,6 @@
  .prime-form-bottom{font-size:10px}
  .prime-has-messages .prime-heading{padding:5px 0 16px}
  .prime-has-messages .prime-heading h1{font-size:28px}
- .prime-compact-viewport .prime-heading{display:none}
- .prime-compact-viewport .prime-toolbar{min-height:52px}
- .prime-compact-viewport .prime-composer textarea{max-height:clamp(44px,calc(var(--prime-height,100dvh) - 260px),76px)}
 }
 @media(max-height:680px){.prime-heading{padding-block:8px 18px}.prime-heading h1{font-size:clamp(40px,9vw,80px)}.prime-intro{padding-bottom:10px}.prime-starters{margin-top:15px}}
 @media(max-height:480px) and (min-width:641px){.prime-toolbar{min-height:52px}.prime-heading{padding:0 0 12px}.prime-heading h1{font-size:36px}.prime-conversation{padding:10px 0}.prime-intro{padding:0}.prime-invite{font-size:24px}.prime-starters{margin-top:8px}.prime-form{padding-block:10px}.prime-form-bottom{min-height:18px;padding-top:4px}}

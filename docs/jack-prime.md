@@ -46,7 +46,14 @@ The page shares the main site's white canvas, Arial typography, thin rules,
 rectangular controls, header, and menu. The horizontal masthead sits above a
 broad conversation area with flat message blocks. It contracts once a chat
 starts, and makes room for the composer when a phone keyboard reduces the
-visible viewport. The styles are scoped to Jack Prime.
+visible viewport. The styles are scoped to Jack Prime. On mobile, the fixed
+conversation frame follows both the visual viewport's height and vertical offset
+so Safari's keyboard focus panning cannot move the composer away from the
+keyboard. The document stays locked while the conversation and menu can scroll;
+pinch zoom retains native behavior. Prime's header stays available during native
+focus scrolling, while other pages retain their existing header behavior.
+In very short visible viewports, the header and toolbar fold away so the message
+box remains usable; they return when the available height increases.
 
 The current free provider allows five requests per minute per region. A rate
 limit returns HTTP 429 with a short retry message and a `Retry-After` header;

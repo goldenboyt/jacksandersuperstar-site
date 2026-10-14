@@ -65,7 +65,7 @@
   let headerTick=false;
   function updateHeader(){
     headerTick=false;
-    const hidden=window.scrollY>64;
+    const hidden=!document.body.classList.contains('prime-page')&&window.scrollY>64;
     header.classList.toggle('header-away',hidden);header.inert=hidden||document.documentElement.classList.contains('intro-pending');
   }
   window.addEventListener('scroll',()=>{if(!headerTick){headerTick=true;requestAnimationFrame(updateHeader)}},{passive:true});
