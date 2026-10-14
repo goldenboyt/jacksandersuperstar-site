@@ -19,6 +19,11 @@ export async function POST(request) {
     return Response.json({text:result.text.trim()},{headers});
   } catch (error) {
     if (error instanceof PaidModelBlocked) return Response.json({error:'Jack Prime is taking a break. Please check back later.'},{status:402,headers});
+    if (error.statusCode === 429) {
+      const seconds=Math.min(60,Math.max(1,Number(String(error.message).match(/Retry after (\d+)s/i)?.[1])||60));
+      console.warn('Jack Prime temporarily busy',{status:429,retryAfter:seconds});
+      return Response.json({error:`give me a moment. try again in ${seconds} seconds.`},{status:429,headers:{...headers,'Retry-After':String(seconds)}});
+    }
     console.error('Jack Prime request failed', {name:error.name, status:error.statusCode, message:String(error.message).slice(0,500)});
     return Response.json({error:"Can't reach Jack Prime right now. Try again in a moment."},{status:503,headers});
   }

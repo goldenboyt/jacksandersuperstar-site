@@ -41,6 +41,10 @@ safe DOM text nodes, including conversations restored after refresh. Visiting th
 page does not call the AI. The page has no character or alter-ego labels; explicit
 questions about AI identity still receive honest answers.
 
+The current free provider allows five requests per minute per region. A rate
+limit returns HTTP 429 with a short retry message and a `Retry-After` header;
+it never triggers an automatic retry or a paid model fallback.
+
 The activated backend passed real introductions, follow-ups, and merch questions
 on the production domain. Runtime logs confirm the selected model and successful
 zero-price checks. Desktop Chromium and mobile WebKit also passed layout,
