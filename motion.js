@@ -5,8 +5,8 @@
   const live=document.getElementById('live');
   const videoStage=document.getElementById('music-video-stage');
   const preference=window.matchMedia('(prefers-reduced-motion: reduce)');
-  const navLinks=[...document.querySelectorAll('.desktop-nav a')];
-  const sections=navLinks.map(a=>document.querySelector(a.getAttribute('href')));
+  const navLinks=[...document.querySelectorAll('.desktop-nav a[href^="#"]')];
+  const sections=navLinks.map(a=>document.getElementById(a.hash.slice(1)));
   const PHOTO_WIDTH=1152,PHOTO_HEIGHT=1536,HEAD_TOP=573,HEAD_BOTTOM=687;
   let ticking=false,resizeTick=0,heroHeight=0,lastActive=null;
   const offsets=new Map();
