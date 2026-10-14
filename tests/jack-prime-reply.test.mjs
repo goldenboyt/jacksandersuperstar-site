@@ -22,3 +22,22 @@ test('omits an unfinished second sentence when the model hits its token limit',(
   assert.equal(shortReply('Start with **cybertruck**. Then you could try the','length'),'Start with **cybertruck**.');
   assert.equal(shortReply('**Start with the','length'),'**Start with…**');
 });
+
+test('keeps greeting and acknowledgment replies casual even with old check-in history',()=>{
+  assert.equal(shortReply("bet. What's good with you?",'stop','Fine'),'bet.');
+  assert.equal(shortReply("How you doing? What's on your mind today?",'stop','Hiiii'),'yo.');
+  assert.equal(shortReply('yo, how are you!','stop','hey'),'yo.');
+  assert.equal(shortReply('hey, how’s it going!','stop','Hiiii'),'yo.');
+  assert.equal(shortReply('how you been.','stop','Fine'),'bet.');
+  assert.equal(shortReply("what’s good.",'stop','Fine'),'bet.');
+  assert.equal(shortReply('Hiiii!!! How are you?','stop','Hiiii'),'hi.');
+  assert.equal(shortReply('Got you. What else do you need?','stop',' thank   you! '),'Got you.');
+});
+
+test('preserves answers and useful questions for substantive or combined messages',()=>{
+  const text='Do you want the album or a single? That changes my pick.';
+  for(const input of ['hi, what should I listen to?','fine?','sure','yes','How do you write a hook?']){
+    assert.equal(shortReply(text,'stop',input),text);
+  }
+  assert.equal(shortReply('**cybertruck** got hooks. Check /cybertruck.','stop','What song should I play?'),'**cybertruck** got hooks. Check /cybertruck.');
+});

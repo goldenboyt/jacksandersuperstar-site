@@ -15,7 +15,7 @@ export async function POST(request) {
   try {
     await verifyFreeModel(request.signal);
     const result = await generateText({model, instructions, messages, reasoning:'none', maxOutputTokens:96, maxRetries:0, abortSignal:AbortSignal.any([request.signal,AbortSignal.timeout(25000)])});
-    const text=shortReply(result.text,result.finishReason);
+    const text=shortReply(result.text,result.finishReason,messages.at(-1).content);
     if (!text) throw new Error('Empty reply');
     console.info('Jack Prime reply', {model, generationId:result.finalStep.providerMetadata?.gateway?.generationId ?? result.finalStep.response.id, inputTokens:result.usage.inputTokens, outputTokens:result.usage.outputTokens, pricing:'verified-zero'});
     return Response.json({text},{headers});
