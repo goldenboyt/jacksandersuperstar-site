@@ -81,12 +81,24 @@ idempotency, a cumulative budget, or a guarantee that stopping the browser can
 cancel a billed image request. At most three generations run concurrently in one
 instance. Invalid requests and changed image pricing are rejected before billing.
 
-Generated image blobs stay in IndexedDB on the visitor's device, with at most 20
-retained images. Session history holds IDs and plain text, never base64 images.
-Reloading restores saved images without starting another generation. Resetting
-the conversation stops its audio and clears its owned saved images. Downloads
-use the original PNG. Unsupported or full local storage still permits immediate
-display and download; after a refresh a missing image gets an explanatory label.
+Generated images stay available for display and download during the current
+conversation. Binary data uses device IndexedDB with at most 20 retained images;
+raw photo uploads stay in memory and are not persisted. Refreshing starts a new
+conversation, clears editing and upload state, and removes the preceding
+conversation's generated-image records. Reset does the same and stops audio.
+Downloads use the original PNG. No image data or uploaded photo enters text-model
+history, logs, or session storage.
+
+Two suggested cover starters prepare edits without billing until the visitor
+submits. Superstar uses the actual `assets/album.webp` cover as its reference and
+replaces its chest wordmark with up to 160 characters of literal visitor text.
+Prodigy Genius takes the original `covers/prodigy-genius.jpg` and a visitor's
+uploaded photo as separate references, replacing facial identity while keeping
+the cover's composition, suit, exaggerated head shape, and advisory label.
+Photos are decoded and resized on the device to at most 1024 pixels, converted
+to JPEG, and sent as multipart data. The server accepts only known templates,
+validates image signatures and a 2.1 MB upload limit, and includes the photo in
+the retry fingerprint. Reference-image edits have additional image-input charges.
 
 Text replies include canonical song IDs when they mention catalog tracks.
 `lib/jack-prime-songs.js` resolves names, featured-title aliases, and single paths
@@ -94,14 +106,15 @@ against the existing release catalog. It deduplicates album/single recordings,
 avoids ordinary phrases and album-name-only matches, and permits only known
 Apple or same-site preview URLs. The browser renders compact cover/title cards
 with the shared 30-second preview player; sound starts only on a tap, and only
-one preview plays at a time. Song IDs survive a refresh with the conversation.
+one preview plays at a time. Refresh starts fresh without any automatic playback.
 
 ## Conversation and verification
 
-The browser keeps this tab's conversation in session storage. It supports
+The browser keeps the current conversation in memory; refreshing starts fresh,
+as requested by the user. It supports
 follow-ups, Enter to send, Shift+Enter for a new line, stop, retry, and reset.
 Only known site paths become links. Assistant replies render bold emphasis with
-safe DOM text nodes, including conversations restored after refresh. Visiting the
+safe DOM text nodes. Visiting the
 page does not call the AI. The page has no character or alter-ego labels; explicit
 questions about AI identity still receive honest answers.
 

@@ -4,16 +4,17 @@
   const status=document.getElementById('prime-status'),log=document.getElementById('prime-messages');
   const intro=document.getElementById('prime-intro'),scroll=document.getElementById('prime-conversation');
   const modeButtons=[...document.querySelectorAll('[data-prime-mode]')];
+  const coverEditor=document.getElementById('prime-cover-editor'),coverReference=document.getElementById('prime-cover-reference');
+  const coverTitle=document.getElementById('prime-cover-title'),coverHelp=document.getElementById('prime-cover-help'),coverClose=document.getElementById('prime-cover-close');
+  const coverUpload=document.getElementById('prime-cover-upload'),photoInput=document.getElementById('prime-cover-photo'),photoPreview=document.getElementById('prime-cover-photo-preview'),photoName=document.getElementById('prime-cover-photo-name');
   const storage='superstar:jack-prime:conversation',imageStorage=`${storage}:image-request`,ownerStorage=`${storage}:image-owner`;
   const catalog=new Map((window.SuperstarCatalog?.releases||[]).map(release=>[release.page,release]));
   const imageURLs=new Map();
-  let history=[],controller=null,turn=0,mode='text',imageRetry=null,database;
-  let imageOwner=crypto.randomUUID();
-  try{imageOwner=sessionStorage.getItem(ownerStorage)||imageOwner;sessionStorage.setItem(ownerStorage,imageOwner)}catch{}
+  let history=[],controller=null,turn=0,mode='text',imageRetry=null,database,coverTemplate=null,uploadedPhoto=null,photoURL=null,photoSerial=0;
+  let imageOwner=crypto.randomUUID(),previousOwner;
+  try{previousOwner=sessionStorage.getItem(ownerStorage);sessionStorage.removeItem(storage);sessionStorage.removeItem(imageStorage);sessionStorage.setItem(ownerStorage,imageOwner)}catch{}
   const idle='';
   const paths=new Set(['/merch','/jacksandersuperstar','/prodigygenius','/cybertruck','/designer','/brainstorm','/catscash','/#music','/#live']);
-  function save(){try{sessionStorage.setItem(storage,JSON.stringify(history.slice(-12)))}catch{}}
-  function saveRetry(){try{if(imageRetry)sessionStorage.setItem(imageStorage,JSON.stringify(imageRetry));else sessionStorage.removeItem(imageStorage)}catch{}}
   function nearBottom(){return scroll.scrollHeight-scroll.scrollTop-scroll.clientHeight<48}
   function followBottom(follow){if(follow)requestAnimationFrame(()=>{scroll.scrollTop=scroll.scrollHeight})}
   function validSongs(songs){
@@ -114,9 +115,25 @@
     followBottom(follow);return node;
   }
   function resize(){input.style.height='auto';input.style.height=`${Math.min(124,input.scrollHeight)}px`}
+  function clearPhoto(){photoSerial++;uploadedPhoto=null;photoInput.value='';if(photoURL)URL.revokeObjectURL(photoURL);photoURL=null;photoPreview.removeAttribute('src');photoPreview.hidden=true;photoName.textContent='';if(!controller)send.disabled=false;}
+  function selectCover(value){
+    if(controller)return;
+    clearPhoto();coverTemplate=['superstar','prodigy'].includes(value)?value:null;
+    document.body.classList.toggle('prime-cover-selected',Boolean(coverTemplate));
+    document.querySelectorAll('[data-prime-cover]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.primeCover===coverTemplate)));
+    coverEditor.hidden=!coverTemplate;coverUpload.hidden=coverTemplate!=='prodigy';imageRetry=null;
+    if(coverTemplate){
+      coverReference.src=coverTemplate==='superstar'?'/assets/album.webp':'/assets/prodigy.webp';
+      coverTitle.textContent=coverTemplate==='superstar'?'your superstar cover':'your prodigy genius cover';
+      coverHelp.textContent=coverTemplate==='superstar'?'replace the tee text. keep the original cover.':'add a photo. keep the original cover and swap the face.';
+      setMode('image');
+    }else setMode('text');
+    status.textContent='';input.value='';resize();(coverTemplate==='prodigy'?photoInput:input).focus({preventScroll:true});
+  }
   function setMode(value){
     mode=value==='image'?'image':'text';modeButtons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.primeMode===mode)));
-    input.placeholder=mode==='image'?'describe your image':'talk to jack prime';
+    input.placeholder=coverTemplate==='superstar'?'what should the tee say?':coverTemplate==='prodigy'?'any other details? (optional)':mode==='image'?'describe your image':'talk to jack prime';
+    input.required=coverTemplate!=='prodigy';input.maxLength=coverTemplate==='superstar'?160:1600;
     input.setAttribute('aria-label',mode==='image'?'Describe an image for Jack Prime to make':'Message Jack Prime');
     send.setAttribute('aria-label',mode==='image'?'Make image':'Send message');
   }
@@ -127,27 +144,38 @@
   }
   function busy(value,kind=mode){
     send.disabled=value;modeButtons.forEach(button=>{button.disabled=value});stop.hidden=!value;
+    photoInput.disabled=value;coverClose.disabled=value;
     status.textContent=value?(kind==='image'?'making your image…':'jack prime is thinking…'):idle;form.setAttribute('aria-busy',String(value));
   }
   async function ask(text){
-    text=text.trim();if(!text||controller)return;
+    text=text.trim();if((!text&&coverTemplate!=='prodigy')||controller)return;
+    if(coverTemplate==='prodigy'&&!uploadedPhoto){status.textContent='add a photo first.';photoInput.focus();return;}
+    const template=coverTemplate,photo=uploadedPhoto;
+    const display=template==='superstar'?`make a superstar cover with this text: ${text}`:template==='prodigy'?`put my photo on prodigy genius${text?`: ${text}`:''}`:text;
     const kind=mode==='image'||imageIntent(text)?'image':'text',before=[...history],request=++turn;
-    const pendingMessage=message('user',text);history.push({role:'user',content:text,...(kind==='image'?{kind:'image'}:{})});input.value='';resize();
+    const pendingMessage=message('user',display);history.push({role:'user',content:display,...(kind==='image'?{kind:'image'}:{})});input.value='';resize();
     controller=new AbortController();busy(true,kind);
     let answered=false;
     try{
       if(kind==='image'){
         const owner=imageOwner;
-        if(imageRetry?.prompt!==text)imageRetry={prompt:text,requestId:crypto.randomUUID()};saveRetry();
+        const key=JSON.stringify([template,text,photo?.key]);
+        if(imageRetry?.key!==key)imageRetry={key,requestId:crypto.randomUUID()};
         const imageId=imageRetry.requestId;
-        const response=await fetch('/api/jack-prime-image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(imageRetry),signal:controller.signal});
+        let payload,headers;
+        if(template){
+          payload=new FormData();payload.set('template',template);payload.set('requestId',imageId);
+          if(template==='superstar')payload.set('text',text);
+          else{payload.set('prompt',text);payload.set('photo',photo.blob,'face-reference.jpg');}
+        }else{headers={'Content-Type':'application/json'};payload=JSON.stringify({prompt:text,requestId:imageId});}
+        const response=await fetch('/api/jack-prime-image',{method:'POST',headers,body:payload,signal:controller.signal});
         if(!response.ok||!response.headers.get('content-type')?.startsWith('image/')){
           const data=await response.json().catch(()=>({}));throw new Error(data.error||"Couldn't make that image right now.");
         }
         const blob=await response.blob();if(request!==turn)return;
         if(!blob.size)throw new Error("Couldn't load the image. Try again.");
         storeImage(imageId,blob,owner).then(()=>{if(owner!==imageOwner)deleteImages([imageId])});
-        const entry={role:'assistant',content:'made that.',kind:'image',imageId,imagePrompt:text};message(entry.role,entry.content,entry,blob);history.push(entry);imageRetry=null;saveRetry();
+        const entry={role:'assistant',content:'made that.',kind:'image',imageId,imagePrompt:display};message(entry.role,entry.content,entry,blob);history.push(entry);imageRetry=null;
       }else{
         let recent=history.slice(-11).map(({role,content})=>({role,content}));if(recent[0]?.role==='assistant')recent.shift();
         const response=await fetch('/api/jack-prime',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:recent}),signal:controller.signal});
@@ -156,37 +184,50 @@
         if(request!==turn)return;
         const entry={role:'assistant',content:data.text,songs:validSongs(data.songs)};message(entry.role,entry.content,entry);history.push(entry);
       }
-      save();answered=true;
+      answered=true;
     }catch(error){
       if(request!==turn)return;
       pendingMessage.remove();history=before;input.value=text;if(kind==='image')setMode('image');resize();
       if(!history.length){intro.hidden=false;intro.style.removeProperty('display');document.body.classList.remove('prime-has-messages');}
       status.textContent=error.name==='AbortError'?(kind==='image'?'stopped waiting. your image may still finish.':'stopped. your message is ready to try again.'):error.message;
     }finally{
-      if(request===turn){controller=null;send.disabled=false;modeButtons.forEach(button=>{button.disabled=false});stop.hidden=true;form.setAttribute('aria-busy','false');if(answered)status.textContent=idle;}
+      if(request===turn){controller=null;send.disabled=false;modeButtons.forEach(button=>{button.disabled=false});photoInput.disabled=false;coverClose.disabled=false;stop.hidden=true;form.setAttribute('aria-busy','false');if(answered)status.textContent=idle;}
     }
   }
   form.addEventListener('submit',event=>{event.preventDefault();ask(input.value)});
-  modeButtons.forEach(button=>button.addEventListener('click',()=>{setMode(button.dataset.primeMode);status.textContent=idle;input.focus({preventScroll:true})}));
+  modeButtons.forEach(button=>button.addEventListener('click',()=>{if(coverTemplate)selectCover(null);setMode(button.dataset.primeMode);status.textContent=idle;input.focus({preventScroll:true})}));
+  document.querySelectorAll('[data-prime-cover]').forEach(button=>button.addEventListener('click',()=>selectCover(button.dataset.primeCover)));
+  coverClose.addEventListener('click',()=>selectCover(null));
+  photoInput.addEventListener('change',async()=>{
+    const file=photoInput.files?.[0];clearPhoto();if(!file)return;
+    const serial=photoSerial;send.disabled=true;status.textContent='preparing your photo…';
+    let source;
+    try{
+      if(file.size>20000000||file.type&&!/^image\/(?:jpeg|png|webp|heic|heif)$/.test(file.type))throw new Error('Choose a JPEG, PNG, WebP, or HEIC photo under 20 MB.');
+      source=URL.createObjectURL(file);const image=new Image();image.src=source;await image.decode().catch(()=>{throw new Error('That photo could not be read. Try a JPEG or PNG.');});
+      if(image.naturalWidth*image.naturalHeight>60000000)throw new Error('Please choose a smaller photo.');
+      const scale=Math.min(1,1024/Math.max(image.naturalWidth,image.naturalHeight));
+      const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(image.naturalWidth*scale));canvas.height=Math.max(1,Math.round(image.naturalHeight*scale));
+      const context=canvas.getContext('2d');context.fillStyle='#fff';context.fillRect(0,0,canvas.width,canvas.height);context.drawImage(image,0,0,canvas.width,canvas.height);
+      const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('That photo could not be prepared.')),'image/jpeg',.9));
+      const digest=await crypto.subtle.digest('SHA-256',await blob.arrayBuffer());
+      if(serial!==photoSerial)return;
+      uploadedPhoto={blob,key:[...new Uint8Array(digest)].map(byte=>byte.toString(16).padStart(2,'0')).join('')};
+      photoURL=URL.createObjectURL(blob);photoPreview.src=photoURL;photoPreview.hidden=false;photoName.textContent='photo ready';status.textContent='';
+    }catch(error){if(serial===photoSerial)status.textContent=error.message||'That photo could not be read. Try a JPEG or PNG.';}
+    finally{if(source)URL.revokeObjectURL(source);if(serial===photoSerial&&!controller)send.disabled=false;}
+  });
   input.addEventListener('input',resize);
   input.addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();form.requestSubmit()}});
-  document.querySelectorAll('[data-prime-prompt]').forEach(button=>button.addEventListener('click',()=>{setMode('text');ask(button.dataset.primePrompt)}));
+  document.querySelectorAll('[data-prime-prompt]').forEach(button=>button.addEventListener('click',()=>{if(coverTemplate)selectCover(null);setMode('text');ask(button.dataset.primePrompt)}));
   stop.addEventListener('click',()=>controller?.abort());
   document.getElementById('prime-reset').addEventListener('click',()=>{
-    turn++;controller?.abort();controller=null;history=[];save();imageRetry=null;saveRetry();
+    turn++;controller?.abort();controller=null;history=[];imageRetry=null;selectCover(null);
     window.SuperstarPreviews?.stopWithin(log);log.replaceChildren();for(const url of imageURLs.values())URL.revokeObjectURL(url);imageURLs.clear();
     const oldOwner=imageOwner;imageOwner=crypto.randomUUID();try{sessionStorage.setItem(ownerStorage,imageOwner)}catch{}clearOwnedImages(oldOwner);
     intro.hidden=false;intro.style.removeProperty('display');document.body.classList.remove('prime-has-messages');busy(false);setMode('text');input.value='';resize();input.focus({preventScroll:true});
   });
-  try{
-    const retry=JSON.parse(sessionStorage.getItem(imageStorage)||'null');
-    if(retry&&typeof retry.prompt==='string'&&retry.prompt.length<=1600&&/^[a-f0-9-]{36}$/i.test(retry.requestId))imageRetry={prompt:retry.prompt,requestId:retry.requestId};
-    const saved=JSON.parse(sessionStorage.getItem(storage)||'[]');
-    if(Array.isArray(saved)&&saved.length<=12&&saved.every(entry=>['user','assistant'].includes(entry.role)&&typeof entry.content==='string'&&entry.content.length<=2400)){
-      history=saved.map(entry=>({role:entry.role,content:entry.content,...(entry.kind==='image'?{kind:'image'}:{}),...(entry.role==='assistant'?{songs:validSongs(entry.songs)}:{}),...(entry.role==='assistant'&&entry.kind==='image'&&/^[a-f0-9-]{36}$/i.test(entry.imageId)?{imageId:entry.imageId,imagePrompt:typeof entry.imagePrompt==='string'?entry.imagePrompt.slice(0,1600):'an original image'}:{})}));
-      history.forEach(entry=>message(entry.role,entry.content,entry));followBottom(true);
-    }
-  }catch{}
+  if(previousOwner)clearOwnedImages(previousOwner);
   let viewportFrame=0;
   function updateViewport(){
     viewportFrame=0;

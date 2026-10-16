@@ -62,3 +62,34 @@ test('an SDK empty image result asks for a different description without retryin
   const response=await handler(request());
   assert.equal(response.status,422);assert.match((await response.json()).error,/different description/);assert.equal(calls,1);
 });
+
+test('Superstar customization edits the actual cover with literal visitor text',async()=>{
+  let options;
+  const handler=createImageHandler({verifyPricing:async()=>{},generate:async value=>{options=value;return generated();}});
+  const response=await handler(request({template:'superstar',text:'#my inner superstar',requestId:id}));
+  assert.equal(response.status,200);assert.equal(options.prompt.images.length,1);
+  assert.equal(Buffer.from(options.prompt.images[0].subarray(0,4)).toString(),'RIFF');
+  assert.ok(options.prompt.text.includes(JSON.stringify('#my inner superstar')));
+  assert.equal(options.providerOptions.openai.inputFidelity,undefined);
+});
+
+test('Prodigy face replacement sends both the original cover and uploaded face',async()=>{
+  let calls=0,options;
+  const handler=createImageHandler({verifyPricing:async()=>{},generate:async value=>{calls++;options=value;return generated();}});
+  const face=Uint8Array.from(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScLbtAAAAABJRU5ErkJggg==','base64'));
+  const form=new FormData();form.set('template','prodigy');form.set('requestId',id);form.set('photo',new Blob([face],{type:'image/png'}),'face.png');
+  const response=await handler(new Request('https://jacksandersuperstar.com/api/jack-prime-image',{method:'POST',body:form,headers:{Origin:'https://jacksandersuperstar.com'}}));
+  assert.equal(response.status,200);assert.equal(calls,1);assert.equal(options.prompt.images.length,2);
+  assert.equal(options.prompt.images[0][0],255);assert.deepEqual(options.prompt.images[1],face);
+  assert.match(options.prompt.text,/facial identity/);
+});
+
+test('missing faces, invalid file contents, and oversized custom text cannot trigger billing',async()=>{
+  let calls=0;
+  const handler=createImageHandler({verifyPricing:async()=>{calls++;},generate:async()=>{calls++;return generated();}});
+  assert.equal((await handler(request({template:'prodigy',requestId:id}))).status,400);
+  assert.equal((await handler(request({template:'superstar',text:'x'.repeat(161),requestId:id}))).status,400);
+  const form=new FormData();form.set('template','prodigy');form.set('requestId',id);form.set('photo',new Blob(['<svg onload="alert(1)"></svg>'],{type:'image/png'}),'fake.png');
+  assert.equal((await handler(new Request('https://jacksandersuperstar.com/api/jack-prime-image',{method:'POST',body:form}))).status,400);
+  assert.equal(calls,0);
+});
