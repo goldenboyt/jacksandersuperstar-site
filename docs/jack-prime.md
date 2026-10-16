@@ -8,6 +8,10 @@ does not invent the artist's real memories, private facts, or upcoming plans.
 For standalone greetings and simple acknowledgments, the response guard keeps
 the first statement and removes generic check-ins, including those copied from
 older chat history. Substantive questions still receive generated answers.
+Standalone greetings and simple acknowledgments are answered directly by the
+server, before any model or pricing request. They remain available during model
+cooldowns and leave the shared AI quota for substantive messages. Combined
+greetings/questions, offers, and clarifications still use the normal AI path.
 
 The backend uses AI SDK 7.0.140 with Vercel OIDC authentication; no provider API
 key is needed. Instructions and current release facts live in `lib/jack-prime.js`.

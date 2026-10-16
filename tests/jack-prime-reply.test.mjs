@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {shortReply} from '../lib/jack-prime-reply.js';
+import {instantReply,shortReply} from '../lib/jack-prime-reply.js';
 
 test('drops extra sentences, including lower-case follow-ups and extra paragraphs',()=>{
   assert.equal(shortReply('Start with cybertruck. it got hooks. then try the album. More info here.'),'Start with cybertruck. it got hooks.');
@@ -40,4 +40,12 @@ test('preserves answers and useful questions for substantive or combined message
     assert.equal(shortReply(text,'stop',input),text);
   }
   assert.equal(shortReply('**cybertruck** got hooks. Check /cybertruck.','stop','What song should I play?'),'**cybertruck** got hooks. Check /cybertruck.');
+});
+
+test('instant replies cover only simple social turns, never meaningful questions or offers',()=>{
+  assert.equal(instantReply('Hiiii'),'yo.');
+  assert.equal(instantReply(' Fine! '),'bet.');
+  for(const input of ['hi, what should I listen to?','fine?','yes','sure','alright','What do you think?','thanks, but where is the merch?']){
+    assert.equal(instantReply(input),null);
+  }
 });

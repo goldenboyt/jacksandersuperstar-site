@@ -1,7 +1,7 @@
 import {generateText} from 'ai';
 import {instructions,model,validateMessages} from '../lib/jack-prime.js';
 import {PaidModelBlocked,verifyFreeModel} from '../lib/jack-prime-cost.js';
-import {shortReply} from '../lib/jack-prime-reply.js';
+import {instantReply,shortReply} from '../lib/jack-prime-reply.js';
 
 const headers = {'Cache-Control':'no-store'};
 export async function POST(request) {
@@ -12,6 +12,9 @@ export async function POST(request) {
   try { body = await request.json(); } catch { return Response.json({error:'Please send a message.'},{status:400,headers}); }
   const messages = validateMessages(body);
   if (!messages) return Response.json({error:'Please shorten your message or start a new conversation.'},{status:400,headers});
+  // Routine greetings need neither model quota nor a pricing lookup.
+  const instant=instantReply(messages.at(-1).content);
+  if(instant)return Response.json({text:instant},{headers});
   try {
     await verifyFreeModel(request.signal);
     const result = await generateText({model, instructions, messages, reasoning:'none', maxOutputTokens:96, maxRetries:0, abortSignal:AbortSignal.any([request.signal,AbortSignal.timeout(25000)])});

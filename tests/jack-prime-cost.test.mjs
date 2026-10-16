@@ -7,7 +7,25 @@ import {POST} from '../api/jack-prime.js';
 const entry = pricing => ({id:model, type:'language', pricing});
 const request = () => new Request('https://jacksandersuperstar.com/api/jack-prime', {
   method:'POST', headers:{'Content-Type':'application/json','Origin':'https://jacksandersuperstar.com'},
-  body:JSON.stringify({messages:[{role:'user',content:'hello'}]})
+  body:JSON.stringify({messages:[{role:'user',content:'Which song should I start with?'}]})
+});
+
+test('routine greetings and acknowledgments do not use model quota, even if the provider is unavailable',async()=>{
+  const original=globalThis.fetch;
+  let calls=0;
+  globalThis.fetch=async()=>{calls++;throw new Error('Provider must not be contacted');};
+  try{
+    for(const [input,expected] of [['Hiiii','yo.'],['hey!','yo.'],['Fine','bet.'],['thanks','bet.'],['okay','bet.'],['yo','yo.']]){
+      const req=new Request('https://jacksandersuperstar.com/api/jack-prime',{
+        method:'POST',headers:{'Content-Type':'application/json',Origin:'https://jacksandersuperstar.com'},
+        body:JSON.stringify({messages:[{role:'user',content:input}]})
+      });
+      const response=await POST(req);
+      assert.equal(response.status,200);
+      assert.deepEqual(await response.json(),{text:expected});
+    }
+    assert.equal(calls,0);
+  }finally{globalThis.fetch=original;}
 });
 
 test('only the pinned zero-price model can pass the cost check', () => {
