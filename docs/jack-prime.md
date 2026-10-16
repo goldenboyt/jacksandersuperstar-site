@@ -19,28 +19,46 @@ Replies aim for one sentence and 25 words, with a server-enforced maximum of two
 sentences. Generation is limited to 96 output tokens, with at most 12 submitted messages and
 12,000 characters of conversational context. Automatic retries are disabled.
 
-## Spending constraint
+## Model pricing and funded credits
 
-The user specified no more than $5 of AI spend on 2026-10-14. Jack Prime uses
-`nvidia/nemotron-3.5-lightning-free`, whose input and output prices were both
-verified as **$0** in the live Gateway catalog. The model is available to the
-team's activated free tier. No credits were purchased, paid fallbacks added,
-or automatic credit top-ups enabled by this implementation.
+The user initially capped AI spending at $5, subsequently added $10 of Gateway
+credits, and authorized a smarter text model on 2026-10-16. Jack Prime now pins
+`openai/gpt-6-luna`. Its reviewed ordinary text rates are **$0.10 per
+million input tokens** and **$0.50 per million output tokens**. Substantive chat
+uses the funded credit balance; greetings and simple acknowledgments still cost
+no model tokens. This implementation purchases no credits and does not enable
+automatic top-up, change billing settings, or add another model as a fallback.
 
-Before **every** generation, `lib/jack-prime-cost.js` fetches uncached model
-pricing. It blocks the request if the model disappears, any supported price
-becomes nonzero, unknown charges appear, or the lookup fails. Tests cover paid
-input/output, higher context tiers, regional and cache fees, unknown charges,
-and failed price lookups. Visitors receive a temporary-unavailability message;
-the backend never switches to a paid model.
+Before **every** generated reply, `lib/jack-prime-cost.js` fetches uncached model
+pricing and verifies the exact model against the complete reviewed snapshot in
+`lib/jack-prime-pricing.json`. Object key order may vary; every rate, fee, context
+threshold, and pricing field must otherwise match. Any change, even a lower
+price or removed field, blocks generation until the snapshot is reviewed again.
+This includes optional cache, regional, service-tier, fast-mode, and web-search
+pricing. No tools, regional routing, cache markers, service-tier or fast-mode
+selection, or model fallbacks are supplied by the route. Visitors receive a
+temporary-unavailability message if pricing changes or the lookup fails.
 
-This restriction concerns AI model charges. Existing Vercel hosting and any
-separately enabled account add-ons have their own billing. The current connector
-does not expose Gateway budget administration, so it cannot verify or change
-the account's separate $5 project budget or automatic top-up settings.
+At 1,600 input tokens and the full 96-token output allowance, a reply costs about
+**$0.000208** before any separate account add-ons; 1,000 such replies cost about
+**$0.208**. Longer conversation histories cost more. The provider can apply
+automatic prompt caching without explicit cache markers. Cache writes cost
+$0.125 per million input tokens and cache reads cost $0.01 per million. If all
+1,600 input tokens were new cache writes, the same 96-output-token illustration
+would cost $0.000248, or $0.248 for 1,000 replies. The runtime base estimate does
+not include these cache adjustments.
+These are per-request estimates, not a cumulative spending cap. Output
+tokens remain limited to 96, reasoning is disabled, and retries remain disabled.
+
+Gateway budgets are soft caps; a request that crosses a budget can complete.
+The connector does not expose budget or auto-top-up administration, so those
+settings must be checked separately in Vercel. Existing Vercel hosting and any
+separately enabled account add-ons have their own billing. Runtime logs include
+the model, generation ID, token usage, and an estimated base token cost; Gateway
+generation details provide the actual billed cost.
 
 Pricing source: https://ai-gateway.vercel.sh/v1/models
-Model: https://vercel.com/ai-gateway/models/nemotron-3.5-lightning-free
+Model: https://vercel.com/ai-gateway/models/gpt-6-luna
 
 ## Conversation and verification
 
@@ -64,12 +82,12 @@ focus scrolling, while other pages retain their existing header behavior.
 In very short visible viewports, the header and toolbar fold away so the message
 box remains usable; they return when the available height increases.
 
-The current free provider allows five requests per minute per region. A rate
-limit returns HTTP 429 with a short retry message and a `Retry-After` header;
-it never triggers an automatic retry or a paid model fallback.
+Provider capacity limits can still return HTTP 429 with a short retry message and
+a `Retry-After` header; the route never retries automatically or selects another
+model. The funded account has moved beyond Gateway's original free-tier cap.
 
-The activated backend passed real introductions, follow-ups, and merch questions
-on the production domain. Runtime logs confirm the selected model and successful
-zero-price checks. Desktop Chromium and mobile WebKit also passed layout,
-conversation history, failed-request retry, stop, and reset checks using
-controlled responses before publication.
+Focused checks cover reviewed model pricing, fee increases, unknown charges,
+failed price lookups, quota-free routine social turns, and the existing short
+reply and tone guards. The page's earlier desktop Chromium and mobile WebKit
+checks covered layout, conversation history, failed-request retry, stop, and
+reset using controlled responses. This text-model change does not alter the UI.

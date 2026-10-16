@@ -1,6 +1,6 @@
 import {generateText} from 'ai';
 import {instructions,model,validateMessages} from '../lib/jack-prime.js';
-import {PaidModelBlocked,verifyFreeModel} from '../lib/jack-prime-cost.js';
+import {ModelPricingBlocked,verifyModelPricing,tokenPriceCeilings} from '../lib/jack-prime-cost.js';
 import {instantReply,shortReply} from '../lib/jack-prime-reply.js';
 
 const headers = {'Cache-Control':'no-store'};
@@ -16,14 +16,14 @@ export async function POST(request) {
   const instant=instantReply(messages.at(-1).content);
   if(instant)return Response.json({text:instant},{headers});
   try {
-    await verifyFreeModel(request.signal);
+    await verifyModelPricing(request.signal);
     const result = await generateText({model, instructions, messages, reasoning:'none', maxOutputTokens:96, maxRetries:0, abortSignal:AbortSignal.any([request.signal,AbortSignal.timeout(25000)])});
     const text=shortReply(result.text,result.finishReason,messages.at(-1).content);
     if (!text) throw new Error('Empty reply');
-    console.info('Jack Prime reply', {model, generationId:result.finalStep.providerMetadata?.gateway?.generationId ?? result.finalStep.response.id, inputTokens:result.usage.inputTokens, outputTokens:result.usage.outputTokens, pricing:'verified-zero'});
+    console.info('Jack Prime reply', {model, generationId:result.finalStep.providerMetadata?.gateway?.generationId ?? result.finalStep.response.id, inputTokens:result.usage.inputTokens, outputTokens:result.usage.outputTokens, pricing:'verified-capped', estimatedBaseTokenCostUsd:result.usage.inputTokens*tokenPriceCeilings.input+result.usage.outputTokens*tokenPriceCeilings.output});
     return Response.json({text},{headers});
   } catch (error) {
-    if (error instanceof PaidModelBlocked) return Response.json({error:'Jack Prime is taking a break. Please check back later.'},{status:402,headers});
+    if (error instanceof ModelPricingBlocked) return Response.json({error:'Jack Prime is taking a break. Please check back later.'},{status:402,headers});
     if (error.statusCode === 429) {
       const seconds=Math.min(60,Math.max(1,Number(String(error.message).match(/Retry after (\d+)s/i)?.[1])||60));
       console.warn('Jack Prime temporarily busy',{status:429,retryAfter:seconds});
