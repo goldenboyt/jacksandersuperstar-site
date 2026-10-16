@@ -76,3 +76,27 @@
 }
 @media(max-height:680px){.prime-heading{padding-block:8px 18px}.prime-heading h1{font-size:clamp(40px,9vw,80px)}.prime-intro{padding-bottom:10px}.prime-starters{margin-top:15px}}
 @media(max-height:480px) and (min-width:641px){.prime-toolbar{min-height:52px}.prime-heading{padding:0 0 12px}.prime-heading h1{font-size:36px}.prime-conversation{padding:10px 0}.prime-intro{padding:0}.prime-invite{font-size:24px}.prime-starters{margin-top:8px}.prime-form{padding-block:10px}.prime-form-bottom{min-height:18px;padding-top:4px}}
+.prime-modes{display:flex;align-items:center;gap:22px;margin:-4px 0 8px;white-space:normal}
+.prime-modes button{display:flex;align-items:center;gap:12px;min-height:32px;background:none;color:#777;font:12px/1 Arial,Helvetica,sans-serif;border-bottom:1px solid transparent;padding:0 0 2px}
+.prime-modes button[aria-pressed=true]{color:#111;border-color:#111}
+.prime-modes button:disabled{opacity:.5;cursor:default}
+.prime-modes button:focus-visible{outline:1px solid #111;outline-offset:4px}
+.prime-song{display:flex;align-items:center;gap:14px;width:380px;max-width:100%;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px 0;margin-top:16px;white-space:normal}
+.prime-song+.prime-song{margin-top:-1px}
+.prime-song .prime-song-cover{width:60px;flex:0 0 60px;align-self:flex-start;line-height:0}
+.prime-song-cover img{width:60px;height:60px;display:block;object-fit:cover}
+.prime-song-details{flex:1;min-width:0}
+.prime-song-tracklist{list-style:none;padding:0;margin:0;font:15px/1.35 Arial,Helvetica,sans-serif;letter-spacing:-.025em}
+.prime-song-tracklist li{padding:0;margin:0;border:0}
+.prime-song-tracklist .song-preview-button{min-height:35px;gap:14px}
+.prime-song-tracklist .song-preview-icon{margin-left:auto}
+.prime-song .prime-song-release{display:block;font:11px/1.5 Arial,Helvetica,sans-serif;color:#777;text-decoration:none;letter-spacing:0}
+.prime-song .prime-song-release:hover{color:var(--red)}
+.prime-song .song-preview-panel{gap:8px}
+.prime-image{width:460px;max-width:100%;margin:16px 0 0;white-space:normal}
+.prime-image>img{display:block;width:100%;height:auto;max-height:65dvh;object-fit:contain;object-position:left}
+.prime-image-placeholder{min-height:100px;border:1px solid var(--line);padding:20px;font:13px/1.5 Arial,Helvetica,sans-serif;color:#777}
+.prime-image .prime-image-download{display:inline-flex;align-items:center;min-height:44px;font:12px/1.4 Arial,Helvetica,sans-serif;letter-spacing:0;text-decoration:none;border-bottom:1px solid var(--line)}
+@media(max-width:640px){.prime-song{width:330px;gap:12px}.prime-image{width:360px}.prime-modes{gap:20px;margin-top:-3px;margin-bottom:6px}.prime-modes button{min-height:30px;font-size:11px}.prime-image>img{max-height:55dvh}}
+.prime-tight-viewport .prime-modes{margin-top:-4px;margin-bottom:2px}
+.prime-tight-viewport .prime-modes button{min-height:24px}

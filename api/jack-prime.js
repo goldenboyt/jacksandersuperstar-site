@@ -2,6 +2,7 @@ import {generateText} from 'ai';
 import {instructions,model,validateMessages} from '../lib/jack-prime.js';
 import {ModelPricingBlocked,verifyModelPricing,tokenPriceCeilings} from '../lib/jack-prime-cost.js';
 import {instantReply,shortReply} from '../lib/jack-prime-reply.js';
+import {resolveSongMentions} from '../lib/jack-prime-songs.js';
 
 const headers = {'Cache-Control':'no-store'};
 export async function POST(request) {
@@ -21,7 +22,8 @@ export async function POST(request) {
     const text=shortReply(result.text,result.finishReason,messages.at(-1).content);
     if (!text) throw new Error('Empty reply');
     console.info('Jack Prime reply', {model, generationId:result.finalStep.providerMetadata?.gateway?.generationId ?? result.finalStep.response.id, inputTokens:result.usage.inputTokens, outputTokens:result.usage.outputTokens, pricing:'verified-capped', estimatedBaseTokenCostUsd:result.usage.inputTokens*tokenPriceCeilings.input+result.usage.outputTokens*tokenPriceCeilings.output});
-    return Response.json({text},{headers});
+    const songs=resolveSongMentions(text,messages.at(-1).content);
+    return Response.json({text,...(songs.length?{songs}:{})},{headers});
   } catch (error) {
     if (error instanceof ModelPricingBlocked) return Response.json({error:'Jack Prime is taking a break. Please check back later.'},{status:402,headers});
     if (error.statusCode === 429) {

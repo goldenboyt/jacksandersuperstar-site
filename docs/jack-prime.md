@@ -60,6 +60,42 @@ generation details provide the actual billed cost.
 Pricing source: https://ai-gateway.vercel.sh/v1/models
 Model: https://vercel.com/ai-gateway/models/gpt-6-luna
 
+## Images and song previews
+
+Jack Prime's image mode and explicit natural-language image requests send a
+prompt to `/api/jack-prime-image`. The route generates exactly one 1024 × 1024
+PNG with `openai/gpt-image-2.5-sunburst` at high quality, using the existing Vercel
+OIDC authentication. It verifies the complete reviewed image pricing before
+generation, disables automatic retries and fallbacks, and accepts no model,
+quality, size, or image-count settings from the caller. The current image-output
+estimate is $0.05268 per image, plus prompt charges, from the high-quality
+1024-square calculator. Image calls consume the user's funded Gateway credits.
+No billing settings, auto-top-up settings, or additional storage services change.
+
+The function has a 180-second duration allowance and a 155-second model timeout.
+It returns binary PNG rather than base64 JSON to stay under the function's
+4.5 MB response limit. Each warm instance retains up to eight completed image
+results for ten minutes and shares an in-progress result for a repeated UUID.
+This retry cache is best effort across instances; it is not globally durable
+idempotency, a cumulative budget, or a guarantee that stopping the browser can
+cancel a billed image request. At most three generations run concurrently in one
+instance. Invalid requests and changed image pricing are rejected before billing.
+
+Generated image blobs stay in IndexedDB on the visitor's device, with at most 20
+retained images. Session history holds IDs and plain text, never base64 images.
+Reloading restores saved images without starting another generation. Resetting
+the conversation stops its audio and clears its owned saved images. Downloads
+use the original PNG. Unsupported or full local storage still permits immediate
+display and download; after a refresh a missing image gets an explanatory label.
+
+Text replies include canonical song IDs when they mention catalog tracks.
+`lib/jack-prime-songs.js` resolves names, featured-title aliases, and single paths
+against the existing release catalog. It deduplicates album/single recordings,
+avoids ordinary phrases and album-name-only matches, and permits only known
+Apple or same-site preview URLs. The browser renders compact cover/title cards
+with the shared 30-second preview player; sound starts only on a tap, and only
+one preview plays at a time. Song IDs survive a refresh with the conversation.
+
 ## Conversation and verification
 
 The browser keeps this tab's conversation in session storage. It supports
