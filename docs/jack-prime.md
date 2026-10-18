@@ -124,13 +124,22 @@ artist direction described below. Math and essay restrictions also apply to phot
 General image generation and editing accept ideas without a topic-based refusal.
 Server-side art direction preserves the visitor's main subject, medium, colors,
 and intended edit while connecting the result visibly to Jack's creative world.
-Requests already about a cover, song, or merch keep that connection. Other subjects
-become Jack-inspired artwork, music posters, or scenes with the Superstar wordmark
-or black tee. Recent context (up to 6,000 characters) and uploaded references remain
+Requests already about a cover, song, or merch keep that connection. The artist's
+provided portrait is bundled at `lib/references/jack-portrait.jpg`, with metadata
+removed and original image pixels preserved. General generations receive it as an
+identity reference so Jack can appear when a person naturally fits the idea or his
+face would strengthen the personal connection. It is not a generic face description.
+Object, pet, and abstract ideas can instead connect through cover imagery, the
+Superstar wordmark, or merch when a person would feel forced. Uploaded-photo edits
+receive the visitor's image first and Jack's portrait second, with explicit roles;
+another person's identity stays intact unless a replacement is requested. The
+portrait is not sent to the chat/vision route or added to either cover starter.
+Recent context (up to 6,000 characters) and uploaded references remain
 part of the brief; follow-ups do not have to repeat Jack's name. The two album-cover
 templates retain their specific reference-editing instructions. No text classifier
-or additional classification charge is used. Vision questions and reference edits
-still incur image-input token charges through the existing balance. No new model,
+or additional classification charge is used. The bundled portrait adds image-input
+charges to general generation and photo edits; vision questions and cover edits
+retain their own reference-input charges through the existing balance. No new model,
 billing settings, or auto-top-up changes are introduced.
 
 Pending replies display a small animated four-stroke thinking mark; pending images
