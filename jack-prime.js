@@ -144,7 +144,7 @@
   }
   function setMode(value){
     mode=value==='image'?'image':'text';modeButtons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.primeMode===mode)));
-    input.placeholder=coverTemplate==='superstar'?'what should the tee say?':coverTemplate==='prodigy'?'any other details? (optional)':uploadedPhoto?(mode==='image'?'what should change?':'ask about this image'):mode==='image'?"an image from Jack's world":'talk to jack prime';
+    input.placeholder=coverTemplate==='superstar'?'what should the tee say?':coverTemplate==='prodigy'?'any other details? (optional)':uploadedPhoto?(mode==='image'?'what should change?':'ask about this image'):mode==='image'?'describe your image':'talk to jack prime';
     input.required=coverTemplate!=='prodigy'&&!(uploadedPhoto&&mode==='text');input.maxLength=coverTemplate==='superstar'?160:1600;
     photoAdd.hidden=coverTemplate==='superstar';
     input.setAttribute('aria-label',mode==='image'?'Describe an image for Jack Prime to make':'Message Jack Prime');
@@ -197,9 +197,6 @@
         const response=await fetch('/api/jack-prime-image',{method:'POST',headers,body:payload,signal:abort.signal});
         if(!response.ok||!response.headers.get('content-type')?.startsWith('image/')){
           const data=await response.json().catch(()=>({}));
-          if(response.ok&&data.declined&&typeof data.text==='string'){
-            if(request!==turn)return;waiting.remove();const entry={role:'assistant',content:data.text};message(entry.role,entry.content);history.push(entry);imageRetry=null;answered=true;return;
-          }
           throw new Error(data.error||"Couldn't make that image right now.");
         }
         const blob=await response.blob();if(request!==turn)return;

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {photoMediaType,withPhoto,isJackImage,imageDecline} from '../lib/jack-prime-media.js';
+import {photoMediaType,withPhoto} from '../lib/jack-prime-media.js';
 import {createChatHandler} from '../lib/jack-prime-chat.js';
 import {createImageHandler} from '../lib/jack-prime-images.js';
 
@@ -37,32 +37,34 @@ test('invalid uploads and photographed-math text requests cannot start a model c
   assert.match((await response.json()).text,/don't do math/);assert.equal(calls,0);
 });
 
-test('scope classification uses the pinned model, photo, and follow-up context',async()=>{
-  let options,priced=0;
-  const deps={verifyPricing:async()=>{priced++},generate:async value=>{options=value;return {output:'related'}}};
-  assert.equal(await isJackImage({prompt:'make it darker',context:'user: make a Superstar album poster',photo},deps),true);
-  assert.equal(priced,1);assert.equal(options.model,'openai/gpt-6-luna');assert.equal(options.maxRetries,0);
-  assert.match(options.messages[0].content[0].text,/Superstar album poster/);assert.deepEqual(options.messages[0].content[1].data,photo);
-  assert.equal(await isJackImage({prompt:'unrelated wallpaper'},{...deps,generate:async()=>({output:'unrelated'})}),false);
-  await assert.rejects(isJackImage({prompt:'a poster'},{...deps,verifyPricing:async()=>{throw new Error('price blocked')}}),/price blocked/);
-});
-
-test('unrelated image requests return a conversational decline without image generation or duplicate classification',async()=>{
-  let checked=0,generated=0;
-  const handler=createImageHandler({verifyPricing:async()=>{},allowImage:async()=>{checked++;return false},generate:async()=>{generated++;throw new Error('must not create')}});
+test('unrelated image ideas generate once with their subject preserved and a visible Jack connection',async()=>{
+  let priced=0,generated=0,options;
+  const image={mediaType:'image/png',uint8Array:photo};
+  const prompt='Draw a watercolor portrait of a golden retriever for grandma';
+  const context='Keep the soft colors. Remove all Jack branding.';
+  const handler=createImageHandler({verifyPricing:async()=>{priced++},generate:async value=>{generated++;options=value;return {image,images:[image]}}});
   for(let retry=0;retry<2;retry++){
-    const response=await handler(request('/api/jack-prime-image',{prompt:'a random landscape wallpaper',requestId:id}));
-    assert.equal(response.status,200);assert.deepEqual(await response.json(),{declined:true,text:imageDecline});
+    const response=await handler(request('/api/jack-prime-image',{prompt,context,requestId:id}));
+    assert.equal(response.status,200);assert.equal(response.headers.get('Content-Type'),'image/png');
+    assert.deepEqual(new Uint8Array(await response.arrayBuffer()),photo);
   }
-  assert.equal(checked,1);assert.equal(generated,0);
+  assert.equal(priced,1);assert.equal(generated,1);
+  assert.ok(options.prompt.includes(JSON.stringify(prompt)));assert.ok(options.prompt.includes(JSON.stringify(context)));
+  assert.match(options.prompt,/#jacksandersuperstar® wordmark/);
+  assert.match(options.prompt,/Keep the requested subject central/);
+  assert.match(options.prompt,/cannot remove this Jack connection/);
 });
 
 test('general photo edits pass actual reference bytes, and changed photos or context cannot reuse a request ID',async()=>{
   let options;
   const image={mediaType:'image/png',uint8Array:photo};
-  const handler=createImageHandler({verifyPricing:async()=>{},allowImage:async parsed=>{assert.deepEqual(parsed.photo,photo);return true},generate:async value=>{options=value;return {image,images:[image]}}});
-  const fields={prompt:'put this on a Jack concert poster',context:'fan artwork',requestId:id};
+  const handler=createImageHandler({verifyPricing:async()=>{},generate:async value=>{options=value;return {image,images:[image]}}});
+  const fields={prompt:'make the background a sunset',context:'keep the subject recognizable',requestId:id};
   assert.equal((await handler(request('/api/jack-prime-image',form(fields)))).status,200);
-  assert.deepEqual(options.prompt.images,[photo]);assert.match(options.prompt.text,/Jack concert poster/);
+  assert.deepEqual(options.prompt.images,[photo]);assert.ok(options.prompt.text.includes(JSON.stringify(fields.prompt)));
+  assert.match(options.prompt.text,/#jacksandersuperstar® wordmark/);
+  assert.match(options.prompt.text,/preserving the recognizable subject and composition/);
   assert.equal((await handler(request('/api/jack-prime-image',form({...fields,context:'different artwork'})))).status,409);
+  const changedPhoto=Uint8Array.from(photo);changedPhoto[changedPhoto.length-1]^=1;
+  assert.equal((await handler(request('/api/jack-prime-image',form(fields,changedPhoto)))).status,409);
 });
