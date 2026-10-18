@@ -193,6 +193,7 @@
   }
   function imageIntent(text){
     text=text.replace(/^(?:hey|yo)[,.!]?\s+/i,'');
+    if(/^(?:(?:can|could|will|would)\s+you\s+)?(?:please\s+)?(?:make|create|generate|design)\s+(?:me\s+)?(?:an?\s+|the\s+)?(?:soboda|sobota|saboda|sabota)\b(?!\s+(?:song|track|lyrics|essay|story|joke|beat)\b)/i.test(text))return true;
     if(uploadedPhoto&&/\bmake\s+(?:sense\s+of|an?\s+analysis\s+of)\b/i.test(text))return false;
     if(/^(?:can|could|will|would)\s+you\s+(?:make|create|generate|design|draw)\s+(?:me\s+)?(?:(?:an?|some)\s+)?(?:images?|pictures?|photos?|posters?|wallpapers?|artwork|cover\s*art|album\s*covers?|illustrations?)\s*[.!?]*$/i.test(text))return false;
     return /^(?:(?:hey|yo)[,.!]?\s+)?(?:(?:can|could|will|would)\s+you\s+)?(?:please\s+)?(?:(?:make|create|generate|design)\s+(?:me\s+)?(?:an?\s+|some\s+)?(?:[^.!?\n]{0,70}\s+)?(?:image|picture|photo|poster|wallpaper|artwork|cover\s*art|album\s*cover|illustration)\b|(?:draw|illustrate|paint)\s+(?:me\s+)?(?:an?\s+)?\S)/i.test(text);
