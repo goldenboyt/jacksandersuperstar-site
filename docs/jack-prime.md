@@ -5,6 +5,15 @@ natural conversational AAVE, with short, low-key replies. Greetings and simple
 acknowledgments stay brief; it does not mirror stretched greetings or keep asking
 generic check-in questions. It can have creative opinions, but
 does not invent the artist's real memories, private facts, or upcoming plans.
+It answers questions about Jack Sander's released music, credited features,
+videos, recorded performances, merch, and creative projects. The instructions
+include track counts, listed merch prices, ordering details, and explicit gaps
+in the public biography. Missing facts receive a brief acknowledgment instead
+of an invented answer. Short casual conversation and music opinions remain welcome.
+Math problems, tutoring, essays, and academic assignments are outside its role,
+including assignments framed around Jack. Clear arithmetic and essay requests
+are declined directly before any pricing lookup or model call. Numeric facts
+such as album track counts, release dates, and merch prices remain available.
 For standalone greetings and simple acknowledgments, the response guard keeps
 the first statement and removes generic check-ins, including those copied from
 older chat history. Substantive questions still receive generated answers.
@@ -113,6 +122,18 @@ one preview plays at a time. Refresh starts fresh without any automatic playback
 The browser keeps the current conversation in memory; refreshing starts fresh,
 as requested by the user. It supports
 follow-ups, Enter to send, Shift+Enter for a new line, stop, retry, and reset.
+Context is trimmed by complete old turns to stay inside the API's 12,000-character
+limit, so a longer conversation does not leave the next message permanently
+invalid. Visible messages are retained. Stalled requests release the composer
+after 35 seconds for text or 175 seconds for images; no automatic retry is sent.
+Newly typed drafts survive a failed or stopped request, and canceling a cover
+or switching back to chat preserves its text. Sending keeps keyboard focus;
+IME confirmation does not accidentally submit. Growing drafts keep the latest
+reply anchored only when the visitor was already reading at the bottom.
+The compact keyboard layout reduces the header and toolbar, keeps long drafts
+inside the visible viewport, and discards a stale viewport offset after closing
+the keyboard. These paths are checked in Chromium and WebKit, including simulated
+keyboard sizes, viewport panning, and longer conversations.
 Only known site paths become links. Assistant replies render bold emphasis with
 safe DOM text nodes. Visiting the
 page does not call the AI. The page has no character or alter-ego labels; explicit

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {instantReply,shortReply} from '../lib/jack-prime-reply.js';
+import {instantReply,taskReply,shortReply} from '../lib/jack-prime-reply.js';
 
 test('drops extra sentences, including lower-case follow-ups and extra paragraphs',()=>{
   assert.equal(shortReply('Start with cybertruck. it got hooks. then try the album. More info here.'),'Start with cybertruck. it got hooks.');
@@ -47,5 +47,20 @@ test('instant replies cover only simple social turns, never meaningful questions
   assert.equal(instantReply(' Fine! '),'bet.');
   for(const input of ['hi, what should I listen to?','fine?','yes','sure','alright','What do you think?','thanks, but where is the merch?']){
     assert.equal(instantReply(input),null);
+  }
+});
+
+test('math and essay tasks are declined without producing the requested work',()=>{
+  for(const input of ["What's 2 + 2?",'What is two times four?',"What's 9-2?",'9 - 2','Solve x^2 + 2x = 6','Help with my algebra homework','Explain the Pythagorean theorem','Can you do my math?']){
+    assert.equal(taskReply(input),"i don't do math problems. ask me about Jack.");
+  }
+  for(const input of ['Write an essay about Jack','Can you do my history essay?','Write a 500-word biography of Jack','Draft a research paper on music']){
+    assert.equal(taskReply(input),"i don't write essays. i can keep it short about Jack, though.");
+  }
+});
+
+test('ordinary Jack questions, dates, counts, prices, and creative conversation stay available',()=>{
+  for(const input of ['Who is Jack Sander?','When did prodigy genius come out?','How many tracks are on Jack’s album?','How much is a superstar tee?','What does Jack write about?','I don’t want an essay. Who is Jack?','What is Jack’s birthday?','What did Jack release in 2020-2026?','What album came out on 7/15/2026?','What did Jack release on 2026-07-15?','Does Jack write essays?','Does Jack like algebra?','Give me a hot take.','Make a poster for Jack']){
+    assert.equal(taskReply(input),null,input);
   }
 });

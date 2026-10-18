@@ -10,11 +10,11 @@
   const storage='superstar:jack-prime:conversation',imageStorage=`${storage}:image-request`,ownerStorage=`${storage}:image-owner`;
   const catalog=new Map((window.SuperstarCatalog?.releases||[]).map(release=>[release.page,release]));
   const imageURLs=new Map();
-  let history=[],controller=null,turn=0,mode='text',imageRetry=null,database,coverTemplate=null,uploadedPhoto=null,photoURL=null,photoSerial=0;
+  let history=[],controller=null,turn=0,mode='text',imageRetry=null,database,coverTemplate=null,uploadedPhoto=null,photoURL=null,photoSerial=0,draftRevision=0;
   let imageOwner=crypto.randomUUID(),previousOwner;
   try{previousOwner=sessionStorage.getItem(ownerStorage);sessionStorage.removeItem(storage);sessionStorage.removeItem(imageStorage);sessionStorage.setItem(ownerStorage,imageOwner)}catch{}
   const idle='';
-  const paths=new Set(['/merch','/jacksandersuperstar','/prodigygenius','/cybertruck','/designer','/brainstorm','/catscash','/#music','/#live']);
+  const paths=new Set(['/merch','/jacksandersuperstar','/prodigygenius','/cybertruck','/designer','/brainstorm','/catscash','/soboda','/#music','/#live','/#video']);
   function nearBottom(){return scroll.scrollHeight-scroll.scrollTop-scroll.clientHeight<48}
   function followBottom(follow){if(follow)requestAnimationFrame(()=>{scroll.scrollTop=scroll.scrollHeight})}
   function validSongs(songs){
@@ -114,7 +114,7 @@
     if(role==='assistant'){songCards(node,entry.songs);if(entry.imageId)imageAttachment(node,entry,entry.imagePrompt||'an original image',blob)}
     followBottom(follow);return node;
   }
-  function resize(){input.style.height='auto';input.style.height=`${Math.min(124,input.scrollHeight)}px`}
+  function resize(){const follow=nearBottom();input.style.height='auto';input.style.height=`${Math.min(124,input.scrollHeight)}px`;followBottom(follow)}
   function clearPhoto(){photoSerial++;uploadedPhoto=null;photoInput.value='';if(photoURL)URL.revokeObjectURL(photoURL);photoURL=null;photoPreview.removeAttribute('src');photoPreview.hidden=true;photoName.textContent='';if(!controller)send.disabled=false;}
   function selectCover(value){
     if(controller)return;
@@ -128,7 +128,7 @@
       coverHelp.textContent=coverTemplate==='superstar'?'replace the tee text. keep the original cover.':'add a photo. keep the original cover and swap the face.';
       setMode('image');
     }else setMode('text');
-    status.textContent='';input.value='';resize();(coverTemplate==='prodigy'?photoInput:input).focus({preventScroll:true});
+    status.textContent='';if(coverTemplate){input.value='';draftRevision++;}resize();(coverTemplate==='prodigy'?photoInput:input).focus({preventScroll:true});
   }
   function setMode(value){
     mode=value==='image'?'image':'text';modeButtons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.primeMode===mode)));
@@ -147,15 +147,22 @@
     photoInput.disabled=value;coverClose.disabled=value;
     status.textContent=value?(kind==='image'?'making your image…':'jack prime is thinking…'):idle;form.setAttribute('aria-busy',String(value));
   }
+  function recentMessages(){
+    const recent=history.slice(-11).map(({role,content})=>({role,content:content.slice(0,2400)}));
+    if(recent[0]?.role==='assistant')recent.shift();
+    while(recent.length>1&&recent.reduce((total,message)=>total+message.content.length,0)>12000)recent.splice(0,2);
+    return recent;
+  }
   async function ask(text){
     text=text.trim();if((!text&&coverTemplate!=='prodigy')||controller)return;
     if(coverTemplate==='prodigy'&&!uploadedPhoto){status.textContent='add a photo first.';photoInput.focus();return;}
     const template=coverTemplate,photo=uploadedPhoto;
     const display=template==='superstar'?`make a superstar cover with this text: ${text}`:template==='prodigy'?`put my photo on prodigy genius${text?`: ${text}`:''}`:text;
-    const kind=mode==='image'||imageIntent(text)?'image':'text',before=[...history],request=++turn;
+    const kind=mode==='image'||imageIntent(text)?'image':'text',before=[...history],request=++turn,sentRevision=draftRevision;
     const pendingMessage=message('user',display);history.push({role:'user',content:display,...(kind==='image'?{kind:'image'}:{})});input.value='';resize();
-    controller=new AbortController();busy(true,kind);
-    let answered=false;
+    const abort=new AbortController();controller=abort;busy(true,kind);
+    let answered=false,timedOut=false;
+    const timeout=setTimeout(()=>{timedOut=true;abort.abort()},kind==='image'?175000:35000);
     try{
       if(kind==='image'){
         const owner=imageOwner;
@@ -168,7 +175,7 @@
           if(template==='superstar')payload.set('text',text);
           else{payload.set('prompt',text);payload.set('photo',photo.blob,'face-reference.jpg');}
         }else{headers={'Content-Type':'application/json'};payload=JSON.stringify({prompt:text,requestId:imageId});}
-        const response=await fetch('/api/jack-prime-image',{method:'POST',headers,body:payload,signal:controller.signal});
+        const response=await fetch('/api/jack-prime-image',{method:'POST',headers,body:payload,signal:abort.signal});
         if(!response.ok||!response.headers.get('content-type')?.startsWith('image/')){
           const data=await response.json().catch(()=>({}));throw new Error(data.error||"Couldn't make that image right now.");
         }
@@ -177,8 +184,7 @@
         storeImage(imageId,blob,owner).then(()=>{if(owner!==imageOwner)deleteImages([imageId])});
         const entry={role:'assistant',content:'made that.',kind:'image',imageId,imagePrompt:display};message(entry.role,entry.content,entry,blob);history.push(entry);imageRetry=null;
       }else{
-        let recent=history.slice(-11).map(({role,content})=>({role,content}));if(recent[0]?.role==='assistant')recent.shift();
-        const response=await fetch('/api/jack-prime',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:recent}),signal:controller.signal});
+        const response=await fetch('/api/jack-prime',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:recentMessages()}),signal:abort.signal});
         const data=await response.json();
         if(!response.ok||typeof data.text!=='string'||!data.text.trim())throw new Error(data.error||"Can't reach Jack Prime right now.");
         if(request!==turn)return;
@@ -187,14 +193,20 @@
       answered=true;
     }catch(error){
       if(request!==turn)return;
-      pendingMessage.remove();history=before;input.value=text;if(kind==='image')setMode('image');resize();
+      pendingMessage.remove();history=before;if(draftRevision===sentRevision)input.value=text;if(kind==='image')setMode('image');resize();
       if(!history.length){intro.hidden=false;intro.style.removeProperty('display');document.body.classList.remove('prime-has-messages');}
-      status.textContent=error.name==='AbortError'?(kind==='image'?'stopped waiting. your image may still finish.':'stopped. your message is ready to try again.'):error.message;
+      status.textContent=timedOut?'that took too long. you can try again.':error.name==='AbortError'?(kind==='image'?'stopped waiting. your image may still finish.':'stopped. your message is ready to try again.'):error.message;
     }finally{
+      clearTimeout(timeout);
       if(request===turn){controller=null;send.disabled=false;modeButtons.forEach(button=>{button.disabled=false});photoInput.disabled=false;coverClose.disabled=false;stop.hidden=true;form.setAttribute('aria-busy','false');if(answered)status.textContent=idle;}
     }
   }
   form.addEventListener('submit',event=>{event.preventDefault();ask(input.value)});
+  // Keep the keyboard open when sending by mouse or touch from the composer.
+  [send,stop].forEach(button=>{
+    const keepFocus=event=>{if(event.button===0&&document.activeElement===input)event.preventDefault()};
+    button.addEventListener('pointerdown',keepFocus);button.addEventListener('mousedown',keepFocus);
+  });
   modeButtons.forEach(button=>button.addEventListener('click',()=>{if(coverTemplate)selectCover(null);setMode(button.dataset.primeMode);status.textContent=idle;input.focus({preventScroll:true})}));
   document.querySelectorAll('[data-prime-cover]').forEach(button=>button.addEventListener('click',()=>selectCover(button.dataset.primeCover)));
   coverClose.addEventListener('click',()=>selectCover(null));
@@ -217,8 +229,8 @@
     }catch(error){if(serial===photoSerial)status.textContent=error.message||'That photo could not be read. Try a JPEG or PNG.';}
     finally{if(source)URL.revokeObjectURL(source);if(serial===photoSerial&&!controller)send.disabled=false;}
   });
-  input.addEventListener('input',resize);
-  input.addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();form.requestSubmit()}});
+  input.addEventListener('input',()=>{draftRevision++;resize()});
+  input.addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing&&event.keyCode!==229){event.preventDefault();form.requestSubmit()}});
   document.querySelectorAll('[data-prime-prompt]').forEach(button=>button.addEventListener('click',()=>{if(coverTemplate)selectCover(null);setMode('text');ask(button.dataset.primePrompt)}));
   stop.addEventListener('click',()=>controller?.abort());
   document.getElementById('prime-reset').addEventListener('click',()=>{
@@ -234,10 +246,11 @@
     const view=window.visualViewport;if(view&&view.scale!==1)return;
     const atBottom=scroll.scrollHeight-scroll.scrollTop-scroll.clientHeight<24;
     const height=view?.height||innerHeight;
-    document.documentElement.style.setProperty('--prime-top',`${Math.max(0,view?.offsetTop||0)}px`);
+    const top=Math.min(Math.max(0,view?.offsetTop||0),Math.max(0,innerHeight-height));
+    document.documentElement.style.setProperty('--prime-top',`${top}px`);
     document.documentElement.style.setProperty('--prime-height',`${height}px`);
     document.body.classList.toggle('prime-compact-viewport',height<480);
-    document.body.classList.toggle('prime-tight-viewport',height<320);
+    document.body.classList.toggle('prime-tight-viewport',height<380);
     if(atBottom)scroll.scrollTop=scroll.scrollHeight;
   }
   function viewport(){if(!viewportFrame)viewportFrame=requestAnimationFrame(updateViewport)}

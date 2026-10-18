@@ -1,7 +1,7 @@
 import {generateText} from 'ai';
 import {instructions,model,validateMessages} from '../lib/jack-prime.js';
 import {ModelPricingBlocked,verifyModelPricing,tokenPriceCeilings} from '../lib/jack-prime-cost.js';
-import {instantReply,shortReply} from '../lib/jack-prime-reply.js';
+import {instantReply,taskReply,shortReply} from '../lib/jack-prime-reply.js';
 import {resolveSongMentions} from '../lib/jack-prime-songs.js';
 
 const headers = {'Cache-Control':'no-store'};
@@ -13,8 +13,8 @@ export async function POST(request) {
   try { body = await request.json(); } catch { return Response.json({error:'Please send a message.'},{status:400,headers}); }
   const messages = validateMessages(body);
   if (!messages) return Response.json({error:'Please shorten your message or start a new conversation.'},{status:400,headers});
-  // Routine greetings need neither model quota nor a pricing lookup.
-  const instant=instantReply(messages.at(-1).content);
+  // Social replies and clearly out-of-scope tasks need no model call.
+  const instant=instantReply(messages.at(-1).content)||taskReply(messages.at(-1).content);
   if(instant)return Response.json({text:instant},{headers});
   try {
     await verifyModelPricing(request.signal);

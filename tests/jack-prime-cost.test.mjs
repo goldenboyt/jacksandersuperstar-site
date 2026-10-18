@@ -31,6 +31,22 @@ test('routine greetings and acknowledgments do not use model quota, even if the 
   }finally{globalThis.fetch=original;}
 });
 
+test('math and essay requests are declined before pricing or generation, including with music history',async()=>{
+  const original=globalThis.fetch;let calls=0;
+  globalThis.fetch=async()=>{calls++;throw new Error('No model call expected');};
+  try{
+    for(const input of ['What is 37 * 48?','Write an essay about Jack Sander']){
+      const response=await POST(new Request('https://jacksandersuperstar.com/api/jack-prime',{
+        method:'POST',headers:{'Content-Type':'application/json',Origin:'https://jacksandersuperstar.com'},
+        body:JSON.stringify({messages:[{role:'user',content:'Who is Jack?'},{role:'assistant',content:'Jack Sander is the artist behind the music.'},{role:'user',content:input}]})
+      }));
+      assert.equal(response.status,200);
+      assert.match((await response.json()).text,/i don't (?:do math problems|write essays)/);
+    }
+    assert.equal(calls,0);
+  }finally{globalThis.fetch=original;}
+});
+
 test('only the pinned model with the complete reviewed pricing snapshot can pass', () => {
   assert.equal(model,'openai/gpt-6-luna');
   assert.equal(approvedPricing.input,'0.0000001');
