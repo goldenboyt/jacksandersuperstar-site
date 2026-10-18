@@ -7,7 +7,7 @@
   const coverEditor=document.getElementById('prime-cover-editor'),coverReference=document.getElementById('prime-cover-reference');
   const coverTitle=document.getElementById('prime-cover-title'),coverHelp=document.getElementById('prime-cover-help'),coverClose=document.getElementById('prime-cover-close');
   const coverUpload=document.getElementById('prime-cover-upload'),photoInput=document.getElementById('prime-cover-photo'),photoPreview=document.getElementById('prime-cover-photo-preview'),photoName=document.getElementById('prime-cover-photo-name');
-  const photoAdd=document.getElementById('prime-photo-add'),photoRemove=document.getElementById('prime-photo-remove');
+  const photoAdd=document.getElementById('prime-photo-add'),photoRemove=document.getElementById('prime-photo-remove'),photoOpen=document.getElementById('prime-photo-open');
   const storage='superstar:jack-prime:conversation',imageStorage=`${storage}:image-request`,ownerStorage=`${storage}:image-owner`;
   const catalog=new Map((window.SuperstarCatalog?.releases||[]).map(release=>[release.page,release]));
   const imageURLs=new Map();
@@ -125,8 +125,15 @@
       let url=imageURLs.get(entry.imageId);if(!url){url=URL.createObjectURL(source);imageURLs.set(entry.imageId,url)}
       const image=document.createElement('img');image.src=url;image.alt=`Image made by Jack Prime: ${prompt}`;image.width=1024;image.height=1024;image.loading='lazy';
       image.addEventListener('load',()=>followBottom(nearBottom()),{once:true});
-      const download=document.createElement('a');download.href=url;download.download=`jack-prime-${entry.imageId.slice(0,8)}.png`;download.className='prime-image-download';download.textContent='download image ↗';
-      box.replaceChildren(image,download);followBottom(follow);
+      const open=document.createElement('button');open.type='button';open.className='prime-image-open';open.setAttribute('aria-label','Open generated image full-screen');open.append(image);
+      const details={url,blob:source,name:`jack-prime-${entry.imageId.slice(0,8)}.png`,alt:image.alt,opener:open};
+      open.addEventListener('click',()=>window.SuperstarImageViewer?.open(details));
+      const actions=document.createElement('figcaption');actions.className='prime-image-actions';
+      const save=document.createElement('button');save.type='button';save.className='prime-image-save';save.textContent='save image ↗';
+      const saveStatus=document.createElement('span');saveStatus.className='prime-image-save-status';saveStatus.setAttribute('role','status');
+      save.addEventListener('click',()=>window.SuperstarImageViewer?.save({...details,opener:save},saveStatus,save));
+      const download=document.createElement('a');download.href=url;download.download=details.name;download.className='prime-image-download';download.textContent='download file ↗';
+      actions.append(save,download,saveStatus);box.replaceChildren(open,actions);followBottom(follow);
     }
     show();
   }
@@ -139,7 +146,9 @@
     if(role==='assistant'){songCards(node,entry.songs);if(entry.imageId)imageAttachment(node,entry,entry.imagePrompt||'an original image',blob)}
     else if(blob){
       const image=document.createElement('img'),url=URL.createObjectURL(blob);imageURLs.set(`photo:${crypto.randomUUID()}`,url);
-      image.className='prime-uploaded-image';image.src=url;image.alt='Your uploaded image';image.width=160;image.height=160;node.append(image);
+      image.className='prime-uploaded-image';image.src=url;image.alt='Your uploaded image';image.width=160;image.height=160;
+      const open=document.createElement('button');open.type='button';open.className='prime-photo-open';open.setAttribute('aria-label','Open uploaded image full-screen');open.append(image);node.append(open);
+      open.addEventListener('click',()=>window.SuperstarImageViewer?.open({url,blob,name:'jack-prime-upload.jpg',alt:image.alt,opener:open}));
       image.addEventListener('load',()=>followBottom(nearBottom()),{once:true});
     }
     followBottom(follow);return node;
@@ -159,7 +168,7 @@
     if(!overflow){input.scrollTop=0;input.scrollLeft=0;}
     followBottom(follow);
   }
-  function clearPhoto(){photoSerial++;uploadedPhoto=null;photoInput.value='';if(photoURL)URL.revokeObjectURL(photoURL);photoURL=null;photoPreview.removeAttribute('src');photoPreview.hidden=true;coverUpload.hidden=true;photoName.textContent='';if(!controller)send.disabled=false;setMode(mode);}
+  function clearPhoto(){photoSerial++;uploadedPhoto=null;photoInput.value='';if(photoURL)URL.revokeObjectURL(photoURL);photoURL=null;photoPreview.removeAttribute('src');photoPreview.hidden=true;photoOpen.hidden=true;coverUpload.hidden=true;photoName.textContent='';if(!controller)send.disabled=false;setMode(mode);}
   function selectCover(value){
     if(controller)return;
     const next=['superstar','prodigy'].includes(value)?value:null;if(next)clearPhoto();coverTemplate=next;
@@ -281,15 +290,17 @@
       const digest=await crypto.subtle.digest('SHA-256',await blob.arrayBuffer());
       if(serial!==photoSerial)return;
       uploadedPhoto={blob,key:[...new Uint8Array(digest)].map(byte=>byte.toString(16).padStart(2,'0')).join('')};
-      photoURL=URL.createObjectURL(blob);photoPreview.src=photoURL;photoPreview.hidden=false;coverUpload.hidden=false;photoName.textContent='photo ready';status.textContent='';setMode(mode);
+      photoURL=URL.createObjectURL(blob);photoPreview.src=photoURL;photoPreview.hidden=false;photoOpen.hidden=false;coverUpload.hidden=false;photoName.textContent='photo ready';status.textContent='';setMode(mode);
     }catch(error){if(serial===photoSerial)status.textContent=error.message||'That photo could not be read. Try a JPEG or PNG.';}
     finally{if(source)URL.revokeObjectURL(source);if(serial===photoSerial&&!controller)send.disabled=false;}
   });
   input.addEventListener('input',()=>{draftRevision++;resize()});
   input.addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing&&event.keyCode!==229){event.preventDefault();form.requestSubmit()}});
   document.querySelectorAll('[data-prime-prompt]').forEach(button=>button.addEventListener('click',()=>{if(coverTemplate)selectCover(null);setMode('text');ask(button.dataset.primePrompt)}));
+  photoOpen.addEventListener('click',()=>{if(uploadedPhoto&&photoURL)window.SuperstarImageViewer?.open({url:photoURL,blob:uploadedPhoto.blob,name:'jack-prime-upload.jpg',alt:photoPreview.alt,opener:photoOpen})});
   stop.addEventListener('click',()=>controller?.abort());
   document.getElementById('prime-reset').addEventListener('click',()=>{
+    window.SuperstarImageViewer?.close();
     turn++;controller?.abort();controller=null;history=[];imageRetry=null;clearPhoto();selectCover(null);
     window.SuperstarPreviews?.stopWithin(log);log.replaceChildren();for(const url of imageURLs.values())URL.revokeObjectURL(url);imageURLs.clear();
     const oldOwner=imageOwner;imageOwner=crypto.randomUUID();try{sessionStorage.setItem(ownerStorage,imageOwner)}catch{}clearOwnedImages(oldOwner);
@@ -340,6 +351,7 @@
     const point=event.touches[0];touch={x:point.clientX,y:point.clientY,at:performance.now(),moved:false,selection:false};
   },{passive:true,capture:true});
   document.addEventListener('touchmove',event=>{
+    if(event.target instanceof Element&&event.target.closest('.prime-image-viewer'))return;
     if(!touch||event.touches.length!==1||(window.visualViewport?.scale||1)!==1)return;
     const point=event.touches[0],dy=point.clientY-touch.y,dx=point.clientX-touch.x;
     const area=event.target instanceof Element?event.target.closest('#prime-input,.prime-conversation,.menu-dialog'):null;
