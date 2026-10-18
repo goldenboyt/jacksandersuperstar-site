@@ -1,0 +1,66 @@
+:root{color-scheme:light;--page-bg:#fff;--page-ink:#111;--theme-surface:#1b1b1b;--theme-raised:#242424;--theme-muted:#aaa}
+.menu-dialog{overflow-y:auto}
+.menu-footer{align-items:center;flex-wrap:wrap;gap:18px;padding-bottom:max(24px,env(safe-area-inset-bottom))}
+.theme-picker{--theme-control-ink:var(--page-ink);--theme-control-surface:var(--page-bg);display:flex;align-items:center;gap:0;flex-shrink:0}
+.theme-picker-label{font:12px/1.4 Arial,Helvetica,sans-serif;letter-spacing:0;margin-right:14px}
+.theme-picker button{min-width:62px;min-height:44px;padding:9px 12px;border:1px solid currentColor;background:transparent;color:inherit;font:13px/1.4 Arial,Helvetica,sans-serif;cursor:pointer;touch-action:manipulation}
+.theme-picker button+button{margin-left:-1px}
+.theme-picker button[aria-pressed=true]{position:relative;z-index:1;background:var(--theme-control-ink);color:var(--theme-control-surface);border-color:var(--theme-control-ink)}
+.theme-picker button:focus-visible{position:relative;z-index:2;outline:2px solid var(--theme-control-ink);outline-offset:4px}
+.menu-dialog .theme-picker{--theme-control-ink:#fff;--theme-control-surface:var(--red)}
+.theme-menu-item{list-style:none;margin-top:18px}
+.live-page .header{color:var(--page-ink);background:var(--page-bg);border-color:var(--line)}
+.live-page .header .wordmark>img{filter:brightness(0)}
+
+html[data-theme=dark]{color-scheme:dark;--page-bg:#111;--page-ink:#f2f2f2;--theme-accent:#ff6168;--black:#f2f2f2;--gray:#aaa;--line:#3d3d3d;background:var(--page-bg);color:var(--page-ink)}
+html[data-theme=dark] body{background:var(--page-bg);color:var(--page-ink)}
+html[data-theme=dark] :is(.header.scrolled,.release-page .header,.prime-page .header,.live-page .header){background:var(--page-bg);color:var(--page-ink);border-color:var(--line)}
+html[data-theme=dark] .wordmark>img,
+html[data-theme=dark] .header .wordmark>img,
+html[data-theme=dark] :is(.release-title-art,.album-title>img,.nav-logo){filter:brightness(0) invert(1)}
+/* Invert the finished SVG so its luminance mask keeps the same opening. */
+html[data-theme=dark] .intro-surface>rect{fill:#eee}
+html[data-theme=dark] .intro-stage{filter:invert(1)}
+html[data-theme=dark] .site-intro{color-scheme:dark}
+html[data-theme=dark] .skip{background:var(--page-ink);color:var(--page-bg)}
+html[data-theme=dark] :is(.red,.asterisk,.star,.desktop-nav [aria-current=page],.discovery-nav>a[aria-current=location],.discovery-timeline>li>span,.discovery-closing>.discovery-kicker,.soboda-copy h2>span,.discovery-intro h1>span,.rasha-copy h2>span,.text-button:hover,.release-page-link:hover,.shop-order-link:hover,.prime-message a:hover,.discovery-nav>a:hover){color:var(--theme-accent)}
+
+html[data-theme=dark] :is(.release-meta,.catalog-header>span,.release-card p,.dialog-meta,.tracklist li:before,.release-page-meta,.release-page-tracklist li::before,.release-page-card p,.release-share-status,.song-preview-icon,.song-preview-panel,.shop-intro>.eyebrow,.shop-number,.shop-description,.shop-note,.merch-footer>span,.tee-count,.soboda-footnote,.soboda-feature-record dt,.discovery-record dt,.discovery-description,.discovery-nav>a>span,.discovery-body,.discovery-timeline p,.field-file-heading p,.field-entries p,.discovery-archive .discovery-section-heading>p,.discovery-gallery figcaption p,.archive-dialog-copy p){color:var(--theme-muted)}
+html[data-theme=dark] :is(.rule,.song-preview-progress){background:#555}
+html[data-theme=dark] :is(.catalog-header,.tracklist li,.release-page-tracklist li,.shop-tee,.shop-order,.tee-slideshow,.tee-controls,.discovery-nav,.discovery-read-link,.discovery-timeline,.discovery-preserved figcaption,.field-file,.discovery-gallery figcaption,.discovery-closing){border-color:var(--line)}
+html[data-theme=dark] :is(.release-card .card-image,.release-page-art,.release-page-card>div,.product-image,.shop-art,.archive-image){background:var(--theme-surface)}
+html[data-theme=dark] :is(.release-page-tracklist li:target,.archive-record){background:var(--theme-raised);color:var(--page-ink)}
+html[data-theme=dark] :is(.tee-slideshow,.tee-slides,.soboda-section,.soboda-feature.soboda-section,.discovery-nav){background:var(--page-bg)}
+html[data-theme=dark] .button-black{background:var(--page-ink);color:var(--page-bg)}
+html[data-theme=dark] .button-black:hover{background:#d2d2d2}
+html[data-theme=dark] :is(.streaming-more,.release-share-button,.release-share-url,.soboda-image>span,.archive-enlarge){background:var(--page-bg);color:var(--page-ink);border-color:var(--page-ink)}
+html[data-theme=dark] :is(.streaming-more:hover,.release-share-button:hover){background:var(--page-ink);color:var(--page-bg)}
+html[data-theme=dark] .archive-image:hover .archive-enlarge{background:var(--red);color:#fff}
+html[data-theme=dark] :is(.release-dialog,.dialog-toolbar,.shop-zoom,.archive-dialog,.archive-dialog .dialog-toolbar){background:var(--page-bg);color:var(--page-ink);border-color:var(--line)}
+html[data-theme=dark] .archive-dialog>img{background:var(--theme-surface)}
+html[data-theme=dark] .menu-dialog{background:#151515;color:#fff}
+html[data-theme=dark] .menu-dialog .theme-picker{--theme-control-surface:#151515}
+html[data-theme=dark] .menu-dialog nav>a:hover{color:#ff8b90}
+html[data-theme=dark] .menu-dialog .close-button:hover{background:#fff;color:#111}
+
+html[data-theme=dark] .prime-form{background:var(--page-bg)}
+html[data-theme=dark] .prime-message--user{background:var(--theme-raised)}
+html[data-theme=dark] :is(.prime-composer,.prime-upload){border-color:var(--page-ink)}
+html[data-theme=dark] .prime-composer:focus-within{outline-color:var(--page-ink)}
+html[data-theme=dark] :is(.prime-composer textarea,.prime-form-bottom button,.prime-upload,.prime-photo>button,.prime-render>span){color:var(--page-ink);caret-color:var(--page-ink)}
+html[data-theme=dark] .prime-composer button{background:var(--page-ink);color:var(--page-bg)}
+html[data-theme=dark] .prime-composer button:hover{background:var(--red);color:#fff}
+html[data-theme=dark] :is(.prime-message-label,.prime-form-bottom,.prime-modes button,.prime-song .prime-song-release,.prime-image-placeholder,.prime-cover-starter small,.prime-cover-context small,.prime-cover-upload,.prime-photo,.prime-activity-label){color:var(--theme-muted)}
+html[data-theme=dark] .prime-composer textarea::placeholder{color:var(--theme-muted)}
+html[data-theme=dark] .prime-modes button[aria-pressed=true]{color:var(--page-ink);border-color:var(--page-ink)}
+html[data-theme=dark] .prime-cover-starter{background:var(--page-bg);color:var(--page-ink)}
+html[data-theme=dark] :is(.prime-cover-starter:hover,.prime-cover-starter[aria-pressed=true]){border-color:var(--page-ink)}
+html[data-theme=dark] .prime-thinking-mark i:not(:first-child){background:var(--page-ink)}
+html[data-theme=dark] .prime-render{background-color:var(--theme-surface);background-image:linear-gradient(#ffffff09 1px,transparent 1px),linear-gradient(90deg,#ffffff09 1px,transparent 1px)}
+html[data-theme=dark] .prime-render:before{border-color:var(--page-ink)}
+
+/* The old music URL redirects in production; its fallback keeps the same choice. */
+html[data-theme=dark] .menu-icon span{background:var(--page-ink)}
+html[data-theme=dark] :is(.menu-list a,.stream-link,.release-cover-mystery-text){color:var(--page-ink)}
+html[data-theme=dark] .release-cover--mystery{background:var(--theme-surface)}
+@media(max-width:640px){.menu-footer{gap:12px}.theme-picker-label{margin-right:12px}.theme-picker button{min-width:58px}}
