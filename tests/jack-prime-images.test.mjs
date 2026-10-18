@@ -1,7 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {NoImageGeneratedError} from 'ai';
-import {createImageHandler,imageModel,isApprovedImageModel,ImagePricingBlocked} from '../lib/jack-prime-images.js';
+import {createImageHandler as imageHandler,imageModel,isApprovedImageModel,ImagePricingBlocked} from '../lib/jack-prime-images.js';
+import {defaultFaceReference} from '../lib/jack-prime-references.js';
+const createImageHandler=options=>imageHandler({selectReference:async()=>defaultFaceReference,...options});
 
 const id='d6c27f5e-d95d-4df5-b188-0629cc362953';
 const body={prompt:'A black and white concert poster',requestId:id};
