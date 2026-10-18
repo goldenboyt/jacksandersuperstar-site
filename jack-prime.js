@@ -142,7 +142,9 @@
     intro.hidden=true;intro.style.display='none';document.body.classList.add('prime-has-messages');
     const node=document.createElement('div');node.className=`prime-message prime-message--${role}`;
     const label=document.createElement('span');label.className='prime-message-label';label.textContent=role==='user'?'you':'jack prime';
-    const body=document.createElement('div');if(role==='assistant')formattedText(text,body);else body.textContent=text;node.append(label,body);log.append(node);
+    node.append(label);
+    if(text){const body=document.createElement('div');if(role==='assistant')formattedText(text,body);else body.textContent=text;node.append(body)}
+    log.append(node);
     if(role==='assistant'){songCards(node,entry.songs);if(entry.imageId)imageAttachment(node,entry,entry.imagePrompt||'an original image',blob)}
     else if(blob){
       const image=document.createElement('img'),url=URL.createObjectURL(blob);imageURLs.set(`photo:${crypto.randomUUID()}`,url);
@@ -244,7 +246,7 @@
         const blob=await response.blob();if(request!==turn)return;
         if(!blob.size)throw new Error("Couldn't load the image. Try again.");
         storeImage(imageId,blob,owner).then(()=>{if(owner!==imageOwner)deleteImages([imageId])});
-        waiting.remove();const entry={role:'assistant',content:'made that.',kind:'image',imageId,imagePrompt:display};message(entry.role,entry.content,entry,blob);history.push(entry);imageRetry=null;
+        waiting.remove();const entry={role:'assistant',content:`[Generated image for: ${JSON.stringify(display)}]`,kind:'image',imageId,imagePrompt:display};message(entry.role,'',entry,blob);history.push(entry);imageRetry=null;
       }else{
         let payload,headers;
         if(photo){payload=new FormData();payload.set('messages',JSON.stringify(recentMessages()));payload.set('photo',photo.blob,'attachment.jpg');}

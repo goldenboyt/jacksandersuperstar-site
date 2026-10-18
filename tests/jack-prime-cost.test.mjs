@@ -16,14 +16,14 @@ const request = () => new Request('https://jacksandersuperstar.com/api/jack-prim
   body:JSON.stringify({messages:[{role:'user',content:'Which song should I start with?'}]})
 });
 
-test('greetings and acknowledgments reach the model with conversation history and retain its response',async()=>{
+test('greetings, acknowledgments, and starters reach the model with conversation history and retain its response',async()=>{
   const expected='That track fits the mood you mentioned.';
   const generated=[];let priced=0;
   const handler=createChatHandler({verifyPricing:async()=>{priced++},generate:async options=>{
     generated.push(options);
     return {text:expected,finishReason:'stop',usage:{inputTokens:100,outputTokens:10},finalStep:{providerMetadata:{gateway:{generationId:'test-conversation'}}}};
   }});
-  for(const input of ['Hiiii','hey!','Fine','thanks','okay','yo']){
+  for(const input of ['Hiiii','hey!','Fine','thanks','okay','yo','Give me a hot take.','What should I listen to?']){
     const messages=[{role:'user',content:'I want a song for a quiet drive.'},{role:'assistant',content:'Try cybertruck.'},{role:'user',content:input}];
     const req=new Request('https://jacksandersuperstar.com/api/jack-prime',{
       method:'POST',headers:{'Content-Type':'application/json',Origin:'https://jacksandersuperstar.com'},body:JSON.stringify({messages})
@@ -32,7 +32,7 @@ test('greetings and acknowledgments reach the model with conversation history an
     assert.equal(response.status,200);assert.deepEqual(await response.json(),{text:expected});
     assert.deepEqual(generated.at(-1).messages,messages);
   }
-  assert.equal(generated.length,6);assert.equal(priced,6);
+  assert.equal(generated.length,8);assert.equal(priced,8);
 });
 
 test('math and essay requests are declined before pricing or generation, including with music history',async()=>{
