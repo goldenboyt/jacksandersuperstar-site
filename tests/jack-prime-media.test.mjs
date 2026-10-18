@@ -27,7 +27,7 @@ test('photo questions reach the vision-capable chat model and keep the short res
   const handler=createChatHandler({verifyPricing:async()=>{priced++},generate:async value=>{options=value;return reply}});
   const response=await handler(request('/api/jack-prime',form({messages:JSON.stringify([{role:'user',content:'what does this say?'}])})));
   assert.equal(response.status,200);assert.deepEqual(await response.json(),{text:reply.text});assert.equal(priced,1);
-  assert.equal(options.model,'openai/gpt-6-luna');assert.equal(options.maxOutputTokens,96);assert.equal(options.maxRetries,0);
+  assert.equal(options.model,'spacexai/grok-4.20-non-reasoning');assert.deepEqual(options.providerOptions,{gateway:{only:['xai']}});assert.equal(options.reasoning,undefined);assert.equal(options.maxOutputTokens,96);assert.equal(options.maxRetries,0);
   assert.deepEqual(options.messages.at(-1).content[1].data,photo);
 });
 
