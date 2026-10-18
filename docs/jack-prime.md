@@ -24,6 +24,8 @@ greetings/questions, offers, and clarifications still use the normal AI path.
 
 The backend uses AI SDK 7.0.140 with Vercel OIDC authentication; no provider API
 key is needed. Instructions and current release facts live in `lib/jack-prime.js`.
+The chat handler lives in `lib/jack-prime-chat.js`; shared photo validation,
+vision message construction, and image-scope checks live in `lib/jack-prime-media.js`.
 Replies aim for one sentence and 25 words, with a server-enforced maximum of two
 sentences. Generation is limited to 96 output tokens, with at most 12 submitted messages and
 12,000 characters of conversational context. Automatic retries are disabled.
@@ -81,7 +83,8 @@ estimate is $0.05268 per image, plus prompt charges, from the high-quality
 1024-square calculator. Image calls consume the user's funded Gateway credits.
 No billing settings, auto-top-up settings, or additional storage services change.
 
-The function has a 180-second duration allowance and a 155-second model timeout.
+The function has a 180-second duration allowance and a 140-second image-model timeout,
+leaving time for the creation-scope check and price verification.
 It returns binary PNG rather than base64 JSON to stay under the function's
 4.5 MB response limit. Each warm instance retains up to eight completed image
 results for ten minutes and shares an in-progress result for a repeated UUID.
@@ -108,6 +111,33 @@ Photos are decoded and resized on the device to at most 1024 pixels, converted
 to JPEG, and sent as multipart data. The server accepts only known templates,
 validates image signatures and a 2.1 MB upload limit, and includes the photo in
 the retry fingerprint. Reference-image edits have additional image-input charges.
+
+The same upload control works outside the cover starters. In chat mode it sends
+the current question and attached image as a binary AI SDK file part to the existing
+vision-capable text model. In image mode it supplies the photo as an edit reference.
+The photo stays visibly attached across follow-ups and mode changes until removed,
+replaced, reset, or refreshed. Raw uploads are kept only in device memory and are
+not added to text history, logs, session storage, or remote file storage. Photo
+questions may discuss ordinary visible content; image creation and edits use the
+artist scope described below. Math and essay restrictions also apply to images.
+
+Before general image generation or editing, the pinned text model makes a short
+structured choice about whether the request loosely fits Jack's creative world.
+It considers the prompt, recent text context (up to 6,000 characters), and attached
+photo. Covers, merch, music posters, fan art, and follow-up edits can qualify without
+repeating Jack's name. Clearly unrelated requests return a chat decline before an
+image-model call. The two album-cover templates are already in scope and skip this
+check. Classification uses the same complete text-price verification, no reasoning,
+32 output tokens, and no retries; it adds a small text-model charge. Vision questions
+and reference edits also incur image-input token charges through the existing balance.
+No new model, billing settings, or auto-top-up changes are introduced.
+
+Pending replies display a small animated four-stroke thinking mark; pending images
+display a typographic rendering frame and red scan line. These are CSS-only status
+animations, not generated media or simulated percentages. Completion, decline,
+failure, stop, and reset remove the pending state. Reduced-motion preferences retain
+the status label while disabling the animation. The keyboard layout remains compact
+with attachments and the new controls.
 
 Text replies include canonical song IDs when they mention catalog tracks.
 `lib/jack-prime-songs.js` resolves names, featured-title aliases, and single paths

@@ -139,3 +139,38 @@
 .prime-compact-viewport .prime-modes{margin-top:-4px;margin-bottom:2px}
 .prime-compact-viewport .prime-modes button{min-height:24px}
 .prime-compact-viewport .prime-form-bottom{min-height:0;padding-top:4px}
+.prime-tools{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:8px;white-space:normal}
+.prime-tools .prime-modes{margin:0}
+.prime-tools .prime-upload{min-height:32px;font:11px/1 Arial,Helvetica,sans-serif;padding-inline:10px}
+.prime-tools [hidden],.prime-photo[hidden],.prime-photo img[hidden]{display:none}
+.prime-photo{display:flex;align-items:center;gap:10px;margin:0 0 10px;padding:6px 0;font:11px/1.4 Arial,Helvetica,sans-serif;color:#777;white-space:normal}
+.prime-photo>img{width:40px;height:40px;object-fit:cover}
+.prime-photo>button{width:32px;min-height:32px;font:22px/1 Arial,Helvetica,sans-serif;margin-left:auto;color:#111}
+.prime-uploaded-image{display:block;width:160px;height:auto;max-height:180px;object-fit:contain;object-position:left;margin-top:12px}
+.prime-activity{white-space:normal;min-height:56px;padding-bottom:4px}
+.prime-activity-label{display:block;font:11px/1.5 Arial,Helvetica,sans-serif;letter-spacing:.04em;color:#777;margin-top:10px}
+.prime-activity--text{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.prime-activity--text .prime-message-label{flex-basis:100%;margin-bottom:0}
+.prime-activity--text .prime-activity-label{margin-top:0}
+.prime-thinking-mark{display:flex;align-items:center;gap:4px;height:25px}
+.prime-thinking-mark i{display:block;width:3px;height:20px;background:#111;transform-origin:center;animation:prime-think 1.15s cubic-bezier(.45,0,.55,1) infinite}
+.prime-thinking-mark i:first-child{background:var(--red)}
+.prime-thinking-mark i:nth-child(2){animation-delay:-.85s}
+.prime-thinking-mark i:nth-child(3){animation-delay:-.6s}
+.prime-thinking-mark i:nth-child(4){animation-delay:-.3s}
+.prime-render{--render-size:240px;position:relative;width:var(--render-size);max-width:100%;aspect-ratio:1;display:grid;place-items:center;overflow:hidden;border:1px solid var(--line);background:#f7f7f7;background-image:linear-gradient(#11111109 1px,transparent 1px),linear-gradient(90deg,#11111109 1px,transparent 1px);background-size:25% 25%}
+.prime-render>span{color:#111;font:96px/1 Arial,Helvetica,sans-serif;letter-spacing:-.085em;opacity:.24;animation:prime-print 3.2s ease-in-out infinite}
+.prime-render:before{content:'';position:absolute;inset:14px;border:1px solid #111;opacity:.35;animation:prime-frame 3.2s ease-in-out infinite}
+.prime-render>i{position:absolute;left:0;right:0;top:0;height:2px;background:var(--red);animation:prime-scan 2.4s cubic-bezier(.45,0,.55,1) infinite alternate}
+@keyframes prime-think{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
+@keyframes prime-scan{from{translate:0 10px}to{translate:0 calc(var(--render-size) - 12px)}}
+@keyframes prime-frame{0%,100%{transform:scale(.93)}50%{transform:scale(1)}}
+@keyframes prime-print{0%,100%{transform:translateX(-4px)}50%{transform:translateX(4px)}}
+.prime-compact-viewport .prime-tools{margin-bottom:5px}
+.prime-compact-viewport .prime-tools .prime-upload{min-height:26px}
+.prime-compact-viewport .prime-photo{padding-block:2px;margin-bottom:5px}
+.prime-compact-viewport .prime-photo>img{width:28px;height:28px}
+.prime-compact-viewport .prime-photo>button{min-height:28px}
+.prime-compact-viewport .prime-render{--render-size:180px}
+.prime-compact-viewport .prime-render>span{font-size:72px}
+@media(prefers-reduced-motion:reduce){.prime-thinking-mark i,.prime-render>span,.prime-render:before,.prime-render>i{animation:none}.prime-thinking-mark i:nth-child(2n){transform:scaleY(.5)}.prime-render>i{top:50%;translate:none}}
