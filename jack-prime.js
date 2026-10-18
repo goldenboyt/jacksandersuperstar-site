@@ -15,7 +15,7 @@
   let imageOwner=crypto.randomUUID(),previousOwner;
   try{previousOwner=sessionStorage.getItem(ownerStorage);sessionStorage.removeItem(storage);sessionStorage.removeItem(imageStorage);sessionStorage.setItem(ownerStorage,imageOwner)}catch{}
   const idle='';
-  const paths=new Set(['/merch','/jacksandersuperstar','/prodigygenius','/cybertruck','/designer','/brainstorm','/catscash','/soboda','/#music','/#live','/#video']);
+  const paths=new Map([['/merch','merch'],['/jacksandersuperstar','#jacksandersuperstar®'],['/prodigygenius','prodigy genius'],['/cybertruck','cybertruck'],['/designer','designer'],['/brainstorm','brainstorm'],['/catscash','cats cash'],['/soboda','Soboda'],['/#music','music'],['/#live','Live in Dallas'],['/#video','Magic (Tragic) music video']]);
   function nearBottom(){return scroll.scrollHeight-scroll.scrollTop-scroll.clientHeight<48}
   function followBottom(follow){if(follow)requestAnimationFrame(()=>{scroll.scrollTop=scroll.scrollHeight})}
   function validSongs(songs){
@@ -27,23 +27,34 @@
       seen.add(key);return [{releasePage:`/${release.page}`,trackIndex:index}];
     });
   }
-  function textWithLinks(text,element){
-    const regex=/\/(?:#[a-z]+|[a-z]+)(?![a-z/])/g;let position=0;
-    for(const match of text.matchAll(regex)){
-      if(!paths.has(match[0]))continue;
-      element.append(document.createTextNode(text.slice(position,match.index)));
-      const a=document.createElement('a');a.href=match[0];a.textContent=match[0];element.append(a);position=match.index+match[0].length;
-    }
-    element.append(document.createTextNode(text.slice(position)));
+  function sitePath(target){
+    if(!target.startsWith('/')&&!/^https:\/\/(?:www\.)?jacksandersuperstar\.com\//i.test(target))return null;
+    try{
+      const url=new URL(target,location.origin);
+      if(![location.origin,'https://jacksandersuperstar.com','https://www.jacksandersuperstar.com'].includes(url.origin)||url.search)return null;
+      const path=url.pathname+url.hash;return paths.has(path)?path:null;
+    }catch{return null}
   }
-  function formattedText(text,element){
-    const bold=/\*\*([^*\n]+)\*\*|__([^_\n]+)__/g;let position=0;
-    for(const match of text.matchAll(bold)){
-      textWithLinks(text.slice(position,match.index),element);
-      const strong=document.createElement('strong');textWithLinks(match[1]??match[2],strong);element.append(strong);
+  function formattedText(text,element,emphasis=true){
+    const tokens=/\[([^\]\n]+)\]\(([^\s)]+)\)|https?:\/\/[^\s<>()]+|\/(?:#[a-z]+|[a-z]+)(?![\w/#%-])|\*\*([^*\n]+)\*\*|__([^_\n]+)__/g;
+    let position=0;
+    for(const match of text.matchAll(tokens)){
+      let node,trailing='';
+      if(match[3]||match[4]){
+        if(!emphasis)continue;
+        node=document.createElement('strong');formattedText(match[3]??match[4],node,false);
+      }else{
+        let target=match[2]||match[0];
+        if(!match[2]&&target.startsWith('/')&&match.index>0&&/[\w/:.]/.test(text[match.index-1]))continue;
+        if(!match[2]&&target.startsWith('http')){trailing=target.match(/[.,!?;:]+$/)?.[0]||'';if(trailing)target=target.slice(0,-trailing.length);}
+        const path=sitePath(target);if(!path)continue;
+        node=document.createElement('a');node.href=path;
+        const label=match[1]?.replace(/\*\*|__/g,'');node.textContent=label&&!label.startsWith('/')&&!/^https?:/i.test(label)?label:paths.get(path);
+      }
+      element.append(document.createTextNode(text.slice(position,match.index)),node,document.createTextNode(trailing));
       position=match.index+match[0].length;
     }
-    textWithLinks(text.slice(position),element);
+    element.append(document.createTextNode(text.slice(position)));
   }
   function songCards(node,songs){
     if(!window.SuperstarPreviews)return;
@@ -111,7 +122,7 @@
     intro.hidden=true;intro.style.display='none';document.body.classList.add('prime-has-messages');
     const node=document.createElement('div');node.className=`prime-message prime-message--${role}`;
     const label=document.createElement('span');label.className='prime-message-label';label.textContent=role==='user'?'you':'jack prime';
-    const body=document.createElement('div');(role==='assistant'?formattedText:textWithLinks)(text,body);node.append(label,body);log.append(node);
+    const body=document.createElement('div');if(role==='assistant')formattedText(text,body);else body.textContent=text;node.append(label,body);log.append(node);
     if(role==='assistant'){songCards(node,entry.songs);if(entry.imageId)imageAttachment(node,entry,entry.imagePrompt||'an original image',blob)}
     else if(blob){
       const image=document.createElement('img'),url=URL.createObjectURL(blob);imageURLs.set(`photo:${crypto.randomUUID()}`,url);
@@ -126,7 +137,15 @@
     node.innerHTML='<span class="prime-message-label">jack prime</span>'+(kind==='image'?'<div class="prime-render" aria-hidden="true"><span>prime</span><i></i></div>':'<span class="prime-thinking-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>')+`<span class="prime-activity-label" role="status">${kind==='image'?'making your image':'thinking'}</span>`;
     log.append(node);followBottom(follow);return node;
   }
-  function resize(){const follow=nearBottom();input.style.height='auto';input.style.height=`${Math.min(124,input.scrollHeight)}px`;followBottom(follow)}
+  function resize(){
+    const follow=nearBottom();input.style.height='auto';
+    const limit=parseFloat(getComputedStyle(input).maxHeight)||124;
+    input.style.height=`${Math.min(limit,Math.max(44,input.scrollHeight))}px`;
+    const overflow=input.scrollHeight>input.clientHeight+1;
+    input.classList.toggle('prime-input-scrollable',overflow);
+    if(!overflow){input.scrollTop=0;input.scrollLeft=0;}
+    followBottom(follow);
+  }
   function clearPhoto(){photoSerial++;uploadedPhoto=null;photoInput.value='';if(photoURL)URL.revokeObjectURL(photoURL);photoURL=null;photoPreview.removeAttribute('src');photoPreview.hidden=true;coverUpload.hidden=true;photoName.textContent='';if(!controller)send.disabled=false;setMode(mode);}
   function selectCover(value){
     if(controller)return;
@@ -264,25 +283,57 @@
     intro.hidden=false;intro.style.removeProperty('display');document.body.classList.remove('prime-has-messages');busy(false);setMode('text');input.value='';resize();input.focus({preventScroll:true});
   });
   if(previousOwner)clearOwnedImages(previousOwner);
-  let viewportFrame=0;
+  const tesla=/\bTesla\b/i.test(navigator.userAgent);
+  let viewportFrame=0,viewportTimers=[],restingWidth=innerWidth,restingHeight=Math.min(innerHeight,window.visualViewport?.height||innerHeight);
   function updateViewport(){
     viewportFrame=0;
     const view=window.visualViewport;if(view&&view.scale!==1)return;
     const atBottom=scroll.scrollHeight-scroll.scrollTop-scroll.clientHeight<24;
-    const height=view?.height||innerHeight;
-    const top=Math.min(Math.max(0,view?.offsetTop||0),Math.max(0,innerHeight-height));
+    const measuredHeight=Math.min(innerHeight,view?.height||innerHeight);
+    const top=Math.min(Math.max(0,view?.offsetTop||0),Math.max(0,innerHeight-measuredHeight));
+    const typing=document.activeElement===input,keyboard=navigator.virtualKeyboard?.boundingRect;
+    const keyboardVisible=keyboard?.height>0&&keyboard.width>0;
+    if(!typing||restingWidth!==innerWidth){restingHeight=measuredHeight;restingWidth=innerWidth;}
+    let height=measuredHeight;
+    if(keyboardVisible&&keyboard.top>top)height=Math.min(height,keyboard.top-top);
+    // Some in-car keyboards overlay the page without reporting resized bounds.
+    // Keep the typing controls at the top and the chat in the upper screen.
+    if(tesla&&typing&&!keyboardVisible&&restingHeight-height<96)height=Math.min(height,Math.floor(restingHeight/2));
     document.documentElement.style.setProperty('--prime-top',`${top}px`);
     document.documentElement.style.setProperty('--prime-height',`${height}px`);
-    document.body.classList.toggle('prime-compact-viewport',height<480);
+    document.body.classList.toggle('prime-tesla-typing',tesla&&typing);
+    document.body.classList.toggle('prime-compact-viewport',height<480||(tesla&&typing));
     document.body.classList.toggle('prime-tight-viewport',height<380);
+    resize();
     if(atBottom)scroll.scrollTop=scroll.scrollHeight;
   }
   function viewport(){if(!viewportFrame)viewportFrame=requestAnimationFrame(updateViewport)}
+  function settleViewport(){
+    viewportTimers.forEach(clearTimeout);viewport();
+    viewportTimers=[80,250,500].map(delay=>setTimeout(viewport,delay));
+  }
   window.visualViewport?.addEventListener('resize',viewport);
   window.visualViewport?.addEventListener('scroll',viewport);
+  navigator.virtualKeyboard?.addEventListener('geometrychange',viewport);
   window.addEventListener('resize',viewport);window.addEventListener('scroll',viewport,{passive:true});
-  window.addEventListener('pageshow',viewport);
-  input.addEventListener('focus',viewport);input.addEventListener('blur',viewport);
+  window.addEventListener('pageshow',settleViewport);window.addEventListener('orientationchange',settleViewport);
+  input.addEventListener('focus',settleViewport);input.addEventListener('blur',settleViewport);
+  let touch;
+  document.body.addEventListener('touchstart',event=>{
+    if(event.touches.length!==1){touch=null;return;}
+    const point=event.touches[0];touch={x:point.clientX,y:point.clientY,at:performance.now(),moved:false,selection:false};
+  },{passive:true});
+  document.body.addEventListener('touchmove',event=>{
+    if(!touch||event.touches.length!==1||(window.visualViewport?.scale||1)!==1)return;
+    const point=event.touches[0],dy=point.clientY-touch.y,dx=point.clientX-touch.x;
+    if(Math.abs(dy)<4||Math.abs(dy)<Math.abs(dx))return;
+    const area=event.target instanceof Element?event.target.closest('#prime-input,.prime-conversation,.menu-dialog'):null;
+    // Keep native long-press selection and caret dragging available.
+    if(area===input&&(input.selectionStart!==input.selectionEnd||touch.selection||(!touch.moved&&performance.now()-touch.at>350))){touch.selection=true;return;}
+    touch.moved=true;touch.x=point.clientX;touch.y=point.clientY;
+    const max=area?area.scrollHeight-area.clientHeight:0;
+    if(!area||max<=1||(dy>0?area.scrollTop<=0:area.scrollTop>=max-1))event.preventDefault();
+  },{passive:false});
   document.getElementById('menu-open').addEventListener('click',()=>input.blur());
   updateViewport();setMode('text');
   window.addEventListener('pagehide',()=>controller?.abort());resize();

@@ -174,8 +174,11 @@ The compact keyboard layout reduces the header and toolbar, keeps long drafts
 inside the visible viewport, and discards a stale viewport offset after closing
 the keyboard. These paths are checked in Chromium and WebKit, including simulated
 keyboard sizes, viewport panning, and longer conversations.
-Only known site paths become links. Assistant replies render bold emphasis with
-safe DOM text nodes. Visiting the
+Only known site destinations become links. Assistant replies render page names
+instead of raw slash paths, accepting named Markdown links and translating any
+legacy bare path or same-site URL into a readable label. External or unrecognized
+destinations stay plain text; labels and bold emphasis use safe DOM text nodes.
+The model instructions use named links in examples and website facts. Visiting the
 page does not call the AI. The page has no character or alter-ego labels; explicit
 questions about AI identity still receive honest answers.
 
@@ -183,14 +186,30 @@ The page shares the main site's white canvas, Arial typography, thin rules,
 rectangular controls, header, and menu. The horizontal masthead sits above a
 broad conversation area with flat message blocks. It contracts once a chat
 starts, and makes room for the composer when a phone keyboard reduces the
-visible viewport. The styles are scoped to Jack Prime. On mobile, the fixed
-conversation frame follows both the visual viewport's height and vertical offset
-so Safari's keyboard focus panning cannot move the composer away from the
-keyboard. The document stays locked while the conversation and menu can scroll;
-pinch zoom retains native behavior. Prime's header stays available during native
+visible viewport. The styles are scoped to Jack Prime. On mobile, the fixed page
+body and conversation frame follow the smaller of the window and visual viewport
+heights plus the visual offset. This prevents a stale embedded-browser reading
+from placing the composer below a resized window and avoids leaving a full-height
+draggable page behind the composer. Where available, virtual-keyboard geometry
+also bounds the usable area. Chromium is asked to resize content for interactive
+widgets. Focus/blur includes short settling checks for keyboard animations;
+pinch zoom retains native behavior.
+Tesla browsers keep the composer near the top while typing. If an overlay keyboard
+reports no size change, the chat uses the upper half of the resting viewport as a
+conservative fallback. Measured keyboard bounds take priority. Blur restores the
+normal layout; this fallback is restricted to the Tesla user agent.
+Short drafts hide textarea overflow and reset its scroll position. A longer draft
+can scroll internally when its content exceeds the displayed height. Vertical
+touch gestures outside scrollable conversation, menu, or long-draft content are
+contained, including at scroll boundaries; selection, long-press caret movement,
+and multi-touch zoom remain available. Prime's header stays available during native
 focus scrolling, while other pages retain their existing header behavior.
 In very short visible viewports, the header and toolbar fold away so the message
 box remains usable; they return when the available height increases.
+The keyboard/layout checks run in Chromium and WebKit with actual browser focus,
+typing, and sending. Tesla overlays, stale viewport readings, keyboard geometry,
+and touch drag events are simulated; an actual in-car keyboard is not available
+in this execution environment.
 
 Provider capacity limits can still return HTTP 429 with a short retry message and
 a `Retry-After` header; the route never retries automatically or selects another
