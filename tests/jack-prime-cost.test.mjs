@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {model,providerOptions} from '../lib/jack-prime.js';
 import {isApprovedModel,isApprovedEndpoint,verifyModelPricing,tokenPriceCeilings} from '../lib/jack-prime-cost.js';
 import {POST} from '../api/jack-prime.js';
+import {createChatHandler} from '../lib/jack-prime-chat.js';
 
 const entry = pricing => ({id:model, type:'language', pricing});
 const reviewed = JSON.parse(readFileSync(new URL('../lib/jack-prime-pricing.json',import.meta.url),'utf8'));
@@ -15,22 +16,23 @@ const request = () => new Request('https://jacksandersuperstar.com/api/jack-prim
   body:JSON.stringify({messages:[{role:'user',content:'Which song should I start with?'}]})
 });
 
-test('routine greetings and acknowledgments do not use model quota, even if the provider is unavailable',async()=>{
-  const original=globalThis.fetch;
-  let calls=0;
-  globalThis.fetch=async()=>{calls++;throw new Error('Provider must not be contacted');};
-  try{
-    for(const [input,expected] of [['Hiiii','yo.'],['hey!','yo.'],['Fine','bet.'],['thanks','bet.'],['okay','bet.'],['yo','yo.']]){
-      const req=new Request('https://jacksandersuperstar.com/api/jack-prime',{
-        method:'POST',headers:{'Content-Type':'application/json',Origin:'https://jacksandersuperstar.com'},
-        body:JSON.stringify({messages:[{role:'user',content:input}]})
-      });
-      const response=await POST(req);
-      assert.equal(response.status,200);
-      assert.deepEqual(await response.json(),{text:expected});
-    }
-    assert.equal(calls,0);
-  }finally{globalThis.fetch=original;}
+test('greetings and acknowledgments reach the model with conversation history and retain its response',async()=>{
+  const expected='That track fits the mood you mentioned.';
+  const generated=[];let priced=0;
+  const handler=createChatHandler({verifyPricing:async()=>{priced++},generate:async options=>{
+    generated.push(options);
+    return {text:expected,finishReason:'stop',usage:{inputTokens:100,outputTokens:10},finalStep:{providerMetadata:{gateway:{generationId:'test-conversation'}}}};
+  }});
+  for(const input of ['Hiiii','hey!','Fine','thanks','okay','yo']){
+    const messages=[{role:'user',content:'I want a song for a quiet drive.'},{role:'assistant',content:'Try cybertruck.'},{role:'user',content:input}];
+    const req=new Request('https://jacksandersuperstar.com/api/jack-prime',{
+      method:'POST',headers:{'Content-Type':'application/json',Origin:'https://jacksandersuperstar.com'},body:JSON.stringify({messages})
+    });
+    const response=await handler(req);
+    assert.equal(response.status,200);assert.deepEqual(await response.json(),{text:expected});
+    assert.deepEqual(generated.at(-1).messages,messages);
+  }
+  assert.equal(generated.length,6);assert.equal(priced,6);
 });
 
 test('math and essay requests are declined before pricing or generation, including with music history',async()=>{
