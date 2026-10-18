@@ -301,6 +301,9 @@
   function updateViewport(){
     viewportFrame=0;
     const view=window.visualViewport;if(view&&view.scale!==1)return;
+    // Safari can pan the outer document while its keyboard is open, even with
+    // an overflow-hidden body. Keep that separate from the chat's own scroll.
+    if(window.scrollX||window.scrollY)window.scrollTo(0,0);
     const atBottom=scroll.scrollHeight-scroll.scrollTop-scroll.clientHeight<24;
     const measuredHeight=Math.min(innerHeight,view?.height||innerHeight);
     const top=Math.min(Math.max(0,view?.offsetTop||0),Math.max(0,innerHeight-measuredHeight));
@@ -332,21 +335,21 @@
   window.addEventListener('pageshow',settleViewport);window.addEventListener('orientationchange',settleViewport);
   input.addEventListener('focus',settleViewport);input.addEventListener('blur',settleViewport);
   let touch;
-  document.body.addEventListener('touchstart',event=>{
+  document.addEventListener('touchstart',event=>{
     if(event.touches.length!==1){touch=null;return;}
     const point=event.touches[0];touch={x:point.clientX,y:point.clientY,at:performance.now(),moved:false,selection:false};
-  },{passive:true});
-  document.body.addEventListener('touchmove',event=>{
+  },{passive:true,capture:true});
+  document.addEventListener('touchmove',event=>{
     if(!touch||event.touches.length!==1||(window.visualViewport?.scale||1)!==1)return;
     const point=event.touches[0],dy=point.clientY-touch.y,dx=point.clientX-touch.x;
-    if(Math.abs(dy)<4||Math.abs(dy)<Math.abs(dx))return;
     const area=event.target instanceof Element?event.target.closest('#prime-input,.prime-conversation,.menu-dialog'):null;
     // Keep native long-press selection and caret dragging available.
     if(area===input&&(input.selectionStart!==input.selectionEnd||touch.selection||(!touch.moved&&performance.now()-touch.at>350))){touch.selection=true;return;}
+    if(area&&Math.abs(dy)<Math.abs(dx))return;
     touch.moved=true;touch.x=point.clientX;touch.y=point.clientY;
     const max=area?area.scrollHeight-area.clientHeight:0;
     if(!area||max<=1||(dy>0?area.scrollTop<=0:area.scrollTop>=max-1))event.preventDefault();
-  },{passive:false});
+  },{passive:false,capture:true});
   document.getElementById('menu-open').addEventListener('click',()=>input.blur());
   updateViewport();setMode('text');
   window.addEventListener('pagehide',()=>controller?.abort());resize();
