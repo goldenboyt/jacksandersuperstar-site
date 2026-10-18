@@ -29,6 +29,8 @@
 .release-page-tracklist{list-style:none;counter-reset:track;padding:0;margin:0}
 .release-page-tracklist li{counter-increment:track;border-top:1px solid #eee;padding:13px 0;display:grid;grid-template-columns:30px 1fr;gap:14px;font-size:14px;line-height:1.5}
 .release-page-tracklist li::before{content:counter(track,decimal-leading-zero);color:#777;font-size:12px;padding-top:2px}
+.release-page-tracklist li{scroll-margin-top:110px}
+.release-page-tracklist li:target{background:#f5f5f5}
 .release-page-notes{display:flex;flex-wrap:wrap;gap:22px;margin-top:28px}
 .release-page-notes a{font-size:13px;border-bottom:1px solid #aaa;padding:8px 0}
 .release-more{margin-top:85px;padding-top:30px;border-top:1px solid var(--line)}
@@ -65,5 +67,5 @@
   .release-more{margin-top:58px}
   .release-more-heading h2{font-size:25px}
 }
-@media(prefers-reduced-motion:reduce){.release-page-card img{transition:none}}
+@media(prefers-reduced-motion:reduce){@view-transition{navigation:none}.release-page-card img{transition:none}}
 .featured-release-details{display:flex;align-items:center;gap:28px;flex-wrap:wrap}

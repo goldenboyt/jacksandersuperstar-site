@@ -5,7 +5,7 @@
 .shop-intro>.button{margin-left:auto;margin-bottom:15px}
 .shop-intro h1>.asterisk{display:inline-block;width:auto}
 .shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:65px 35px}
-.shop-product{min-width:0}
+.shop-product{min-width:0;scroll-margin-top:110px}
 .shop-tee{grid-column:1/-1;display:grid;grid-template-columns:1.2fr 1fr;align-items:center;gap:8vw;border-bottom:1px solid #ccc;padding-bottom:65px}
 .shop-tee .tee-slides{aspect-ratio:4/5}
 .shop-tee .shop-copy h2{font-size:clamp(42px,4.5vw,75px);letter-spacing:-.05em;margin-top:28px}

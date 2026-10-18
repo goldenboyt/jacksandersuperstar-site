@@ -16,6 +16,16 @@
   try{previousOwner=sessionStorage.getItem(ownerStorage);sessionStorage.removeItem(storage);sessionStorage.removeItem(imageStorage);sessionStorage.setItem(ownerStorage,imageOwner)}catch{}
   const idle='';
   const paths=new Map([['/merch','merch'],['/jacksandersuperstar','#jacksandersuperstar®'],['/prodigygenius','prodigy genius'],['/cybertruck','cybertruck'],['/designer','designer'],['/brainstorm','brainstorm'],['/catscash','cats cash'],['/soboda','Soboda'],['/#music','music'],['/#live','Live in Dallas'],['/#video','Magic (Tragic) music video']]);
+  const itemPaths=new Map(),albumPaths=new Set([...catalog.values()].filter(release=>release.type==='album').map(release=>`/${release.page}`));
+  const itemKey=value=>value.toLowerCase().replace(/\s*[([]\s*(?:ft|feat|featuring)\.?[^)\]]*[)\]]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
+  const albumNames=new Set([...catalog.values()].filter(release=>release.type==='album').map(release=>itemKey(release.title)));
+  for(const [id,title,aliases] of [['tees','superstar tees',['tee','tees','shirt','t shirt','superstar tee','superstar tees']],['vinyl','vinyl',['vinyl','vinyl record','jacksandersuperstar vinyl']],['cologne','cologne',['cologne','jack scent','fragrance','perfume']],['temporary-tattoo','temporary tattoos',['tattoo','tattoos','temporary tattoo','temporary tattoos']],['stickers','stickers',['sticker','stickers','die cut stickers']]]){
+    const path=`/merch#${id}`;paths.set(path,title);aliases.forEach(alias=>itemPaths.set(alias,path));
+  }
+  for(const release of catalog.values())release.tracks.forEach((title,index)=>{
+    const path=release.type==='single'?`/${release.page}`:`/${release.page}#track-${index+1}`,key=itemKey(title);paths.set(path,title);
+    if(!albumNames.has(key)&&(!itemPaths.has(key)||release.type==='single'))itemPaths.set(key,path);
+  });
   function nearBottom(){return scroll.scrollHeight-scroll.scrollTop-scroll.clientHeight<48}
   function followBottom(follow){if(follow)requestAnimationFrame(()=>{scroll.scrollTop=scroll.scrollHeight})}
   function validSongs(songs){
@@ -27,16 +37,19 @@
       seen.add(key);return [{releasePage:`/${release.page}`,trackIndex:index}];
     });
   }
-  function sitePath(target){
+  function sitePath(target,label=''){
     if(!target.startsWith('/')&&!/^https:\/\/(?:www\.)?jacksandersuperstar\.com\//i.test(target))return null;
     try{
       const url=new URL(target,location.origin);
       if(![location.origin,'https://jacksandersuperstar.com','https://www.jacksandersuperstar.com'].includes(url.origin)||url.search)return null;
-      const path=url.pathname+url.hash;return paths.has(path)?path:null;
+      let path=url.pathname+url.hash;
+      const item=itemPaths.get(itemKey(label));
+      if(item&&((path==='/merch'&&item.startsWith('/merch#'))||(albumPaths.has(path)&&!item.startsWith('/merch#'))))path=item;
+      return paths.has(path)?path:null;
     }catch{return null}
   }
   function formattedText(text,element,emphasis=true){
-    const tokens=/\[([^\]\n]+)\]\(([^\s)]+)\)|https?:\/\/[^\s<>()]+|\/(?:#[a-z]+|[a-z]+)(?![\w/#%-])|\*\*([^*\n]+)\*\*|__([^_\n]+)__/g;
+    const tokens=/\[([^\]\n]+)\]\(([^\s)]+)\)|https?:\/\/[^\s<>()]+|\/(?:#[a-z]+|[a-z]+(?:#[a-z0-9-]+)?)(?![\w/#%-])|\*\*([^*\n]+)\*\*|__([^_\n]+)__/g;
     let position=0;
     for(const match of text.matchAll(tokens)){
       let node,trailing='';
@@ -47,9 +60,9 @@
         let target=match[2]||match[0];
         if(!match[2]&&target.startsWith('/')&&match.index>0&&/[\w/:.]/.test(text[match.index-1]))continue;
         if(!match[2]&&target.startsWith('http')){trailing=target.match(/[.,!?;:]+$/)?.[0]||'';if(trailing)target=target.slice(0,-trailing.length);}
-        const path=sitePath(target);if(!path)continue;
+        const label=match[1]?.replace(/\*\*|__/g,''),path=sitePath(target,label);if(!path)continue;
         node=document.createElement('a');node.href=path;
-        const label=match[1]?.replace(/\*\*|__/g,'');node.textContent=label&&!label.startsWith('/')&&!/^https?:/i.test(label)?label:paths.get(path);
+        node.textContent=label&&!label.startsWith('/')&&!/^https?:/i.test(label)?label:paths.get(path);
       }
       element.append(document.createTextNode(text.slice(position,match.index)),node,document.createTextNode(trailing));
       position=match.index+match[0].length;
@@ -61,7 +74,7 @@
     for(const song of validSongs(songs)){
       const release=catalog.get(song.releasePage.replace(/^\//,'')),index=song.trackIndex;
       const card=document.createElement('div');card.className='prime-song';
-      const link=document.createElement('a');link.className='prime-song-cover';link.href=`/${release.page}`;link.setAttribute('aria-label',`Open ${release.title}`);
+      const link=document.createElement('a');link.className='prime-song-cover';link.href=release.type==='single'?`/${release.page}`:`/${release.page}#track-${index+1}`;link.setAttribute('aria-label',`Open ${release.tracks[index]}`);
       const cover=document.createElement('img');cover.src=`/assets/${release.image}.webp`;cover.alt='';cover.width=64;cover.height=64;cover.loading='lazy';link.append(cover);
       const details=document.createElement('div');details.className='prime-song-details';
       const list=window.SuperstarPreviews.createTracklist(release,'prime-song-tracklist');

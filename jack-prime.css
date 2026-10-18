@@ -1,4 +1,6 @@
 .prime-root{height:100%;overflow:hidden;overscroll-behavior:none;scroll-behavior:auto;scroll-padding-top:0}
+/* A keyboard-sized chat frame should navigate without a page snapshot. */
+@view-transition{navigation:none}
 .prime-page{--prime-header:90px;position:fixed;inset:var(--prime-top,0px) 0 auto;width:100%;height:var(--prime-height,100dvh);overflow:hidden;overscroll-behavior:none;background:#fff;color:var(--black)}
 .prime-page .header{top:var(--prime-top,0px);z-index:20;background:#fff;color:var(--black);border-color:var(--line);animation:none}
 .prime-page .header .wordmark>img{filter:brightness(0)}

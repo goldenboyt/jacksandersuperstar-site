@@ -64,3 +64,12 @@ test('ordinary Jack questions, dates, counts, prices, and creative conversation 
     assert.equal(taskReply(input),null,input);
   }
 });
+
+test('formal unknown-fact responses become casual without discarding real answers',()=>{
+  for(const text of ["I don't have Jack's favorite brother confirmed.","I don’t have his birthday confirmed.","I don't have that information.","That information isn't publicly available.","I can't confirm that."]){
+    assert.equal(shortReply(text),'ion know',text);
+  }
+  for(const text of ["the cologne's $50, 30 mL.","ion know yet", "I don't know shipping costs. The tee is $25."]){
+    assert.equal(shortReply(text),text);
+  }
+});

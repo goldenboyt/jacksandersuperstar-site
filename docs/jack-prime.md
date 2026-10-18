@@ -9,7 +9,10 @@ It answers questions about Jack Sander's released music, credited features,
 videos, recorded performances, merch, and creative projects. The instructions
 include track counts, listed merch prices, ordering details, and explicit gaps
 in the public biography. Missing facts receive a brief acknowledgment instead
-of an invented answer. Short casual conversation and music opinions remain welcome.
+of an invented answer: "ion know" is enough. Instructions avoid formal phrases
+such as "not confirmed" and allow natural casual texting language. A response
+guard also shortens standalone formal unknown-fact replies left over from older
+history, without discarding substantive answers. Short casual conversation and music opinions remain welcome.
 Math problems, tutoring, essays, and academic assignments are outside its role,
 including assignments framed around Jack. Clear arithmetic and essay requests
 are declined directly before any pricing lookup or model call. Numeric facts
@@ -125,19 +128,24 @@ General image generation and editing accept ideas without a topic-based refusal.
 Server-side art direction preserves the visitor's main subject, medium, colors,
 and intended edit while connecting the result visibly to Jack's creative world.
 Requests already about a cover, song, or merch keep that connection. The artist's
-provided portrait is bundled at `lib/references/jack-portrait.jpg`, with metadata
-removed and original image pixels preserved. General generations receive it as an
-identity reference so Jack can appear when a person naturally fits the idea or his
-face would strengthen the personal connection. It is not a generic face description.
+provided portraits are bundled at `lib/references/jack-portrait.jpg` and
+`lib/references/jack-portrait-smile.jpg`, with metadata removed. The first preserves
+its original pixels; the second is optimized to a 1024-pixel longest edge using
+the same browser image-processing approach as visitor uploads. General generations
+receive both as identity references so Jack can appear when a person naturally
+fits the idea or his face would strengthen the personal connection. These are
+actual photo references rather than a generic face description.
 Object, pet, and abstract ideas can instead connect through cover imagery, the
 Superstar wordmark, or merch when a person would feel forced. Uploaded-photo edits
-receive the visitor's image first and Jack's portrait second, with explicit roles;
+receive the visitor's image first and Jack's two portraits afterward, with explicit roles;
 another person's identity stays intact unless a replacement is requested. The
-portrait is not sent to the chat/vision route or added to either cover starter.
+portraits are not sent to the chat/vision route or added to either cover starter.
+Instructions treat them as two views of one person, avoid duplicating Jack, and
+preserve natural facial proportions rather than close-up distortion or expression.
 Recent context (up to 6,000 characters) and uploaded references remain
 part of the brief; follow-ups do not have to repeat Jack's name. The two album-cover
 templates retain their specific reference-editing instructions. No text classifier
-or additional classification charge is used. The bundled portrait adds image-input
+or additional classification charge is used. The bundled portraits add image-input
 charges to general generation and photo edits; vision questions and cover edits
 retain their own reference-input charges through the existing balance. No new model,
 billing settings, or auto-top-up changes are introduced.
@@ -181,6 +189,19 @@ destinations stay plain text; labels and bold emphasis use safe DOM text nodes.
 The model instructions use named links in examples and website facts. Visiting the
 page does not call the AI. The page has no character or alter-ego labels; explicit
 questions about AI identity still receive honest answers.
+
+Specific products use their existing merch anchors: `tees`, `vinyl`, `cologne`,
+`stickers`, and `temporary-tattoo`. The model knows these destinations and the
+"Jack scent" alias. A specific labeled item also corrects an old generic merch
+or album destination in the renderer. Album songs use one-based `#track-N`
+anchors; singles retain their dedicated release pages. Opening a song link expands
+its album's tracklist, scrolls to that row, and focuses the preview button without
+starting audio. Song-card artwork links to that track; its album label still opens
+the album. Explicit track destinations resolve playable chat previews, while a
+non-music reference to the Soboda archive does not attach the Soboda song.
+The keyboard-sized chat frame opts out of cross-document snapshot transitions;
+release pages also skip these snapshots when reduced motion is requested. This
+keeps the Chromium navigation handoff from stalling the dynamic tracklist.
 
 The page shares the main site's white canvas, Arial typography, thin rules,
 rectangular controls, header, and menu. The horizontal masthead sits above a

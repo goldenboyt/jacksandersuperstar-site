@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {resolveSongMentions} from '../lib/jack-prime-songs.js';
+import {songLinks} from '../lib/jack-prime.js';
 
 const song=(releasePage,trackIndex)=>({releasePage,trackIndex});
 const album=song('/jacksandersuperstar',0);
@@ -77,4 +78,25 @@ test('unavailable or untrusted preview URLs cannot produce an attachment',()=>{
   }
   assert.deepEqual(resolveSongMentions('unique test song','',[{...release,previews:[apple]}]),[song('/test',0)]);
   assert.deepEqual(resolveSongMentions('unique test song','',[{...release,previews:['/assets/previews/test.m4a']}]),[song('/test',0)]);
+});
+
+test('every generated song destination identifies its exact track, with singles preferred',()=>{
+  const catalog=JSON.parse(readFileSync(new URL('../release-data.js',import.meta.url),'utf8').split(' = ')[1].trim().replace(/;$/,''));
+  for(const {title,href} of songLinks){
+    const [page,hash]=href.slice(1).split('#'),release=catalog.releases.find(item=>item.page===page);
+    assert.ok(release,href);
+    const index=hash?Number(hash.replace('track-',''))-1:0;
+    assert.equal(release.tracks[index],title,href);
+    assert.equal(Boolean(hash),release.type==='album',href);
+  }
+  assert.equal(songLinks.find(song=>song.title==='magic (tragic)').href,'/jacksandersuperstar#track-1');
+  assert.equal(songLinks.find(song=>song.title==='cybertruck').href,'/cybertruck');
+});
+
+test('explicit track links attach that preview while the Soboda archive stays separate',()=>{
+  assert.deepEqual(resolveSongMentions('[listen here](/jacksandersuperstar#track-1)'),[song('/jacksandersuperstar',0)]);
+  assert.deepEqual(resolveSongMentions('[title song](/jacksandersuperstar#track-15)'),[song('/jacksandersuperstar',14)]);
+  assert.deepEqual(resolveSongMentions('[Soboda](/prodigygenius#track-7)'),[song('/prodigygenius',6)]);
+  assert.deepEqual(resolveSongMentions('[Soboda](/soboda)','Give me the link to the Soboda page.'),[]);
+  for(const path of ['/prodigygenius#track-700','https://evil.example/prodigygenius#track-7','/prodigygenius#track-7-fake'])assert.deepEqual(resolveSongMentions(path),[],path);
 });

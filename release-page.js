@@ -14,7 +14,16 @@
     title.after(window.SuperstarPreviews.bindTitle(title, release));
   } else {
     const tracks = document.querySelector('.release-page-tracklist');
-    tracks?.replaceWith(window.SuperstarPreviews.createTracklist(release, 'release-page-tracklist'));
+    const list=window.SuperstarPreviews.createTracklist(release, 'release-page-tracklist');
+    [...list.children].forEach((row,index)=>{row.id=`track-${index+1}`});
+    tracks?.replaceWith(list);
+    function openLinkedTrack(){
+      const number=location.hash.match(/^#track-([1-9]\d*)$/)?.[1],row=number?list.children[Number(number)-1]:null;
+      if(!row)return;
+      document.querySelector('.release-track-details').open=true;
+      requestAnimationFrame(()=>{row.scrollIntoView({block:'center',behavior:'instant'});row.querySelector('button')?.focus({preventScroll:true})});
+    }
+    window.addEventListener('hashchange',openLinkedTrack);openLinkedTrack();
     document.querySelector('.release-track-details')?.addEventListener('toggle', event => {
       if (!event.target.open) window.SuperstarPreviews.stopWithin(event.target);
     });

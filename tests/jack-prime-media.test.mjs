@@ -7,6 +7,7 @@ import {createImageHandler} from '../lib/jack-prime-images.js';
 
 const photo=Uint8Array.from(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScLbtAAAAABJRU5ErkJggg==','base64'));
 const artist=readFileSync(new URL('../lib/references/jack-portrait.jpg',import.meta.url));
+const artistSmile=readFileSync(new URL('../lib/references/jack-portrait-smile.jpg',import.meta.url));
 const id='d6c27f5e-d95d-4df5-b188-0629cc362953';
 const host='https://jacksandersuperstar.com';
 const request=(path,body)=>new Request(host+path,{method:'POST',headers:{Origin:host,...(body instanceof FormData?{}:{'Content-Type':'application/json'})},body:body instanceof FormData?body:JSON.stringify(body)});
@@ -51,11 +52,12 @@ test('unrelated image ideas generate once with their subject preserved and a vis
     assert.deepEqual(new Uint8Array(await response.arrayBuffer()),photo);
   }
   assert.equal(priced,1);assert.equal(generated,1);
-  assert.deepEqual(options.prompt.images,[artist]);assert.equal(photoMediaType(artist),'image/jpeg');
+  assert.deepEqual(options.prompt.images,[artist,artistSmile]);assert.equal(photoMediaType(artist),'image/jpeg');assert.equal(photoMediaType(artistSmile),'image/jpeg');
   assert.ok(options.prompt.text.includes(JSON.stringify(prompt)));assert.ok(options.prompt.text.includes(JSON.stringify(context)));
   assert.match(options.prompt.text,/#jacksandersuperstar® wordmark/);
   assert.match(options.prompt.text,/Jack's recognizable face from the supplied portrait/);
   assert.match(options.prompt.text,/identity reference, not an image to edit or recreate/);
+  assert.match(options.prompt.text,/Both portraits show the same person/);
   assert.match(options.prompt.text,/Keep the requested subject central/);
   assert.match(options.prompt.text,/cannot remove this Jack connection/);
 });
@@ -66,10 +68,10 @@ test('general photo edits pass actual reference bytes, and changed photos or con
   const handler=createImageHandler({verifyPricing:async()=>{},generate:async value=>{options=value;return {image,images:[image]}}});
   const fields={prompt:'make the background a sunset',context:'keep the subject recognizable',requestId:id};
   assert.equal((await handler(request('/api/jack-prime-image',form(fields)))).status,200);
-  assert.deepEqual(options.prompt.images,[photo,artist]);assert.ok(options.prompt.text.includes(JSON.stringify(fields.prompt)));
+  assert.deepEqual(options.prompt.images,[photo,artist,artistSmile]);assert.ok(options.prompt.text.includes(JSON.stringify(fields.prompt)));
   assert.match(options.prompt.text,/#jacksandersuperstar® wordmark/);
   assert.match(options.prompt.text,/Reference image 1 is the visitor's image to edit/);
-  assert.match(options.prompt.text,/Reference image 2 is Jack's identity portrait/);
+  assert.match(options.prompt.text,/Reference images 2 and 3 are Jack's identity portraits/);
   assert.match(options.prompt.text,/Do not replace the visitor's face or another person's identity with Jack unless the visitor explicitly requests/);
   assert.match(options.prompt.text,/preserving the recognizable subject and composition/);
   assert.equal((await handler(request('/api/jack-prime-image',form({...fields,context:'different artwork'})))).status,409);
