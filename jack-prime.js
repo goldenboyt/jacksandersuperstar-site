@@ -252,6 +252,10 @@
         const response=await fetch('/api/jack-prime-image',{method:'POST',headers,body:payload,signal:abort.signal});
         if(!response.ok||!response.headers.get('content-type')?.startsWith('image/')){
           const data=await response.json().catch(()=>({}));
+          if(response.status===422&&data.code==='image_refused'&&typeof data.text==='string'&&data.text.trim()){
+            if(request!==turn)return;
+            waiting.remove();const entry={role:'assistant',content:data.text};message(entry.role,entry.content,entry);history.push(entry);imageRetry=null;answered=true;return;
+          }
           throw new Error(data.error||"Couldn't make that image right now.");
         }
         const blob=await response.blob();if(request!==turn)return;
