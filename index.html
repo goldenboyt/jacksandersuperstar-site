@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
 <script src="theme.js?v=1"></script>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
   <meta name="theme-color" content="#131313"><meta name="description" content="Music, live performances, merch, and #jacksandersuperstar®.">
   <title>#jacksandersuperstar®</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23e32122'/%3E%3Ctext x='16' y='26' text-anchor='middle' font-family='Arial' font-size='32' fill='white'%3E*%3C/text%3E%3C/svg%3E">
@@ -13,6 +13,8 @@
   <link rel="stylesheet" href="soboda-discovery.css">
   <link rel="stylesheet" href="release-pages.css?v=2">
   <link rel="stylesheet" href="song-previews.css?v=2">
+  <link rel="stylesheet" href="prime-feature.css?v=1">
+  <link rel="stylesheet" href="prime-widget.css?v=1">
 <link rel="stylesheet" href="theme.css?v=1">
 </head>
 <body>
@@ -129,8 +131,12 @@
   </div>
   <div class="product-info"><div><h3 id="tee-title">superstar tees</h3><p class="merch-price">$25</p></div><a class="tee-shop" href="merch.html">view merch</a></div>
 </article><a class="product" href="merch.html"><div class="product-image"><img src="assets/vinyl.webp" alt="Jacksandersuperstar vinyl record" loading="lazy" width="800" height="800"></div><div class="product-info"><div><h3>on vinyl</h3><p class="merch-price">$100</p></div><span>view merch</span></div></a></div><div class="merch-footer"><span>from the world of #jacksandersuperstar®</span><a class="text-button" href="merch.html">all merch <span aria-hidden="true">+</span></a></div></section>
+<section class="prime-feature" id="jack-prime" aria-labelledby="prime-feature-title">
+  <div class="prime-feature-top"><span class="eyebrow">04 / jack prime</span><span class="prime-feature-note">chat / images / covers</span></div>
+  <div class="prime-feature-body"><h2 id="prime-feature-title">jack<br>prime.</h2><div class="prime-feature-copy"><form class="prime-feature-form" id="prime-feature-form" action="/jackprime"><label class="sr-only" for="prime-feature-input">Message Jack Prime</label><div class="prime-feature-composer"><input id="prime-feature-input" name="message" type="text" maxlength="1600" placeholder="talk to jack prime" required><button type="submit" aria-label="Send to Jack Prime"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></button></div></form><a class="text-button" href="/jackprime" data-prime-open aria-haspopup="dialog" aria-controls="prime-widget">open conversation <span aria-hidden="true">↗</span></a></div></div>
+</section>
 <section class="soboda-section soboda-feature" id="soboda" aria-labelledby="soboda-title">
-  <div class="soboda-copy"><span class="discovery-kicker">04 / discovery center</span><h2 id="soboda-title">SOBODA<span>.</span></h2><p class="soboda-feature-intro">A rarely seen omnivore of the Taiga.</p>
+  <div class="soboda-copy"><span class="discovery-kicker">05 / discovery center</span><h2 id="soboda-title">SOBODA<span>.</span></h2><p class="soboda-feature-intro">A rarely seen omnivore of the Taiga.</p>
     <dl class="soboda-feature-record"><div><dt>first encounter</dt><dd>Alaska, 1960s</dd></div><div><dt>recorded</dt><dd>40</dd></div><div><dt>habitat</dt><dd>the Taiga</dd></div></dl>
     <a class="button button-red" href="soboda.html">explore the discovery center</a><span class="soboda-footnote">field notes / visual records / the specimen</span>
   </div>
@@ -149,7 +155,10 @@
 <dialog class="release-dialog" id="release-dialog" aria-labelledby="release-dialog-title"><div class="dialog-toolbar"><span>the catalog</span><button class="close-button" data-close="release-dialog" aria-label="Close album details">close <span aria-hidden="true">×</span></button></div><div id="release-content"></div></dialog>
 <dialog class="video-dialog" id="video-dialog" aria-labelledby="video-title"><div class="dialog-toolbar"><h2 id="video-title">live in dallas</h2><button class="close-button" data-close="video-dialog" aria-label="Close video">close <span aria-hidden="true">×</span></button></div><div class="video-frame" id="video-frame"></div><a href="https://www.youtube.com/watch?v=pZm5ldOVBnI" target="_blank" rel="noopener">watch on youtube</a></dialog>
 
-<script src="site-motion.js?v=23" defer></script>
+<button type="button" class="prime-widget-launcher" id="prime-widget-open" aria-haspopup="dialog" aria-controls="prime-widget" aria-expanded="false" hidden>jack prime <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></button>
+<dialog class="prime-widget" id="prime-widget" aria-labelledby="prime-widget-title"><div class="prime-widget-head"><h2 id="prime-widget-title">jack prime</h2><button type="button" id="prime-widget-expand" aria-pressed="false">expand</button><button type="button" class="prime-widget-close" id="prime-widget-close" aria-label="Close Jack Prime">×</button></div><iframe class="prime-widget-frame" id="prime-widget-frame" title="Conversation with Jack Prime" allow="web-share"></iframe></dialog>
+<script src="site-motion.js?v=25" defer></script>
+<script src="prime-widget.js?v=1" defer></script>
 <script src="release-data.js?v=2" defer></script>
 <script src="release-ui.js?v=1" defer></script>
 <script src="song-previews.js?v=1" defer></script>

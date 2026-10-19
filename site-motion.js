@@ -17,10 +17,13 @@
   });
   const menu=document.getElementById('menu');
   const menuOpen=document.getElementById('menu-open');
-  const primeLink=document.createElement('a');primeLink.href='/jackprime';primeLink.textContent='jack prime';primeLink.style.whiteSpace='nowrap';
+  const primeFeature=document.getElementById('jack-prime');
+  const primeLink=document.createElement('a');primeLink.href=primeFeature?'#jack-prime':'/jackprime';primeLink.textContent='jack prime';primeLink.style.whiteSpace='nowrap';
   if(location.pathname==='/jackprime'||location.pathname==='/jackprime.html')primeLink.setAttribute('aria-current','page');
-  document.querySelector('.desktop-nav')?.append(primeLink);
-  const primeMenuLink=primeLink.cloneNode(true);primeMenuLink.insertAdjacentHTML('afterbegin','<span>05</span>');menu.querySelector('nav').append(primeMenuLink);
+  const desktopNav=document.querySelector('.desktop-nav'),menuNav=menu.querySelector('nav');
+  if(desktopNav)desktopNav.insertBefore(primeLink,primeFeature?desktopNav.querySelector('a[href="#soboda"]'):null);
+  const primeMenuLink=primeLink.cloneNode(true);primeMenuLink.insertAdjacentHTML('afterbegin',`<span>${primeFeature?'04':'05'}</span>`);menuNav.insertBefore(primeMenuLink,primeFeature?menuNav.querySelector('a[href="#soboda"]'):null);
+  if(primeFeature){const number=menuNav.querySelector('a[href="#soboda"]>span');if(number)number.textContent='05'}
   let menuTimer=null;
   menu.querySelectorAll('nav a').forEach((link,index)=>link.style.setProperty('--menu-index',index));
   const menuArt=document.createElement('img');
@@ -73,6 +76,6 @@
   document.addEventListener('superstar:intro-end',updateHeader);
   if(!reduced.matches&&'IntersectionObserver' in window){
     const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('arrived');observer.unobserve(entry.target)}}),{threshold:.06,rootMargin:'0px 0px -8% 0px'});
-    document.querySelectorAll('.shop-product,.shop-intro,.shop-order,.video-heading,.music-video-links,footer .footer-top').forEach((element,i)=>{element.classList.add('section-arrive');element.style.setProperty('--arrive-delay',`${i%3*70}ms`);observer.observe(element)});
+    document.querySelectorAll('.shop-product,.shop-intro,.shop-order,.video-heading,.music-video-links,.prime-feature,footer .footer-top').forEach((element,i)=>{element.classList.add('section-arrive');element.style.setProperty('--arrive-delay',`${i%3*70}ms`);observer.observe(element)});
   }
 })();

@@ -1,5 +1,6 @@
 (() => {
   const form=document.getElementById('prime-form'),input=document.getElementById('prime-input');
+  const embedded=document.documentElement.classList.contains('prime-embedded');
   const send=document.getElementById('prime-send'),stop=document.getElementById('prime-stop');
   const status=document.getElementById('prime-status'),log=document.getElementById('prime-messages');
   const intro=document.getElementById('prime-intro'),scroll=document.getElementById('prime-conversation');
@@ -193,14 +194,6 @@
     input.setAttribute('aria-label',mode==='image'?'Describe an image for Jack Prime to make':'Message Jack Prime');
     send.setAttribute('aria-label',mode==='image'?'Make image':'Send message');
   }
-  function imageIntent(text){
-    text=text.replace(/^(?:hey|yo)[,.!]?\s+/i,'');
-    if(/^(?:(?:can|could|will|would)\s+you\s+)?(?:please\s+)?(?:make|create|generate|design)\s+(?:me\s+)?(?:an?\s+|the\s+)?(?:soboda|sobota|saboda|sabota)\b(?!\s+(?:song|track|lyrics|essay|story|joke|beat)\b)/i.test(text))return true;
-    if(uploadedPhoto&&/\bmake\s+(?:sense\s+of|an?\s+analysis\s+of)\b/i.test(text))return false;
-    if(/^(?:can|could|will|would)\s+you\s+(?:make|create|generate|design|draw)\s+(?:me\s+)?(?:(?:an?|some)\s+)?(?:images?|pictures?|photos?|posters?|wallpapers?|artwork|cover\s*art|album\s*covers?|illustrations?)\s*[.!?]*$/i.test(text))return false;
-    return /^(?:(?:hey|yo)[,.!]?\s+)?(?:(?:can|could|will|would)\s+you\s+)?(?:please\s+)?(?:(?:make|create|generate|design)\s+(?:me\s+)?(?:an?\s+|some\s+)?(?:[^.!?\n]{0,70}\s+)?(?:image|picture|photo|poster|wallpaper|artwork|cover\s*art|album\s*cover|illustration)\b|(?:draw|illustrate|paint)\s+(?:me\s+)?(?:an?\s+)?\S)/i.test(text);
-  }
-  function editIntent(text){return Boolean(uploadedPhoto)&&!/\bmake\s+(?:sense\s+of|an?\s+analysis\s+of)\b/i.test(text)&&/^(?:(?:can|could|will|would)\s+you\s+)?(?:please\s+)?(?:edit|remove|erase|replace|change|add|turn|crop|retouch|recolor|make)\b/i.test(text)}
   function busy(value,kind=mode){
     send.disabled=value;modeButtons.forEach(button=>{button.disabled=value});stop.hidden=!value;
     photoInput.disabled=value;photoRemove.disabled=value;coverClose.disabled=value;
@@ -219,13 +212,31 @@
     if(coverTemplate==='prodigy'&&!uploadedPhoto){status.textContent='add a photo first.';photoInput.focus();return;}
     const template=coverTemplate,photo=uploadedPhoto;
     const display=template==='superstar'?`make a superstar cover with this text: ${text}`:template==='prodigy'?`put my photo on prodigy genius${text?`: ${text}`:''}`:text;
-    const kind=mode==='image'||imageIntent(text)||editIntent(text)?'image':'text',before=[...history],request=++turn,sentRevision=draftRevision;
+    let kind=mode==='image'?'image':'text';
+    const before=[...history],request=++turn,sentRevision=draftRevision;
     const pendingMessage=message('user',display,{},photo?.blob);history.push({role:'user',content:display,...(kind==='image'?{kind:'image'}:{})});input.value='';resize();
     const abort=new AbortController();controller=abort;busy(true,kind);
-    const waiting=activity(kind);
+    let waiting=activity(kind);
     let answered=false,timedOut=false;
-    const timeout=setTimeout(()=>{timedOut=true;abort.abort()},kind==='image'?175000:35000);
+    let timeout=setTimeout(()=>{timedOut=true;abort.abort()},kind==='image'?175000:35000);
     try{
+      if(kind==='text'){
+        let payload,headers;
+        if(photo){payload=new FormData();payload.set('messages',JSON.stringify(recentMessages()));payload.set('photo',photo.blob,'attachment.jpg');}
+        else{headers={'Content-Type':'application/json'};payload=JSON.stringify({messages:recentMessages()});}
+        const response=await fetch('/api/jack-prime',{method:'POST',headers,body:payload,signal:abort.signal});
+        const data=await response.json();
+        if(!response.ok)throw new Error(data.error||"Can't reach Jack Prime right now.");
+        if(request!==turn)return;
+        if(data.action==='image'){
+          kind='image';history.at(-1).kind='image';
+          clearTimeout(timeout);timeout=setTimeout(()=>{timedOut=true;abort.abort()},175000);
+          waiting.remove();waiting=activity('image');
+        }else{
+          if(typeof data.text!=='string'||!data.text.trim())throw new Error("Can't reach Jack Prime right now.");
+          waiting.remove();const entry={role:'assistant',content:data.text,songs:validSongs(data.songs)};message(entry.role,entry.content,entry);history.push(entry);
+        }
+      }
       if(kind==='image'){
         const owner=imageOwner;
         const context=history.slice(-6).map(item=>`${item.role}: ${item.content}`).join('\n').slice(-6000);
@@ -247,15 +258,6 @@
         if(!blob.size)throw new Error("Couldn't load the image. Try again.");
         storeImage(imageId,blob,owner).then(()=>{if(owner!==imageOwner)deleteImages([imageId])});
         waiting.remove();const entry={role:'assistant',content:`[Generated image for: ${JSON.stringify(display)}]`,kind:'image',imageId,imagePrompt:display};message(entry.role,'',entry,blob);history.push(entry);imageRetry=null;
-      }else{
-        let payload,headers;
-        if(photo){payload=new FormData();payload.set('messages',JSON.stringify(recentMessages()));payload.set('photo',photo.blob,'attachment.jpg');}
-        else{headers={'Content-Type':'application/json'};payload=JSON.stringify({messages:recentMessages()});}
-        const response=await fetch('/api/jack-prime',{method:'POST',headers,body:payload,signal:abort.signal});
-        const data=await response.json();
-        if(!response.ok||typeof data.text!=='string'||!data.text.trim())throw new Error(data.error||"Can't reach Jack Prime right now.");
-        if(request!==turn)return;
-        waiting.remove();const entry={role:'assistant',content:data.text,songs:validSongs(data.songs)};message(entry.role,entry.content,entry);history.push(entry);
       }
       answered=true;
     }catch(error){
@@ -310,7 +312,7 @@
     intro.hidden=false;intro.style.removeProperty('display');document.body.classList.remove('prime-has-messages');busy(false);setMode('text');input.value='';resize();input.focus({preventScroll:true});
   });
   if(previousOwner)clearOwnedImages(previousOwner);
-  const tesla=/\bTesla\b/i.test(navigator.userAgent);
+  const tesla=!embedded&&/\bTesla\b/i.test(navigator.userAgent);
   let viewportFrame=0,viewportTimers=[],restingWidth=innerWidth,restingHeight=Math.min(innerHeight,window.visualViewport?.height||innerHeight);
   function updateViewport(){
     viewportFrame=0;
@@ -366,6 +368,25 @@
     if(!area||max<=1||(dy>0?area.scrollTop<=0:area.scrollTop>=max-1))event.preventDefault();
   },{passive:false,capture:true});
   document.getElementById('menu-open').addEventListener('click',()=>input.blur());
+  if(embedded){
+    const host=(type,value)=>parent.postMessage({type,...(value===undefined?{}:{value})},location.origin);
+    document.addEventListener('click',event=>{
+      const link=event.target instanceof Element?event.target.closest('a[href]'):null;
+      if(link&&!link.hasAttribute('download')&&!link.getAttribute('href').startsWith('#')&&/^https?:$/.test(link.protocol)&&link.origin===location.origin)link.target='_top';
+    });
+    input.addEventListener('focus',()=>host('prime:typing',true));input.addEventListener('blur',()=>host('prime:typing',false));
+    window.addEventListener('message',event=>{
+      if(event.origin!==location.origin||event.source!==parent)return;
+      if(event.data?.type==='prime:focus')input.focus({preventScroll:true});
+      if(event.data?.type==='prime:send'&&typeof event.data.text==='string'&&event.data.text.trim()&&event.data.text.length<=1600){
+        if(!controller){selectCover(null);setMode('text');}
+        input.value=event.data.text;draftRevision++;resize();input.focus({preventScroll:true});if(!controller)form.requestSubmit();
+      }
+      if(event.data?.type==='prime:blur'){input.blur();window.SuperstarPreviews?.stopWithin(log);}
+    });
+    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.querySelector('dialog[open]'))host('prime:close')});
+    host('prime:ready');
+  }
   updateViewport();setMode('text');
   window.addEventListener('pagehide',()=>controller?.abort());resize();
 })();

@@ -1,0 +1,14 @@
+.prime-feature{padding:70px var(--pad) 80px;border-top:1px solid var(--line);background:var(--page-bg,#fff);color:var(--page-ink,#111)}
+.prime-feature-top{display:flex;align-items:center;justify-content:space-between;gap:24px;padding-bottom:24px;border-bottom:1px solid var(--line)}
+.prime-feature-top .eyebrow{margin:0;font-size:12px;font-weight:400;letter-spacing:.06em}
+.prime-feature-note{font-size:12px;color:var(--gray)}
+.prime-feature-body{display:grid;grid-template-columns:1.25fr 1fr;gap:60px;align-items:end;padding-top:46px}
+.prime-feature h2{margin:0;font-size:clamp(92px,12.5vw,190px);font-weight:400;letter-spacing:-.075em;line-height:.84}
+.prime-feature-copy{padding-bottom:6px}
+.prime-feature-composer{display:flex;align-items:center;gap:12px;padding:8px;border:1px solid var(--page-ink,#111);margin-bottom:18px}
+.prime-feature-composer:focus-within{outline:1px solid var(--page-ink,#111);outline-offset:3px}
+.prime-feature-composer input{flex:1;min-width:0;min-height:46px;padding:10px 12px;background:transparent;border:0;outline:0;border-radius:0;color:inherit;font:16px/1.4 Arial,Helvetica,sans-serif}
+.prime-feature-composer input::placeholder{color:var(--gray);opacity:1}
+.prime-feature-composer button{display:grid;place-items:center;width:46px;height:46px;flex:none;background:var(--red);color:#fff;border:0;cursor:pointer}
+.prime-feature-copy .text-button{gap:34px}
+@media(max-width:700px){.prime-feature{padding:38px var(--pad) 44px}.prime-feature-top{gap:16px;padding-bottom:20px}.prime-feature-note{font-size:11px}.prime-feature-top .eyebrow{font-size:11px}.prime-feature-body{grid-template-columns:1fr;gap:34px;padding-top:32px}.prime-feature h2{font-size:clamp(96px,28vw,148px)}.prime-feature-copy{padding:0}}

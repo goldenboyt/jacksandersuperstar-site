@@ -1,0 +1,14 @@
+html.prime-embedded .header,html.prime-embedded .skip,html.prime-embedded .prime-heading,html.prime-embedded .prime-toolbar>a{display:none}
+html.prime-embedded .prime-page{--prime-header:0px}
+html.prime-embedded .prime-main{top:var(--prime-top,0px);height:var(--prime-height,100dvh);padding:0 18px}
+html.prime-embedded .prime-toolbar{min-height:44px;border-bottom:1px solid var(--line);display:flex}
+html.prime-embedded .prime-toolbar .text-button{min-height:38px;border:0;padding:4px 0;font-size:11px;gap:14px}
+html.prime-embedded .prime-conversation{padding:14px 0 18px}
+html.prime-embedded .prime-invite{font-size:26px}
+html.prime-embedded .prime-starters{margin-top:16px;gap:6px 18px}
+html.prime-embedded .prime-starters .text-button{font-size:12px;gap:16px}
+html.prime-embedded .prime-cover-starters{margin-top:22px}
+html.prime-embedded .prime-message{font-size:17px}
+html.prime-embedded .prime-messages{gap:26px}
+html.prime-embedded .prime-form{padding-top:12px}
+html.prime-embedded .prime-composer textarea{font-size:16px}
