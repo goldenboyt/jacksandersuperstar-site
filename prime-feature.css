@@ -5,6 +5,7 @@
 .prime-feature-body{display:grid;grid-template-columns:1.25fr 1fr;gap:60px;align-items:end;padding-top:46px}
 .prime-feature h2{margin:0;font-size:clamp(92px,12.5vw,190px);font-weight:400;letter-spacing:-.075em;line-height:.84}
 .prime-feature-copy{padding-bottom:6px}
+.prime-feature-tagline{max-width:17em;margin:0 0 28px;font-size:clamp(24px,2.5vw,36px);font-weight:400;line-height:1.15;letter-spacing:-.045em}
 .prime-feature-composer{display:flex;align-items:center;gap:12px;padding:8px;border:1px solid var(--page-ink,#111);margin-bottom:18px}
 .prime-feature-composer:focus-within{outline:1px solid var(--page-ink,#111);outline-offset:3px}
 .prime-feature-composer input{flex:1;min-width:0;min-height:46px;padding:10px 12px;background:transparent;border:0;outline:0;border-radius:0;color:inherit;font:16px/1.4 Arial,Helvetica,sans-serif}
