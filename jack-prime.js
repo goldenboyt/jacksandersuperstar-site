@@ -391,6 +391,6 @@
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.querySelector('dialog[open]'))host('prime:close')});
     host('prime:ready');
   }
-  updateViewport();setMode('text');
+  updateViewport();setMode('text');send.disabled=false;
   window.addEventListener('pagehide',()=>controller?.abort());resize();
 })();
