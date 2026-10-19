@@ -2,8 +2,7 @@
   const dialog=document.getElementById('prime-widget'),frame=document.getElementById('prime-widget-frame');
   const launcher=document.getElementById('prime-widget-open'),close=document.getElementById('prime-widget-close'),expand=document.getElementById('prime-widget-expand');
   if(!dialog||!frame||!launcher)return;
-  const startForm=document.getElementById('prime-feature-form'),startInput=document.getElementById('prime-feature-input');
-  let opener=launcher,scrollY=0,overflow='',typing=false,restingHeight=innerHeight,ready=false,pending='';
+  let opener=launcher,scrollY=0,overflow='',typing=false,restingHeight=innerHeight,ready=false;
   const tesla=/\bTesla\b/i.test(navigator.userAgent);
   function position(){
     const view=window.visualViewport;if(view&&view.scale!==1)return;
@@ -18,9 +17,9 @@
     dialog.style.setProperty('--widget-height',`${height}px`);
   }
   function send(type,data={}){frame.contentWindow?.postMessage({type,...data},location.origin)}
-  function begin(){if(!ready)return;if(pending){send('prime:send',{text:pending});pending='';if(startInput)startInput.value=''}else send('prime:focus')}
-  function open(event,text=''){
-    event?.preventDefault();opener=event?.currentTarget===startForm?startInput:event?.currentTarget||launcher;if(text)pending=text;
+  function begin(){if(ready)send('prime:focus')}
+  function open(event){
+    event?.preventDefault();opener=event?.currentTarget||launcher;
     if(!dialog.open){scrollY=window.scrollY;overflow=document.documentElement.style.overflow;document.documentElement.style.overflow='hidden';dialog.showModal();launcher.setAttribute('aria-expanded','true')}
     position();
     if(!frame.getAttribute('src'))frame.src='/jackprime?embed=1';else begin();
@@ -30,8 +29,6 @@
     launcher.setAttribute('aria-expanded','false');window.scrollTo({top:scrollY,behavior:'instant'});opener?.focus({preventScroll:true});
   }
   launcher.hidden=false;launcher.addEventListener('click',open);
-  document.querySelectorAll('[data-prime-open]').forEach(link=>link.addEventListener('click',open));
-  startForm?.addEventListener('submit',event=>{const text=startInput.value.trim();if(text)open(event,text);else event.preventDefault()});
   close.addEventListener('click',()=>dialog.close());dialog.addEventListener('close',finish);
   expand.addEventListener('click',()=>{const expanded=dialog.classList.toggle('is-expanded');expand.setAttribute('aria-pressed',String(expanded));expand.textContent=expanded?'reduce':'expand';position()});
   window.addEventListener('message',event=>{

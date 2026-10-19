@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="soboda-discovery.css">
   <link rel="stylesheet" href="release-pages.css?v=2">
   <link rel="stylesheet" href="song-previews.css?v=2">
-  <link rel="stylesheet" href="prime-feature.css?v=2">
+  <link rel="stylesheet" href="prime-feature.css?v=3">
   <link rel="stylesheet" href="prime-widget.css?v=1">
 <link rel="stylesheet" href="theme.css?v=1">
 </head>
@@ -133,7 +133,13 @@
 </article><a class="product" href="merch.html"><div class="product-image"><img src="assets/vinyl.webp" alt="Jacksandersuperstar vinyl record" loading="lazy" width="800" height="800"></div><div class="product-info"><div><h3>on vinyl</h3><p class="merch-price">$100</p></div><span>view merch</span></div></a></div><div class="merch-footer"><span>from the world of #jacksandersuperstar®</span><a class="text-button" href="merch.html">all merch <span aria-hidden="true">+</span></a></div></section>
 <section class="prime-feature" id="jack-prime" aria-labelledby="prime-feature-title">
   <div class="prime-feature-top"><span class="eyebrow">04 / jack prime</span><span class="prime-feature-note">chat / images / covers</span></div>
-  <div class="prime-feature-body"><h2 id="prime-feature-title">jack<br>prime.</h2><div class="prime-feature-copy"><p class="prime-feature-tagline">it’s almost as good as the real thing.</p><form class="prime-feature-form" id="prime-feature-form" action="/jackprime"><label class="sr-only" for="prime-feature-input">Message Jack Prime</label><div class="prime-feature-composer"><input id="prime-feature-input" name="message" type="text" maxlength="1600" placeholder="talk to jack prime" required><button type="submit" aria-label="Send to Jack Prime"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></button></div></form><a class="text-button" href="/jackprime" data-prime-open aria-haspopup="dialog" aria-controls="prime-widget">open conversation <span aria-hidden="true">↗</span></a></div></div>
+  <div class="prime-feature-body">
+    <div class="prime-feature-identity"><h2 id="prime-feature-title">jack <span>prime.</span></h2><p class="prime-feature-tagline">it’s almost as good as the real thing.</p></div>
+    <div class="prime-feature-copy">
+      <form class="prime-feature-form" id="prime-feature-form" action="/jackprime"><label for="prime-feature-input">your message</label><div class="prime-feature-composer"><input id="prime-feature-input" type="text" maxlength="1600" placeholder="talk to jack prime" autocomplete="off" enterkeyhint="send" required><button type="submit" aria-label="Send to Jack Prime" disabled><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></button></div></form>
+      <a class="text-button" href="/jackprime">open conversation <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a>
+    </div>
+  </div>
 </section>
 <section class="soboda-section soboda-feature" id="soboda" aria-labelledby="soboda-title">
   <div class="soboda-copy"><span class="discovery-kicker">05 / discovery center</span><h2 id="soboda-title">SOBODA<span>.</span></h2><p class="soboda-feature-intro">A rarely seen omnivore of the Taiga.</p>
@@ -158,7 +164,8 @@
 <button type="button" class="prime-widget-launcher" id="prime-widget-open" aria-haspopup="dialog" aria-controls="prime-widget" aria-expanded="false" hidden>jack prime <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></button>
 <dialog class="prime-widget" id="prime-widget" aria-labelledby="prime-widget-title"><div class="prime-widget-head"><h2 id="prime-widget-title">jack prime</h2><button type="button" id="prime-widget-expand" aria-pressed="false">expand</button><button type="button" class="prime-widget-close" id="prime-widget-close" aria-label="Close Jack Prime">×</button></div><iframe class="prime-widget-frame" id="prime-widget-frame" title="Conversation with Jack Prime" allow="web-share"></iframe></dialog>
 <script src="site-motion.js?v=25" defer></script>
-<script src="prime-widget.js?v=1" defer></script>
+<script src="prime-feature.js?v=1" defer></script>
+<script src="prime-widget.js?v=2" defer></script>
 <script src="release-data.js?v=2" defer></script>
 <script src="release-ui.js?v=1" defer></script>
 <script src="song-previews.js?v=1" defer></script>

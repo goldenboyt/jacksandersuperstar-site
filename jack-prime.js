@@ -393,4 +393,14 @@
   }
   updateViewport();setMode('text');send.disabled=false;
   window.addEventListener('pagehide',()=>controller?.abort());resize();
+  if(!embedded){
+    const fragment=new URLSearchParams(location.hash.slice(1));
+    if(fragment.has('message')){
+      const message=fragment.get('message')?.trim();
+      fragment.delete('message');
+      const remaining=fragment.toString();
+      window.history.replaceState(window.history.state,'',location.pathname+location.search+(remaining?`#${remaining}`:''));
+      if(message&&message.length<=1600)ask(message);
+    }
+  }
 })();
