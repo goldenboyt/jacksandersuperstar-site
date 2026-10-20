@@ -4,7 +4,6 @@
   const send=document.getElementById('prime-send'),stop=document.getElementById('prime-stop');
   const status=document.getElementById('prime-status'),log=document.getElementById('prime-messages');
   const intro=document.getElementById('prime-intro'),scroll=document.getElementById('prime-conversation');
-  const modeButtons=[...document.querySelectorAll('[data-prime-mode]')];
   const coverEditor=document.getElementById('prime-cover-editor'),coverReference=document.getElementById('prime-cover-reference');
   const coverTitle=document.getElementById('prime-cover-title'),coverHelp=document.getElementById('prime-cover-help'),coverClose=document.getElementById('prime-cover-close');
   const coverUpload=document.getElementById('prime-cover-upload'),photoInput=document.getElementById('prime-cover-photo'),photoPreview=document.getElementById('prime-cover-photo-preview'),photoName=document.getElementById('prime-cover-photo-name');
@@ -12,7 +11,7 @@
   const storage='superstar:jack-prime:conversation',imageStorage=`${storage}:image-request`,ownerStorage=`${storage}:image-owner`;
   const catalog=new Map((window.SuperstarCatalog?.releases||[]).map(release=>[release.page,release]));
   const imageURLs=new Map();
-  let history=[],controller=null,turn=0,mode='text',imageRetry=null,database,coverTemplate=null,uploadedPhoto=null,photoURL=null,photoSerial=0,draftRevision=0;
+  let history=[],controller=null,turn=0,imageRetry=null,database,coverTemplate=null,uploadedPhoto=null,photoURL=null,photoSerial=0,draftRevision=0;
   let imageOwner=crypto.randomUUID(),previousOwner;
   try{previousOwner=sessionStorage.getItem(ownerStorage);sessionStorage.removeItem(storage);sessionStorage.removeItem(imageStorage);sessionStorage.setItem(ownerStorage,imageOwner)}catch{}
   const idle='';
@@ -171,7 +170,7 @@
     if(!overflow){input.scrollTop=0;input.scrollLeft=0;}
     followBottom(follow);
   }
-  function clearPhoto(){photoSerial++;uploadedPhoto=null;photoInput.value='';if(photoURL)URL.revokeObjectURL(photoURL);photoURL=null;photoPreview.removeAttribute('src');photoPreview.hidden=true;photoOpen.hidden=true;coverUpload.hidden=true;photoName.textContent='';if(!controller)send.disabled=false;setMode(mode);}
+  function clearPhoto(){photoSerial++;uploadedPhoto=null;photoInput.value='';if(photoURL)URL.revokeObjectURL(photoURL);photoURL=null;photoPreview.removeAttribute('src');photoPreview.hidden=true;photoOpen.hidden=true;coverUpload.hidden=true;photoName.textContent='';if(!controller)send.disabled=false;updateComposer();}
   function selectCover(value){
     if(controller)return;
     const next=['superstar','prodigy'].includes(value)?value:null;if(next)clearPhoto();coverTemplate=next;
@@ -182,20 +181,19 @@
       coverReference.src=coverTemplate==='superstar'?'/assets/album.webp':'/assets/prodigy.webp';
       coverTitle.textContent=coverTemplate==='superstar'?'your superstar cover':'your prodigy genius cover';
       coverHelp.textContent=coverTemplate==='superstar'?'replace the tee text. keep the original cover.':'add a photo. keep the original cover and swap the face.';
-      setMode('image');
-    }else setMode('text');
+    }
+    updateComposer();
     status.textContent='';if(coverTemplate){input.value='';draftRevision++;}resize();(coverTemplate==='prodigy'?photoInput:input).focus({preventScroll:true});
   }
-  function setMode(value){
-    mode=value==='image'?'image':'text';modeButtons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.primeMode===mode)));
-    input.placeholder=coverTemplate==='superstar'?'what should the tee say?':coverTemplate==='prodigy'?'any other details? (optional)':uploadedPhoto?(mode==='image'?'what should change?':'ask about this image'):mode==='image'?'describe your image':'talk to jack prime';
-    input.required=coverTemplate!=='prodigy'&&!(uploadedPhoto&&mode==='text');input.maxLength=coverTemplate==='superstar'?160:1600;
+  function updateComposer(){
+    input.placeholder=coverTemplate==='superstar'?'what should the tee say?':coverTemplate==='prodigy'?'any other details? (optional)':uploadedPhoto?'ask about or edit this image':'talk to jack prime';
+    input.required=coverTemplate!=='prodigy'&&!(uploadedPhoto&&!coverTemplate);input.maxLength=coverTemplate==='superstar'?160:1600;
     photoAdd.hidden=coverTemplate==='superstar';
-    input.setAttribute('aria-label',mode==='image'?'Describe an image for Jack Prime to make':'Message Jack Prime');
-    send.setAttribute('aria-label',mode==='image'?'Make image':'Send message');
+    input.setAttribute('aria-label',coverTemplate==='superstar'?'Text for your Superstar cover':coverTemplate==='prodigy'?'Details for your Prodigy Genius cover':'Message Jack Prime');
+    send.setAttribute('aria-label',coverTemplate?'Make cover':'Send message');
   }
-  function busy(value,kind=mode){
-    send.disabled=value;modeButtons.forEach(button=>{button.disabled=value});stop.hidden=!value;
+  function busy(value){
+    send.disabled=value;stop.hidden=!value;
     photoInput.disabled=value;photoRemove.disabled=value;coverClose.disabled=value;
     status.textContent=idle;form.setAttribute('aria-busy',String(value));
   }
@@ -207,15 +205,15 @@
   }
   async function ask(text){
     text=text.trim();if(controller)return;
-    if(!text&&uploadedPhoto&&mode==='text'&&!coverTemplate)text="what's in this image?";
+    if(!text&&uploadedPhoto&&!coverTemplate)text="what's in this image?";
     if(!text&&coverTemplate!=='prodigy')return;
     if(coverTemplate==='prodigy'&&!uploadedPhoto){status.textContent='add a photo first.';photoInput.focus();return;}
     const template=coverTemplate,photo=uploadedPhoto;
     const display=template==='superstar'?`make a superstar cover with this text: ${text}`:template==='prodigy'?`put my photo on prodigy genius${text?`: ${text}`:''}`:text;
-    let kind=mode==='image'?'image':'text';
+    let kind=template?'image':'text';
     const before=[...history],request=++turn,sentRevision=draftRevision;
     const pendingMessage=message('user',display,{},photo?.blob);history.push({role:'user',content:display,...(kind==='image'?{kind:'image'}:{})});input.value='';resize();
-    const abort=new AbortController();controller=abort;busy(true,kind);
+    const abort=new AbortController();controller=abort;busy(true);
     let waiting=activity(kind);
     let answered=false,timedOut=false;
     let timeout=setTimeout(()=>{timedOut=true;abort.abort()},kind==='image'?175000:35000);
@@ -266,12 +264,12 @@
       answered=true;
     }catch(error){
       if(request!==turn)return;
-      pendingMessage.remove();history=before;if(draftRevision===sentRevision)input.value=text;if(kind==='image')setMode('image');resize();
+      pendingMessage.remove();history=before;if(draftRevision===sentRevision)input.value=text;resize();
       if(!history.length){intro.hidden=false;intro.style.removeProperty('display');document.body.classList.remove('prime-has-messages');}
       status.textContent=timedOut?'that took too long. you can try again.':error.name==='AbortError'?(kind==='image'?'stopped waiting. your image may still finish.':'stopped. your message is ready to try again.'):error.message;
     }finally{
       clearTimeout(timeout);waiting.remove();
-      if(request===turn){controller=null;send.disabled=false;modeButtons.forEach(button=>{button.disabled=false});photoInput.disabled=false;photoRemove.disabled=false;coverClose.disabled=false;stop.hidden=true;form.setAttribute('aria-busy','false');if(answered)status.textContent=idle;}
+      if(request===turn){controller=null;send.disabled=false;photoInput.disabled=false;photoRemove.disabled=false;coverClose.disabled=false;stop.hidden=true;form.setAttribute('aria-busy','false');if(answered)status.textContent=idle;}
     }
   }
   form.addEventListener('submit',event=>{event.preventDefault();ask(input.value)});
@@ -280,7 +278,6 @@
     const keepFocus=event=>{if(event.button===0&&document.activeElement===input)event.preventDefault()};
     button.addEventListener('pointerdown',keepFocus);button.addEventListener('mousedown',keepFocus);
   });
-  modeButtons.forEach(button=>button.addEventListener('click',()=>{if(coverTemplate)selectCover(null);setMode(button.dataset.primeMode);status.textContent=idle;input.focus({preventScroll:true})}));
   document.querySelectorAll('[data-prime-cover]').forEach(button=>button.addEventListener('click',()=>selectCover(button.dataset.primeCover)));
   coverClose.addEventListener('click',()=>selectCover(null));
   photoRemove.addEventListener('click',()=>{clearPhoto();status.textContent='';input.focus({preventScroll:true});resize()});
@@ -299,13 +296,13 @@
       const digest=await crypto.subtle.digest('SHA-256',await blob.arrayBuffer());
       if(serial!==photoSerial)return;
       uploadedPhoto={blob,key:[...new Uint8Array(digest)].map(byte=>byte.toString(16).padStart(2,'0')).join('')};
-      photoURL=URL.createObjectURL(blob);photoPreview.src=photoURL;photoPreview.hidden=false;photoOpen.hidden=false;coverUpload.hidden=false;photoName.textContent='photo ready';status.textContent='';setMode(mode);
+      photoURL=URL.createObjectURL(blob);photoPreview.src=photoURL;photoPreview.hidden=false;photoOpen.hidden=false;coverUpload.hidden=false;photoName.textContent='photo ready';status.textContent='';updateComposer();
     }catch(error){if(serial===photoSerial)status.textContent=error.message||'That photo could not be read. Try a JPEG or PNG.';}
     finally{if(source)URL.revokeObjectURL(source);if(serial===photoSerial&&!controller)send.disabled=false;}
   });
   input.addEventListener('input',()=>{draftRevision++;resize()});
   input.addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing&&event.keyCode!==229){event.preventDefault();form.requestSubmit()}});
-  document.querySelectorAll('[data-prime-prompt]').forEach(button=>button.addEventListener('click',()=>{if(coverTemplate)selectCover(null);setMode('text');ask(button.dataset.primePrompt)}));
+  document.querySelectorAll('[data-prime-prompt]').forEach(button=>button.addEventListener('click',()=>{if(coverTemplate)selectCover(null);ask(button.dataset.primePrompt)}));
   photoOpen.addEventListener('click',()=>{if(uploadedPhoto&&photoURL)window.SuperstarImageViewer?.open({url:photoURL,blob:uploadedPhoto.blob,name:'jack-prime-upload.jpg',alt:photoPreview.alt,opener:photoOpen})});
   stop.addEventListener('click',()=>controller?.abort());
   document.getElementById('prime-reset').addEventListener('click',()=>{
@@ -313,7 +310,7 @@
     turn++;controller?.abort();controller=null;history=[];imageRetry=null;clearPhoto();selectCover(null);
     window.SuperstarPreviews?.stopWithin(log);log.replaceChildren();for(const url of imageURLs.values())URL.revokeObjectURL(url);imageURLs.clear();
     const oldOwner=imageOwner;imageOwner=crypto.randomUUID();try{sessionStorage.setItem(ownerStorage,imageOwner)}catch{}clearOwnedImages(oldOwner);
-    intro.hidden=false;intro.style.removeProperty('display');document.body.classList.remove('prime-has-messages');busy(false);setMode('text');input.value='';resize();input.focus({preventScroll:true});
+    intro.hidden=false;intro.style.removeProperty('display');document.body.classList.remove('prime-has-messages');busy(false);updateComposer();input.value='';resize();input.focus({preventScroll:true});
   });
   if(previousOwner)clearOwnedImages(previousOwner);
   const tesla=!embedded&&/\bTesla\b/i.test(navigator.userAgent);
@@ -383,7 +380,7 @@
       if(event.origin!==location.origin||event.source!==parent)return;
       if(event.data?.type==='prime:focus')input.focus({preventScroll:true});
       if(event.data?.type==='prime:send'&&typeof event.data.text==='string'&&event.data.text.trim()&&event.data.text.length<=1600){
-        if(!controller){selectCover(null);setMode('text');}
+        if(!controller)selectCover(null);
         input.value=event.data.text;draftRevision++;resize();input.focus({preventScroll:true});if(!controller)form.requestSubmit();
       }
       if(event.data?.type==='prime:blur'){input.blur();window.SuperstarPreviews?.stopWithin(log);}
@@ -391,7 +388,7 @@
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.querySelector('dialog[open]'))host('prime:close')});
     host('prime:ready');
   }
-  updateViewport();setMode('text');send.disabled=false;
+  updateViewport();updateComposer();send.disabled=false;
   window.addEventListener('pagehide',()=>controller?.abort());resize();
   if(!embedded){
     const fragment=new URLSearchParams(location.hash.slice(1));
