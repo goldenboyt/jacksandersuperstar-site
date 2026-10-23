@@ -158,11 +158,8 @@
 .prime-render>span{color:#111;font:96px/1 Arial,Helvetica,sans-serif;letter-spacing:-.085em;opacity:.24;animation:prime-print 3.2s ease-in-out infinite}
 .prime-render:before{content:'';position:absolute;inset:14px;border:1px solid #111;opacity:.35;animation:prime-frame 3.2s ease-in-out infinite}
 .prime-render>i{position:absolute;left:0;right:0;top:0;height:2px;background:var(--red);animation:prime-scan 2.4s cubic-bezier(.45,0,.55,1) infinite alternate}
-.prime-render-progress{position:absolute;inset:auto 0 0;padding:16px 14px 13px;background:var(--page-bg,#fff);color:var(--page-ink,#111);border-top:1px solid var(--line);font-family:Arial,Helvetica,sans-serif}
-.prime-render-progress strong{font-size:28px;font-weight:400;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
-.prime-render-progress small{margin-left:8px;font-size:10px;letter-spacing:.02em}
-.prime-render-track{height:2px;margin-top:11px;background:var(--line);overflow:hidden}
-.prime-render-track>span{display:block;height:100%;background:var(--red);transform:scaleX(var(--image-progress,0));transform-origin:left;transition:transform .25s linear}
+.prime-render-progress{position:absolute;inset:auto 10px 10px auto;padding:4px 6px;background:var(--page-bg,#fff);color:var(--page-ink,#111);border:1px solid var(--line);font:13px/1 Arial,Helvetica,sans-serif}
+.prime-render-progress strong{font-size:13px;font-weight:400;line-height:1;letter-spacing:0;font-variant-numeric:tabular-nums}
 @keyframes prime-think{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
 @keyframes prime-scan{from{translate:0 10px}to{translate:0 calc(var(--render-size) - 12px)}}
 @keyframes prime-frame{0%,100%{transform:scale(.93)}50%{transform:scale(1)}}
@@ -174,4 +171,4 @@
 .prime-compact-viewport .prime-photo>button{min-height:28px}
 .prime-compact-viewport .prime-render{--render-size:180px}
 .prime-compact-viewport .prime-render>span{font-size:72px}
-@media(prefers-reduced-motion:reduce){.prime-thinking-mark i,.prime-render>span,.prime-render:before,.prime-render>i{animation:none}.prime-thinking-mark i:nth-child(2n){transform:scaleY(.5)}.prime-render>i{top:50%;translate:none}.prime-render-track>span{transition:none}}
+@media(prefers-reduced-motion:reduce){.prime-thinking-mark i,.prime-render>span,.prime-render:before,.prime-render>i{animation:none}.prime-thinking-mark i:nth-child(2n){transform:scaleY(.5)}.prime-render>i{top:50%;translate:none}}

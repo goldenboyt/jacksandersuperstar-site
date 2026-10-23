@@ -161,20 +161,20 @@
   function activity(kind){
     const follow=nearBottom(),node=document.createElement('div');
     node.className=`prime-message prime-message--assistant prime-activity prime-activity--${kind}`;
-    node.innerHTML='<span class="prime-message-label">jack prime</span>'+(kind==='image'?'<div class="prime-render"><span aria-hidden="true">prime</span><i aria-hidden="true"></i><div class="prime-render-progress" role="progressbar" aria-label="Estimated image generation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="100% left, estimated"><strong>100%</strong><small>left · estimated</small><div class="prime-render-track" aria-hidden="true"><span></span></div></div></div>':'<span class="prime-thinking-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>')+`<span class="prime-activity-label" role="status">${kind==='image'?'making your image':'thinking'}</span>`;
+    node.innerHTML='<span class="prime-message-label">jack prime</span>'+(kind==='image'?'<div class="prime-render"><span aria-hidden="true">prime</span><i aria-hidden="true"></i><div class="prime-render-progress" role="progressbar" aria-label="Estimated image generation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0% complete, estimated" title="Estimated image generation progress"><strong>0%</strong></div></div>':'<span class="prime-thinking-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>')+`<span class="prime-activity-label" role="status">${kind==='image'?'making your image':'thinking'}</span>`;
     log.append(node);followBottom(follow);
     let timer,completed=false;
     const started=performance.now();
     if(kind==='image'){
       const progress=node.querySelector('.prime-render-progress'),number=progress.querySelector('strong');
       const timings=[...imageTimings].sort((a,b)=>a-b),estimate=timings.length?timings[Math.floor(timings.length/2)]:60000;
-      // The provider returns only a finished image. This is a time estimate,
-      // visibly labeled as such, and must never imply completion before delivery.
+      // The provider returns only a finished image. Keep this time estimate
+      // below completion until delivery, with an accessible label and tooltip.
       timer=setInterval(()=>{
         const ratio=(performance.now()-started)/estimate;
         const done=Math.min(95,Math.floor(ratio<=1?90*ratio:90+5*(1-Math.exp(1-ratio))));
-        number.textContent=`${100-done}%`;progress.style.setProperty('--image-progress',done/100);
-        progress.setAttribute('aria-valuenow',String(done));progress.setAttribute('aria-valuetext',`${100-done}% left, estimated`);
+        number.textContent=`${done}%`;
+        progress.setAttribute('aria-valuenow',String(done));progress.setAttribute('aria-valuetext',`${done}% complete, estimated`);
       },250);
     }
     return {
@@ -185,7 +185,7 @@
         // Ignore quick cache hits; retain only durations, never prompts or photos.
         if(elapsed>=5000&&elapsed<=175000){imageTimings=[...imageTimings,elapsed].slice(-6);try{localStorage.setItem(imageTimingStorage,JSON.stringify(imageTimings))}catch{}}
         const progress=node.querySelector('.prime-render-progress');
-        progress.querySelector('strong').textContent='0%';progress.style.setProperty('--image-progress',1);
+        progress.querySelector('strong').textContent='100%';
         progress.setAttribute('aria-valuenow','100');progress.setAttribute('aria-valuetext','Image ready');
       },
       remove(){clearInterval(timer);node.remove();}
