@@ -9,10 +9,11 @@
     if(scaled&&!changed)return;
     // Split-view chrome already positions the page. Its horizontal viewport
     // offset must not become a second margin inside the narrowed page.
-    const left=0,width=Math.max(1,Math.min(scaled?layoutWidth:(view?.width||layoutWidth),layoutWidth));
+    const bounds=window.SuperstarViewport?.bounds();
+    const left=bounds?.left||0,width=Math.max(1,Math.min(scaled?layoutWidth:(bounds?.width||view?.width||layoutWidth),layoutWidth-left));
     // Extend imagery under narrow browser chrome, without moving the subject
     // out of a genuinely small split-view pane in a wider virtual layout.
-    const bleed=Math.min(layoutWidth,width*1.4);
+    const bleed=bounds?.full||Math.min(layoutWidth,width*1.4),bleedLeft=bounds?.left||0;
     const layoutHeight=scaled?(document.documentElement.clientHeight||innerHeight):innerHeight;
     const top=scaled?0:Math.max(0,view?.offsetTop||0),height=scaled?layoutHeight:Math.min(layoutHeight,view?.height||layoutHeight);
     const typing=document.activeElement?.matches('input,textarea,[contenteditable=true]')||Boolean(document.querySelector('dialog[open]'));
@@ -22,12 +23,12 @@
     if(keyboard)keyboardFrozen=true;
     if(!restingHeight||(!keyboard&&(!keyboardFrozen||height>=restingHeight*.72||Math.abs(width-lastWidth)>120))){restingHeight=height;keyboardFrozen=false;}
     const gutter=width<=640?width*.06:Math.max(width*.055,(width-1660)/2);
-    for(const [name,value] of Object.entries({width,left,right:layoutWidth-left-width,bleed,'bleed-right':bleed-width,top,height,hero:restingHeight,gutter}))page.style.setProperty(`--home-${name}`,`${value}px`);
+    for(const [name,value] of Object.entries({width,left,right:layoutWidth-left-width,bleed,'bleed-left':bleedLeft,'bleed-right':bleed-bleedLeft-width,top,height,hero:restingHeight,gutter}))page.style.setProperty(`--home-${name}`,`${value}px`);
     page.classList.toggle('home-compact',width<=1000);page.classList.toggle('home-narrow',width<=640);page.classList.toggle('home-short',restingHeight<720);
     lastWidth=width;lastLayoutWidth=layoutWidth;
   }
   function schedule(){if(!frame)frame=requestAnimationFrame(update)}
   window.addEventListener('resize',schedule);window.addEventListener('pageshow',schedule);window.addEventListener('orientationchange',schedule);
   window.visualViewport?.addEventListener('resize',schedule);window.visualViewport?.addEventListener('scroll',schedule);
-  document.addEventListener('focusout',schedule);update();
+  document.addEventListener('focusout',schedule);document.addEventListener('superstar:viewport',schedule);update();
 })();

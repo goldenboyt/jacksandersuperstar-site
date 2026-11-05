@@ -12,7 +12,6 @@
 
   function paint(item, state) {
     item.state = state;
-    item.panel.dataset.hdrState = state;
     const playing = state === 'playing' || state === 'loading';
     item.button.classList.toggle('is-playing', playing);
     item.button.setAttribute('aria-pressed', String(playing));
@@ -75,7 +74,6 @@
   function bind(button, release, index = 0) {
     const title = release.tracks[index], url = release.previews?.[index];
     const panel = document.createElement('span'); panel.className = 'song-preview-panel';
-    panel.dataset.hdr = 'playing'; panel.dataset.hdrShape = 'wide';
     panel.id = `song-preview-${++serial}`; panel.hidden = true;
     if (!url) return panel;
     button.classList.add('song-preview-button'); button.type = 'button';

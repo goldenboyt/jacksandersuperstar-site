@@ -1,25 +1,9 @@
-/* A single white reflection marks primary actions and successful/active states. */
-.hdr-surface{filter:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+/* Interaction feedback only. Idle controls retain the site's own styling. */
 .hdr-static{position:relative}.hdr-layer{z-index:0}
+.hdr-content{position:relative;z-index:1}
 .hdr-surface>:not(.hdr-media){z-index:1}
-.hdr-surface>.hdr-media{position:absolute;inset:0;z-index:0;display:block;width:100%;height:100%;object-fit:fill;pointer-events:none;visibility:hidden;dynamic-range-limit:no-limit}
+.hdr-surface>.hdr-media{position:absolute;inset:0;z-index:0;display:block;width:100%;height:100%;object-fit:fill;border-radius:inherit;overflow:hidden;pointer-events:none;visibility:hidden;dynamic-range-limit:no-limit}
 .hdr-picture>img{display:block;width:100%;height:100%;object-fit:fill;dynamic-range-limit:no-limit}
+.hdr-active{transition:none!important;filter:none;backdrop-filter:none;-webkit-backdrop-filter:none}
 .hdr-active.hdr-image-ready>.hdr-picture,.hdr-active.hdr-video-ready>.hdr-video{visibility:visible}
-html .hdr-surface[data-hdr=primary],html .hdr-surface[data-hdr=ready],html .hdr-surface[data-hdr=busy],html .hdr-surface[data-hdr=playing]{background:#111;color:#fff;border:1px solid #666}
-html .hdr-surface[data-hdr=primary]:hover,html .hdr-surface[data-hdr=ready]:hover{background:#111;color:#fff;border-color:#bcbcbc}
-html .hdr-surface[data-hdr][data-hdr-theme=red],html .hdr-surface[data-hdr][data-hdr-theme=red]:hover{background:#e51e25;color:#fff;border-color:#e51e25}
-html .prime-cover-starter[data-hdr=selected][aria-pressed=true],html .hdr-surface[data-hdr=feedback][data-hdr-state=copied],html .hdr-surface[data-hdr=feedback][data-hdr-state=copied]:hover{background:#111;color:#fff;border-color:#aaa;box-shadow:none}
-html .prime-cover-starter[data-hdr=selected][aria-pressed=true] small{color:#bbb}
-html .prime-page .prime-form #prime-send[data-hdr],html .prime-feature-composer button[data-hdr]{background:#111;color:#fff;border:1px solid #666}
-html .prime-page .prime-form #prime-send.hdr-active,html .prime-feature-composer button.hdr-active{border-color:#c5c5c5}
-html .prime-image-actions [data-hdr=primary]{background:#111;color:#fff;border:1px solid #666;padding:0 14px}
-html .hdr-surface:active{transform:none}
-html .song-preview-panel[data-hdr]{padding:8px 10px;margin-top:5px;min-height:34px;color:#eee}
-.song-preview-panel[data-hdr] .song-preview-progress{background:#555}
-.song-preview-panel[data-hdr] .song-preview-message{color:#ddd}
-[data-hdr=feedback]{transition:border-color .16s ease}
-html .prime-render[data-hdr]>span{color:#fff}
-.prime-render[data-hdr]>i{background:#bbb}
-.prime-render[data-hdr]::before{border-color:#aaa;z-index:1}
-.prime-render[data-hdr] .prime-render-progress{z-index:2;background:#111;color:#fff;border-color:#555}
 @media(forced-colors:active){.hdr-surface>.hdr-media{display:none}}

@@ -43,7 +43,7 @@ def action_light(x, y):
     return [1.14 + (750 - 1.14) * min(1, top + side)] * 3
 
 
-def encode(name, height, color, width=96, video=False, peak=1000, input_primaries='bt2020'):
+def encode(name, height, color, width=96, video=False, peak=1000, input_primaries='bt2020', max_average=100):
     pixels = bytearray()
     for y in range(height):
         for x in range(width):
@@ -74,7 +74,7 @@ def encode(name, height, color, width=96, video=False, peak=1000, input_primarie
                 '-x265-params', 'lossless=1:log-level=error:pools=none:frame-threads=1:wpp=0:hdr10=1:'
                     'repeat-headers=0:keyint=2:min-keyint=2:scenecut=0:'
                     f'master-display=G(8500,39850)B(6550,2300)R(35400,14600)WP(15635,16450)L({peak * 10000},1):'
-                    f'max-cll={peak},100',
+                    f'max-cll={peak},{max_average}',
                 '-tag:v', 'hvc1', '-movflags', '+faststart+write_colr',
                 str(root / 'assets' / f'{name}.mp4')
             ], check=True)

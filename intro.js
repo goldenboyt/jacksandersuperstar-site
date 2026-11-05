@@ -46,8 +46,9 @@
     // Cover the largest viewport while centering the logo in the visible area.
     const { width, height } = intro.getBoundingClientRect();
     const viewport = window.visualViewport;
+    const bounds = window.SuperstarViewport?.bounds();
     const center = {
-      x: Math.min(width, viewport?.width || innerWidth) / 2,
+      x: (bounds?.left || 0) + Math.min(width, bounds?.width || viewport?.width || innerWidth) / 2,
       y: (viewport?.offsetTop || 0) + (viewport?.height || innerHeight) / 2
     };
     // Coordinates match the upper counter of the e in the original logo.

@@ -133,7 +133,6 @@
       open.addEventListener('click',()=>window.SuperstarImageViewer?.open(details));
       const actions=document.createElement('figcaption');actions.className='prime-image-actions';
       const save=document.createElement('button');save.type='button';save.className='prime-image-save';save.textContent='save image ↗';
-      save.dataset.hdr='primary';save.dataset.hdrShape='wide';
       const saveStatus=document.createElement('span');saveStatus.className='prime-image-save-status';saveStatus.setAttribute('role','status');
       save.addEventListener('click',()=>window.SuperstarImageViewer?.save({...details,opener:save},saveStatus,save));
       const download=document.createElement('a');download.href=url;download.download=details.name;download.className='prime-image-download';download.textContent='download file ↗';
@@ -162,7 +161,7 @@
   function activity(kind){
     const follow=nearBottom(),node=document.createElement('div');
     node.className=`prime-message prime-message--assistant prime-activity prime-activity--${kind}`;
-    node.innerHTML='<span class="prime-message-label">jack prime</span>'+(kind==='image'?'<div class="prime-render" data-hdr="busy" data-hdr-shape="frame"><span aria-hidden="true">prime</span><i aria-hidden="true"></i><div class="prime-render-progress" role="progressbar" aria-label="Estimated image generation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0% complete, estimated" title="Estimated image generation progress"><strong>0%</strong></div></div>':'<span class="prime-thinking-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>')+`<span class="prime-activity-label" role="status">${kind==='image'?'making your image':'thinking'}</span>`;
+    node.innerHTML='<span class="prime-message-label">jack prime</span>'+(kind==='image'?'<div class="prime-render"><span aria-hidden="true">prime</span><i aria-hidden="true"></i><div class="prime-render-progress" role="progressbar" aria-label="Estimated image generation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0% complete, estimated" title="Estimated image generation progress"><strong>0%</strong></div></div>':'<span class="prime-thinking-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>')+`<span class="prime-activity-label" role="status">${kind==='image'?'making your image':'thinking'}</span>`;
     log.append(node);followBottom(follow);
     let timer,completed=false;
     const started=performance.now();
@@ -362,7 +361,8 @@
     const measuredHeight=scaled?layoutHeight:Math.min(layoutHeight,view?.height||layoutHeight);
     const top=scaled?0:Math.min(Math.max(0,view?.offsetTop||0),Math.max(0,layoutHeight-measuredHeight));
     // Safari's split-view inset is outside the page; keep the chat at its own origin.
-    const width=Math.max(1,Math.min(layoutWidth,scaled?layoutWidth:(view?.width||layoutWidth))),left=0;
+    const bounds=window.SuperstarViewport?.bounds(),left=bounds?.left||0;
+    const width=Math.max(1,Math.min(layoutWidth-left,scaled?layoutWidth:(bounds?.width||view?.width||layoutWidth)));
     const typing=document.activeElement===input,keyboard=navigator.virtualKeyboard?.boundingRect;
     const keyboardVisible=keyboard?.height>0&&keyboard.width>0;
     if(!typing||restingWidth!==width){restingHeight=measuredHeight;restingWidth=width;}
@@ -374,7 +374,7 @@
     document.documentElement.style.setProperty('--prime-top',`${top}px`);
     document.documentElement.style.setProperty('--prime-height',`${height}px`);
     document.documentElement.style.setProperty('--prime-left',`${left}px`);
-    document.documentElement.style.setProperty('--prime-right',`${layoutWidth-width}px`);
+    document.documentElement.style.setProperty('--prime-right',`${layoutWidth-left-width}px`);
     document.documentElement.style.setProperty('--prime-width',`${width}px`);
     document.body.classList.toggle('prime-width-compact',width<=1000);document.body.classList.toggle('prime-width-narrow',width<=640);
     document.body.classList.toggle('prime-tesla-typing',tesla&&typing);
@@ -394,6 +394,7 @@
   navigator.virtualKeyboard?.addEventListener('geometrychange',viewport);
   window.addEventListener('resize',viewport);window.addEventListener('scroll',viewport,{passive:true});
   window.addEventListener('pageshow',settleViewport);window.addEventListener('orientationchange',settleViewport);
+  document.addEventListener('superstar:viewport',viewport);
   input.addEventListener('focus',settleViewport);input.addEventListener('blur',settleViewport);
   let touch;
   document.addEventListener('touchstart',event=>{
