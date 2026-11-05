@@ -16,7 +16,7 @@
   function allowed(state){return pageVisible&&state.inView&&state.owner.isConnected&&!document.hidden&&!state.owner.disabled&&state.owner.getAttribute('aria-disabled')!=='true'&&!document.documentElement.classList.contains('intro-pending')&&[...document.querySelectorAll('dialog[open]')].every(dialog=>dialog.contains(state.owner))}
   function wanted(state){return state.tapUntil>performance.now()||(hover.matches&&state.hovered&&state.owner.matches(':hover'))||(state.focused&&state.owner.matches(':focus-visible'))}
   function assetFor(owner){
-    return '/assets/hdr-action-crimson';
+    return '/assets/hdr-action-crimson-v2';
   }
   function stop(state){state.video?.pause();flag(state.owner,'hdr-video-ready',false)}
   function dropMedia(state){
@@ -30,6 +30,8 @@
     const style=getComputedStyle(owner);if(style.position==='static')owner.classList.add('hdr-static');if(style.zIndex==='auto')owner.classList.add('hdr-layer');owner.classList.add('hdr-surface');
     [...owner.childNodes].forEach(node=>{if(node.nodeType===3&&node.textContent.trim()){const label=document.createElement('span');label.className='hdr-content';node.replaceWith(label);label.append(node)}});
     if(!/flex|grid/.test(style.display))[...owner.children].forEach(child=>{if(!child.classList.contains('hdr-media')&&getComputedStyle(child).position==='static')child.classList.add('hdr-content')});
+    // Fill actual label glyphs with HDR white; retain the live DOM and SVG icons.
+    [...owner.children].forEach(child=>{if(child.namespaceURI==='http://www.w3.org/1999/xhtml'&&!child.classList.contains('hdr-media')&&child.textContent.trim())child.classList.add('hdr-label')});
     const picture=document.createElement('picture');picture.className='hdr-media hdr-picture';picture.setAttribute('aria-hidden','true');state.picture=picture;
     const source=document.createElement('source');source.type='image/avif';source.media='(dynamic-range: high)';source.srcset=asset+'.avif';
     const image=document.createElement('img');image.alt='';image.width=384;image.height=128;
