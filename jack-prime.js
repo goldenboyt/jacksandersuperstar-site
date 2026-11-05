@@ -11,7 +11,7 @@
   const storage='superstar:jack-prime:conversation',imageStorage=`${storage}:image-request`,ownerStorage=`${storage}:image-owner`;
   const catalog=new Map((window.SuperstarCatalog?.releases||[]).map(release=>[release.page,release]));
   const imageURLs=new Map();
-  const signalMarkup='<picture class="prime-signal" aria-hidden="true"><source media="(dynamic-range: high)" type="image/avif" srcset="/assets/prime-signal-hdr.avif"><img src="/assets/prime-signal.svg" alt="" width="96" height="12"></picture>';
+  const signalMarkup='<picture class="prime-signal" aria-hidden="true"><source type="image/avif" srcset="/assets/prime-signal-hdr-v2.avif"><img src="/assets/prime-signal.svg" alt="" width="96" height="12"></picture>';
   const imageTimingStorage='superstar:jack-prime:image-times';
   let imageTimings=[];
   try{const saved=JSON.parse(localStorage.getItem(imageTimingStorage));if(Array.isArray(saved))imageTimings=saved.filter(value=>Number.isFinite(value)&&value>=5000&&value<=175000).slice(-6)}catch{}

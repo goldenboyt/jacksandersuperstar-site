@@ -1,4 +1,4 @@
-"""Build the tiny native HDR accent. Requires ffmpeg with libaom and zscale."""
+"""Build static HDR UI assets. Requires ffmpeg with libaom, libx265 and zscale."""
 from pathlib import Path
 import math
 import struct
@@ -6,7 +6,7 @@ import subprocess
 import tempfile
 
 root = Path(__file__).resolve().parents[1]
-width, height = 96, 12
+width = 96
 
 
 def pq(nits):
@@ -17,26 +17,60 @@ def pq(nits):
     return round(((c1 + c2 * linear) / (1 + c3 * linear)) ** m2 * 65535)
 
 
-pixels = bytearray()
-for y in range(height):
-    for x in range(width):
-        # A warm white core peaks at 400 nits, under twice HDR reference white.
-        core = math.exp(-(((x / (width - 1) - .72) / .12) ** 2
-                          + ((y / (height - 1) - .5) / .32) ** 2))
-        rgb = [base + (400 - base) * core for base in (300, 7, 12)]
-        pixels.extend(struct.pack('<HHH', *(pq(value) for value in rgb)))
+def signal(x, y):
+    core = math.exp(-(((x / 95 - .68) / .22) ** 2 + ((y / 31 - .5) / .38) ** 2))
+    return [base + (1000 - base) * core for base in (250, 5, 10)]
 
-with tempfile.TemporaryDirectory() as folder:
-    source = Path(folder) / 'signal.rgb'
-    source.write_bytes(pixels)
-    subprocess.run([
+
+def distance(x, y, start, end):
+    dx, dy = end[0] - start[0], end[1] - start[1]
+    t = min(1, max(0, ((x - start[0]) * dx + (y - start[1]) * dy) / (dx * dx + dy * dy)))
+    return math.hypot(x - start[0] - t * dx, y - start[1] - t * dy)
+
+
+def arrow(x, y):
+    segments = [((24, 72), (72, 24)), ((24, 24), (72, 24)), ((72, 24), (72, 72))]
+    coverage = min(1, max(0, 2 - min(distance(x, y, *segment) for segment in segments)))
+    # The charcoal stays at SDR brightness. Only the white icon reaches 1000 nits.
+    return [1.14 + (1000 - 1.14) * coverage] * 3
+
+
+def encode(name, height, color, width=96):
+    pixels = bytearray()
+    for y in range(height):
+        for x in range(width):
+            pixels.extend(struct.pack('<HHH', *(pq(value) for value in color(x, y))))
+    with tempfile.TemporaryDirectory() as folder:
+        source = Path(folder) / 'frame.rgb'
+        source.write_bytes(pixels)
+        base = [
         'ffmpeg', '-hide_banner', '-loglevel', 'error', '-y',
-        '-f', 'rawvideo', '-pixel_format', 'rgb48le', '-video_size', f'{width}x{height}',
-        '-i', str(source), '-frames:v', '1',
-        '-vf', 'zscale=matrixin=gbr:transferin=smpte2084:primariesin=bt2020:rangein=full:'
-               'matrix=bt2020nc:transfer=smpte2084:primaries=bt2020:range=full,format=yuv444p10le',
-        '-c:v', 'libaom-av1', '-still-picture', '1', '-cpu-used', '6', '-crf', '12', '-b:v', '0',
+        '-f', 'rawvideo', '-pixel_format', 'rgb48le', '-video_size', f'{width}x{height}', '-framerate', '2',
+        '-i', str(source),
         '-color_primaries', 'bt2020', '-color_trc', 'smpte2084',
-        '-colorspace', 'bt2020nc', '-color_range', 'pc',
-        str(root / 'assets' / 'prime-signal-hdr.avif')
-    ], check=True)
+        '-colorspace', 'bt2020nc', '-color_range', 'tv'
+        ]
+        color_filter = ('zscale=matrixin=gbr:transferin=smpte2084:primariesin=bt2020:rangein=full:'
+                        'matrix=bt2020nc:transfer=smpte2084:primaries=bt2020:range=limited,format=yuv420p10le')
+        subprocess.run(base + [
+        '-vf', color_filter, '-frames:v', '1',
+        '-c:v', 'libaom-av1', '-still-picture', '1', '-cpu-used', '6', '-crf', '12', '-b:v', '0',
+        str(root / 'assets' / f'{name}.avif')
+        ], check=True)
+        if name == 'prime-send-hdr':
+            # Two identical frames: no moving decoration or audio. hvc1 + Main10
+            # and HDR10 static metadata use Apple's native HDR video pipeline.
+            subprocess.run(base + [
+                '-vf', color_filter + ',loop=loop=1:size=1:start=0',
+                '-frames:v', '2', '-an', '-c:v', 'libx265', '-preset', 'slow',
+                '-x265-params', 'lossless=1:log-level=error:pools=none:frame-threads=1:wpp=0:hdr10=1:'
+                    'repeat-headers=0:keyint=2:min-keyint=2:scenecut=0:'
+                    'master-display=G(8500,39850)B(6550,2300)R(35400,14600)WP(15635,16450)L(10000000,1):'
+                    'max-cll=1000,100',
+                '-tag:v', 'hvc1', '-movflags', '+faststart+write_colr',
+                str(root / 'assets' / f'{name}.mp4')
+            ], check=True)
+
+
+encode('prime-signal-hdr-v2', 32, signal)
+encode('prime-send-hdr', 192, lambda x, y: arrow(x / 2, y / 2), width=192)

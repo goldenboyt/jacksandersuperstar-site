@@ -8,8 +8,8 @@
 .prime-invite>.prime-signal{margin-left:12px;vertical-align:middle}
 .prime-page .prime-composer{position:relative;transition:border-color .18s ease}
 html .prime-page .prime-composer:focus-within{border-color:var(--prime-accent);outline-color:var(--prime-accent)}
-.prime-composer>.prime-signal{position:absolute;left:14px;top:-2px;width:30px;height:3px;opacity:0;transition:opacity .2s ease}
-.prime-composer:focus-within>.prime-signal{opacity:1}
+.prime-composer>.prime-signal{position:absolute;left:14px;top:-2px;width:32px;height:4px;display:none}
+.prime-composer:focus-within>.prime-signal{display:inline-flex}
 .prime-page #prime-send{transition:background .18s ease,transform .16s ease}
 .prime-page .prime-has-draft #prime-send:not(:disabled){background:var(--prime-accent);color:#fff}
 .prime-page #prime-send:not(:disabled):active{transform:scale(.94)}
@@ -52,3 +52,13 @@ html .prime-page .prime-cover-starter[aria-pressed=true]{border-color:var(--prim
  .prime-page #prime-send:not(:disabled):active,.prime-page .prime-cover-starter:active,.prime-starters .text-button:hover svg,.prime-cover-starter:hover>svg,.prime-feature-composer button:active svg,.prime-widget-launcher:active svg,.prime-feature-composer button:hover svg,.prime-widget-launcher:hover svg{transform:none}
 }
 @media(forced-colors:active){.prime-signal{display:none}}
+
+/* Preserve the native HDR surface: no opacity, filters, masks or transforms. */
+[data-prime-hdr-control]{position:relative}
+[data-prime-hdr-control]>.prime-hdr-icon,[data-prime-hdr-control]>.prime-hdr-video{position:absolute;inset:0;display:block;width:100%;height:100%;pointer-events:none;visibility:hidden;dynamic-range-limit:no-limit;object-fit:fill}
+.prime-hdr-icon>img{display:block;width:100%;height:100%;object-fit:fill;dynamic-range-limit:no-limit}
+[data-prime-hdr-control].prime-hdr-icon-ready>.prime-hdr-icon,[data-prime-hdr-control].prime-hdr-video-ready>.prime-hdr-video{visibility:visible}
+[data-prime-hdr-control].prime-hdr-icon-ready>svg,[data-prime-hdr-control].prime-hdr-video-ready>svg{visibility:hidden}
+html .prime-page .prime-form #prime-send[data-prime-hdr-control],.prime-feature-composer button[data-prime-hdr-control]{background:#111;color:#fff;border:1px solid var(--prime-accent)}
+html .prime-page #prime-send[data-prime-hdr-control]:active{transform:none}
+@media(forced-colors:active){[data-prime-hdr-control]>.prime-hdr-icon,[data-prime-hdr-control]>.prime-hdr-video{display:none}[data-prime-hdr-control]>svg{visibility:visible!important}}
