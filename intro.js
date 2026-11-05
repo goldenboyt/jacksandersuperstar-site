@@ -11,6 +11,7 @@
   }, { once: true });
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const address = new URL(location.href);
+  const preview = address.searchParams.get('intro') === 'preview';
   const introKey = 'superstar:intro:last-shown';
   const cooldown = 60 * 60 * 1000;
   // Keep the cooldown across refreshes and tabs, with a session fallback.
@@ -25,7 +26,7 @@
     }
     return now - lastShown >= cooldown;
   }
-  const play = introIsDue() && !reduced.matches && !navigator.connection?.saveData && !address.searchParams.has('release') && (!address.hash || address.hash === '#top');
+  const play = (preview || introIsDue()) && !reduced.matches && !navigator.connection?.saveData && !address.searchParams.has('release') && (!address.hash || address.hash === '#top');
   function rememberIntro() {
     for (const name of ['localStorage', 'sessionStorage']) {
       try { window[name].setItem(introKey, String(Date.now())); return; } catch {}
@@ -78,6 +79,10 @@
     if (immediate) document.body?.classList.add('intro-complete');
     locked.forEach(element => { element.inert = false; });
     document.dispatchEvent(new Event('superstar:intro-end'));
+    if (preview) {
+      const clean = new URL(location.href); clean.searchParams.delete('intro');
+      history.replaceState(history.state, '', clean.pathname + clean.search + clean.hash);
+    }
     intro?.remove();
   }
 
@@ -97,11 +102,11 @@
   }
   document.addEventListener('DOMContentLoaded', async () => {
     const intro = document.getElementById('site-intro');
-    if (!play || finished || !introIsDue()) { finish(true); intro?.remove(); return; }
+    if (!play || finished || (!preview && !introIsDue())) { finish(true); intro?.remove(); return; }
     const logoElement = intro?.querySelector('.intro-logo');
     if (!logoElement) { finish(true); return; }
     intro.hidden = false;
-    rememberIntro();
+    if (!preview) rememberIntro();
     document.querySelectorAll('.header, main, footer, .skip').forEach(element => {
       if (!element.inert) { element.inert = true; locked.push(element); }
     });

@@ -35,7 +35,15 @@ def arrow(x, y):
     return [1.14 + (1000 - 1.14) * coverage] * 3
 
 
-def encode(name, height, color, width=96):
+def action_light(x, y):
+    # A short neutral reflection along the upper edge, with a soft falloff.
+    # The rest matches the #111 button; neither arrows nor labels are baked in.
+    top = math.exp(-((y - 2.5) / 1.5) ** 2 - ((x - 137) / 48) ** 2)
+    side = .18 * math.exp(-((x - 188.5) / 1.3) ** 2 - ((y - 22) / 24) ** 2)
+    return [1.14 + (750 - 1.14) * min(1, top + side)] * 3
+
+
+def encode(name, height, color, width=96, video=False, peak=1000):
     pixels = bytearray()
     for y in range(height):
         for x in range(width):
@@ -57,7 +65,7 @@ def encode(name, height, color, width=96):
         '-c:v', 'libaom-av1', '-still-picture', '1', '-cpu-used', '6', '-crf', '12', '-b:v', '0',
         str(root / 'assets' / f'{name}.avif')
         ], check=True)
-        if name == 'prime-send-hdr':
+        if name == 'prime-send-hdr' or video:
             # Two identical frames: no moving decoration or audio. hvc1 + Main10
             # and HDR10 static metadata use Apple's native HDR video pipeline.
             subprocess.run(base + [
@@ -65,12 +73,19 @@ def encode(name, height, color, width=96):
                 '-frames:v', '2', '-an', '-c:v', 'libx265', '-preset', 'slow',
                 '-x265-params', 'lossless=1:log-level=error:pools=none:frame-threads=1:wpp=0:hdr10=1:'
                     'repeat-headers=0:keyint=2:min-keyint=2:scenecut=0:'
-                    'master-display=G(8500,39850)B(6550,2300)R(35400,14600)WP(15635,16450)L(10000000,1):'
-                    'max-cll=1000,100',
+                    f'master-display=G(8500,39850)B(6550,2300)R(35400,14600)WP(15635,16450)L({peak * 10000},1):'
+                    f'max-cll={peak},100',
                 '-tag:v', 'hvc1', '-movflags', '+faststart+write_colr',
                 str(root / 'assets' / f'{name}.mp4')
             ], check=True)
 
 
-encode('prime-signal-hdr-v2', 32, signal)
-encode('prime-send-hdr', 192, lambda x, y: arrow(x / 2, y / 2), width=192)
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--highlight-only', action='store_true')
+    args = parser.parse_args()
+    if not args.highlight_only:
+        encode('prime-signal-hdr-v2', 32, signal)
+        encode('prime-send-hdr', 192, lambda x, y: arrow(x / 2, y / 2), width=192)
+    encode('prime-action-light', 192, action_light, width=192, video=True, peak=750)
