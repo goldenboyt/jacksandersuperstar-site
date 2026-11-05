@@ -11,6 +11,7 @@
   const storage='superstar:jack-prime:conversation',imageStorage=`${storage}:image-request`,ownerStorage=`${storage}:image-owner`;
   const catalog=new Map((window.SuperstarCatalog?.releases||[]).map(release=>[release.page,release]));
   const imageURLs=new Map();
+  const signalMarkup='<picture class="prime-signal" aria-hidden="true"><source media="(dynamic-range: high)" type="image/avif" srcset="/assets/prime-signal-hdr.avif"><img src="/assets/prime-signal.svg" alt="" width="96" height="12"></picture>';
   const imageTimingStorage='superstar:jack-prime:image-times';
   let imageTimings=[];
   try{const saved=JSON.parse(localStorage.getItem(imageTimingStorage));if(Array.isArray(saved))imageTimings=saved.filter(value=>Number.isFinite(value)&&value>=5000&&value<=175000).slice(-6)}catch{}
@@ -127,7 +128,7 @@
       if(!(source instanceof Blob)){placeholder.textContent='This image is no longer saved on this device.';followBottom(follow);return}
       let url=imageURLs.get(entry.imageId);if(!url){url=URL.createObjectURL(source);imageURLs.set(entry.imageId,url)}
       const image=document.createElement('img');image.src=url;image.alt=`Image made by Jack Prime: ${prompt}`;image.width=1024;image.height=1024;image.loading='lazy';
-      image.addEventListener('load',()=>followBottom(nearBottom()),{once:true});
+      image.addEventListener('load',()=>{box.classList.add('prime-image--ready');followBottom(nearBottom())},{once:true});
       const open=document.createElement('button');open.type='button';open.className='prime-image-open';open.setAttribute('aria-label','Open generated image full-screen');open.append(image);
       const details={url,blob:source,name:`jack-prime-${entry.imageId.slice(0,8)}.png`,alt:image.alt,opener:open};
       open.addEventListener('click',()=>window.SuperstarImageViewer?.open(details));
@@ -161,7 +162,7 @@
   function activity(kind){
     const follow=nearBottom(),node=document.createElement('div');
     node.className=`prime-message prime-message--assistant prime-activity prime-activity--${kind}`;
-    node.innerHTML='<span class="prime-message-label">jack prime</span>'+(kind==='image'?'<div class="prime-render"><span aria-hidden="true">prime</span><i aria-hidden="true"></i><div class="prime-render-progress" role="progressbar" aria-label="Estimated image generation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0% complete, estimated" title="Estimated image generation progress"><strong>0%</strong></div></div>':'<span class="prime-thinking-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>')+`<span class="prime-activity-label" role="status">${kind==='image'?'making your image':'thinking'}</span>`;
+    node.innerHTML='<span class="prime-message-label">jack prime</span>'+(kind==='image'?`<div class="prime-render"><span aria-hidden="true">prime</span><i aria-hidden="true">${signalMarkup}</i><div class="prime-render-progress" role="progressbar" aria-label="Estimated image generation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0% complete, estimated" title="Estimated image generation progress"><strong>0%</strong>${signalMarkup}</div></div>`:'<span class="prime-thinking-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>')+`<span class="prime-activity-label" role="status">${kind==='image'?'making your image':'thinking'}</span>`;
     log.append(node);followBottom(follow);
     let timer,completed=false;
     const started=performance.now();
@@ -192,6 +193,7 @@
     };
   }
   function resize(){
+    form.classList.toggle('prime-has-draft',Boolean(input.value.trim())||Boolean(uploadedPhoto));
     const follow=nearBottom();input.style.height='auto';
     const limit=parseFloat(getComputedStyle(input).maxHeight)||124;
     input.style.height=`${Math.min(limit,Math.max(44,input.scrollHeight))}px`;
@@ -216,6 +218,7 @@
     status.textContent='';if(coverTemplate){input.value='';draftRevision++;}resize();(coverTemplate==='prodigy'?photoInput:input).focus({preventScroll:true});
   }
   function updateComposer(){
+    form.classList.toggle('prime-has-draft',Boolean(input.value.trim())||Boolean(uploadedPhoto));
     input.placeholder=coverTemplate==='superstar'?'what should the tee say?':coverTemplate==='prodigy'?'any other details? (optional)':uploadedPhoto?'ask about or edit this image':'talk to jack prime';
     input.required=coverTemplate!=='prodigy'&&!(uploadedPhoto&&!coverTemplate);input.maxLength=coverTemplate==='superstar'?160:1600;
     photoAdd.hidden=coverTemplate==='superstar';

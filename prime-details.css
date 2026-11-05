@@ -1,0 +1,54 @@
+/* Small native HDR highlights; the page and ordinary text remain SDR. */
+.prime-page,.prime-feature,.prime-widget,.prime-widget-launcher{--prime-accent:#e71925;--prime-highlight:#ff433d}
+@supports(color:color(display-p3 1 0 0)){
+ @media(color-gamut:p3){.prime-page,.prime-feature,.prime-widget,.prime-widget-launcher{--prime-accent:color(display-p3 .89 .045 .09);--prime-highlight:color(display-p3 1 .24 .18)}}
+}
+.prime-signal{display:inline-flex;flex:none;width:24px;height:3px;line-height:0;pointer-events:none;vertical-align:middle}
+.prime-signal>img{display:block;width:100%;height:100%;object-fit:fill;dynamic-range-limit:no-limit}
+.prime-invite>.prime-signal{margin-left:12px;vertical-align:middle}
+.prime-page .prime-composer{position:relative;transition:border-color .18s ease}
+html .prime-page .prime-composer:focus-within{border-color:var(--prime-accent);outline-color:var(--prime-accent)}
+.prime-composer>.prime-signal{position:absolute;left:14px;top:-2px;width:30px;height:3px;opacity:0;transition:opacity .2s ease}
+.prime-composer:focus-within>.prime-signal{opacity:1}
+.prime-page #prime-send{transition:background .18s ease,transform .16s ease}
+.prime-page .prime-has-draft #prime-send:not(:disabled){background:var(--prime-accent);color:#fff}
+.prime-page #prime-send:not(:disabled):active{transform:scale(.94)}
+.prime-form[aria-busy=true] #prime-send svg{animation:prime-send-lift .36s cubic-bezier(.2,.7,.3,1)}
+.prime-page .prime-thinking-mark i:first-child,.prime-page .prime-render>i{background:var(--prime-accent)}
+.prime-render>i>.prime-signal{position:absolute;right:12px;top:0;width:30px;height:2px}
+.prime-page .prime-render-progress{border-color:var(--prime-accent)}
+.prime-render-progress>.prime-signal{position:absolute;left:5px;bottom:-1px;width:calc(100% - 10px);height:2px}
+.prime-page .prime-cover-starter{transition:border-color .18s ease,transform .18s ease}
+html .prime-page .prime-cover-starter[aria-pressed=true]{border-color:var(--prime-accent);box-shadow:inset 2px 0 var(--prime-accent)}
+.prime-page .prime-cover-starter:active{transform:translateY(1px)}
+.prime-starters svg,.prime-cover-starter>svg{transition:transform .2s ease,color .2s ease}
+.prime-page .song-preview-button.is-playing .song-preview-icon{color:var(--prime-accent)}
+.prime-page .prime-image-open{position:relative}
+.prime-image-open::after{content:"";position:absolute;inset:0;border:1px solid var(--prime-accent);pointer-events:none;opacity:0}
+.prime-image--ready .prime-image-open::after{animation:prime-image-edge .85s ease-out}
+.prime-image--ready .prime-image-open>img{animation:prime-image-arrive .38s cubic-bezier(.2,.7,.3,1)}
+.prime-photo:not([hidden])>.prime-photo-open{animation:prime-photo-arrive .22s ease-out}
+.prime-feature-top .eyebrow::before{display:none}
+.prime-feature-top .eyebrow>.prime-signal{width:24px;height:3px}
+.prime-feature-composer button,.prime-widget-launcher{background:var(--prime-accent);border-color:var(--prime-accent)}
+.prime-feature-composer{border-left-color:var(--prime-accent)}
+.prime-feature-composer button svg,.prime-widget-launcher svg{transition:transform .2s ease}
+.prime-feature-composer button:active svg,.prime-widget-launcher:active svg{transform:translate(2px,-2px)}
+.prime-widget-head h2{display:flex;align-items:center;gap:12px}
+.prime-widget-head .prime-signal{width:20px;height:3px}
+@media(hover:hover){
+ html .prime-page .prime-cover-starter:hover{border-color:var(--prime-accent)}
+ .prime-starters .text-button:hover svg,.prime-cover-starter:hover>svg{transform:translate(2px,-2px);color:var(--prime-accent)}
+ .prime-feature-composer button:hover{background:var(--prime-highlight)}
+ .prime-feature-composer button:hover svg,.prime-widget-launcher:hover svg{transform:translate(2px,-2px)}
+}
+@keyframes prime-send-lift{0%,100%{transform:translate(0,0)}45%{transform:translate(3px,-3px)}}
+@keyframes prime-image-edge{from{opacity:.85}to{opacity:0}}
+@keyframes prime-image-arrive{from{opacity:.9;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes prime-photo-arrive{from{transform:translateY(2px)}to{transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){
+ .prime-page .prime-composer,.prime-composer>.prime-signal,.prime-page #prime-send,.prime-page .prime-cover-starter,.prime-starters svg,.prime-cover-starter>svg,.prime-feature-composer button svg,.prime-widget-launcher svg{transition:none}
+ .prime-form[aria-busy=true] #prime-send svg,.prime-image--ready .prime-image-open::after,.prime-image--ready .prime-image-open>img,.prime-photo:not([hidden])>.prime-photo-open{animation:none}
+ .prime-page #prime-send:not(:disabled):active,.prime-page .prime-cover-starter:active,.prime-starters .text-button:hover svg,.prime-cover-starter:hover>svg,.prime-feature-composer button:active svg,.prime-widget-launcher:active svg,.prime-feature-composer button:hover svg,.prime-widget-launcher:hover svg{transform:none}
+}
+@media(forced-colors:active){.prime-signal{display:none}}
