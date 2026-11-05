@@ -15,12 +15,8 @@
   function target(node){return node instanceof Element?node.closest(actions):null}
   function allowed(state){return pageVisible&&state.inView&&state.owner.isConnected&&!document.hidden&&!state.owner.disabled&&state.owner.getAttribute('aria-disabled')!=='true'&&!document.documentElement.classList.contains('intro-pending')&&[...document.querySelectorAll('dialog[open]')].every(dialog=>dialog.contains(state.owner))}
   function wanted(state){return state.tapUntil>performance.now()||(hover.matches&&state.hovered&&state.owner.matches(':hover'))||(state.focused&&state.owner.matches(':focus-visible'))}
-  function rgba(value){const n=value.match(/[\d.]+/g)?.map(Number)||[0,0,0,0];return {r:n[0],g:n[1],b:n[2],a:n.length>3?n[3]:1}}
   function assetFor(owner){
-    const style=getComputedStyle(owner),bg=rgba(style.backgroundColor),ink=rgba(style.color),rect=owner.getBoundingClientRect();
-    const palette=bg.a>.65&&bg.r>150&&bg.g<100&&bg.b<100?'red':bg.a>.65?(bg.r*.2126+bg.g*.7152+bg.b*.0722>128?'light':'dark'):(ink.r*.2126+ink.g*.7152+ink.b*.0722>128?'dark':'light');
-    const shape=rect.width/Math.max(1,rect.height)>1.55?'wide':'square';
-    return '/assets/hdr-action-'+(palette==='red'?'red':palette==='light'?'light-'+shape:shape);
+    return '/assets/hdr-action-crimson';
   }
   function stop(state){state.video?.pause();flag(state.owner,'hdr-video-ready',false)}
   function dropMedia(state){
@@ -49,7 +45,7 @@
     }
   }
   function sync(state,gesture=false){
-    const active=allowed(state)&&wanted(state);flag(state.owner,'hdr-active',active);
+    const active=allowed(state)&&wanted(state);flag(state.owner,'hdr-active',active);flag(state.owner,'hdr-keyboard',active&&state.focused&&keyboard);
     if(!active){stop(state);return}
     prepare(state);const video=state.video;if(!video||state.failed)return;
     if(state.pending){state.retry=true;return}

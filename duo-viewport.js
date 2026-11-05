@@ -23,12 +23,15 @@
     const hiddenStrip = masked && ((!landscape && previousPhoneWidth && shown < previousPhoneWidth) || (landscape && known));
     const full = hiddenStrip ? shown + 84 : landscape ? larger : smaller;
     const gap = full - shown;
-    if (gap < 40 || gap > 120 || (landscape && !known)) return null;
+    if (gap < 40 || gap > 120 || (landscape && !known && !(Math.abs(smaller-466)<2 && Math.abs(larger-678)<2))) return null;
     // A small app window must retain its own origin, rather than use the screen's.
     if (!masked && outerWidth > 0 && Math.abs(outerWidth - full) > 2) return null;
     if (!landscape && !known) { known = true; try { sessionStorage.setItem(key, '1'); } catch {} }
-    const left = landscape && (type === 'landscape-primary' || (!type && angle === 90)) ? gap : 0;
-    return { width: shown, full, left, right: gap - left, height: Math.min(innerHeight, view?.height || innerHeight) };
+    const stripLeft = landscape && (type === 'landscape-primary' || (!type && angle === 90)) ? gap : 0;
+    // Safari already starts its visible coordinates after a left-hand strip.
+    const nativePane = innerWidth < document.documentElement.clientWidth - 1;
+    const left = stripLeft && !nativePane ? stripLeft : 0;
+    return { width: shown, full, left, right: gap - stripLeft, stripLeft, canvasLeft: left-stripLeft, height: Math.min(innerHeight, view?.height || innerHeight) };
   }
 
   function update() {
@@ -56,23 +59,33 @@
       root.classList.add('site-duo-strip');
       for (const [name,value] of Object.entries({width:next.width,left:next.left,right:next.right})) root.style.setProperty(`--site-visible-${name}`, `${value}px`);
       root.style.setProperty('--site-canvas-width', `${next.full}px`);
+      root.style.setProperty('--site-canvas-left', `${next.canvasLeft}px`);
+      root.style.setProperty('--site-strip-left', `${next.stripLeft}px`);
+      root.style.setProperty('--site-strip-right', `${next.right}px`);
       root.style.setProperty('--site-visible-height', `${Math.ceil(next.height)}px`);
     } else {
       if (ours && tag.content === ours) tag.content = original;
       ours = '';
       root.classList.remove('site-duo-strip');
       for (const name of ['width','left','right']) root.style.removeProperty(`--site-visible-${name}`);
+      for (const name of ['--site-canvas-left','--site-strip-left','--site-strip-right']) root.style.removeProperty(name);
       root.style.removeProperty('--site-canvas-width');
       root.style.removeProperty('--site-visible-height');
+    }
+    if (document.body && !document.body.classList.contains('prime-page') && !document.querySelector('dialog[open]')) {
+      const x = next ? next.stripLeft-next.left : 0;
+      if (Math.abs(scrollX-x)>.5) scrollTo({left:x,top:scrollY,behavior:'instant'});
     }
     if (JSON.stringify(bounds) !== before) document.dispatchEvent(new Event('superstar:viewport'));
   }
   function schedule() { if (!frame) frame = requestAnimationFrame(update); }
   window.addEventListener('resize', schedule);
+  window.addEventListener('scroll', schedule, {passive:true});
   window.addEventListener('orientationchange', schedule);
   window.addEventListener('pageshow', schedule);
   screen.orientation?.addEventListener('change', schedule);
   window.visualViewport?.addEventListener('resize', schedule);
   document.addEventListener('focusout', schedule);
+  document.addEventListener('superstar:intro-end', schedule);
   update();
 })();

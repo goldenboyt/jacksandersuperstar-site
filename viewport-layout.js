@@ -13,7 +13,7 @@
     const left=bounds?.left||0,width=Math.max(1,Math.min(scaled?layoutWidth:(bounds?.width||view?.width||layoutWidth),layoutWidth-left));
     // Extend imagery under narrow browser chrome, without moving the subject
     // out of a genuinely small split-view pane in a wider virtual layout.
-    const bleed=bounds?.full||Math.min(layoutWidth,width*1.4),bleedLeft=bounds?.left||0;
+    const bleed=bounds?.full||Math.min(layoutWidth,width*1.4),bleedLeft=bounds?.stripLeft||0;
     const layoutHeight=scaled?(document.documentElement.clientHeight||innerHeight):innerHeight;
     const top=scaled?0:Math.max(0,view?.offsetTop||0),height=scaled?layoutHeight:Math.min(layoutHeight,view?.height||layoutHeight);
     const typing=document.activeElement?.matches('input,textarea,[contenteditable=true]')||Boolean(document.querySelector('dialog[open]'));

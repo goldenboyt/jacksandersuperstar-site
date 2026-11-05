@@ -64,3 +64,18 @@ html.site-duo-strip .prime-page,html.site-duo-strip .prime-main{left:var(--site-
 html.site-duo-strip .prime-widget-launcher{right:calc(100% - var(--site-visible-left) - var(--site-visible-width) + 16px)}
 .site-duo-strip .home-page .hero{width:var(--home-bleed)}
 .site-duo-strip .site-intro{left:0;right:auto;width:var(--site-canvas-width);height:max(100lvh,var(--site-visible-height));min-height:var(--site-visible-height)}
+
+/* Paint every section across the canvas; keep text and controls in the clear band. */
+.site-duo-strip .home-page main>section:not(.hero),.site-duo-strip .home-page>footer{width:var(--site-canvas-width);margin-left:calc(-1*var(--site-strip-left));padding-left:calc(var(--site-strip-left) + var(--pad));padding-right:calc(var(--site-strip-right) + var(--pad))}
+.site-duo-strip .home-page .music-video-section{padding-inline:0}
+.site-duo-strip .video-panel-copy{padding-left:calc(var(--site-strip-left) + var(--pad));padding-right:calc(var(--site-strip-right) + var(--pad))}
+.site-duo-strip .music-video-stage :is(.preview-toggle,.preview-sound){right:calc(var(--site-strip-right) + var(--pad))}
+.site-duo-strip .music-video-stage .preview-sound{right:calc(var(--site-strip-right) + var(--pad) + 62px)}
+.site-duo-strip .live-photo{inset:0}
+.site-duo-strip body:not(.prime-page){margin-left:var(--site-strip-left)}
+.site-duo-strip body:not(.home-page):not(.prime-page){width:var(--site-canvas-width);margin-left:0}
+.site-duo-strip body:not(.home-page):not(.prime-page) :is(.shop-main,.release-page-main,footer){padding-left:calc(var(--site-strip-left) + var(--pad));padding-right:calc(var(--site-strip-right) + var(--pad))}
+.site-duo-strip .header::before{content:"";position:absolute;z-index:-1;top:0;bottom:-1px;left:calc(-1*var(--site-strip-left));width:var(--site-canvas-width);background:inherit;border-bottom:inherit;pointer-events:none}
+.site-duo-strip .site-intro{left:var(--site-canvas-left)}
+
+.site-duo-strip body:not(.home-page):not(.prime-page) main>section{padding-left:calc(var(--site-strip-left) + var(--pad));padding-right:calc(var(--site-strip-right) + var(--pad))}
