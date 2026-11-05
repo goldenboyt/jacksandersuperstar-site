@@ -47,12 +47,12 @@
     const { width, height } = intro.getBoundingClientRect();
     const viewport = window.visualViewport;
     const center = {
-      x: (viewport?.offsetLeft || 0) + (viewport?.width || innerWidth) / 2,
+      x: Math.min(width, viewport?.width || innerWidth) / 2,
       y: (viewport?.offsetTop || 0) + (viewport?.height || innerHeight) / 2
     };
     // Coordinates match the upper counter of the e in the original logo.
     const focus = { x: 1505, y: 103 };
-    const scale = Math.min((viewport?.width || innerWidth) * .66, 760) / 1710;
+    const scale = Math.min(Math.min(width, viewport?.width || innerWidth) * .66, 760) / 1710;
     const left = center.x - 1710 * scale / 2;
     const top = center.y - 657 * scale / 2;
     const opening = { x: left + focus.x * scale, y: top + focus.y * scale };

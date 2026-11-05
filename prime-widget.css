@@ -1,4 +1,4 @@
-.prime-widget-launcher{position:fixed;right:24px;bottom:max(20px,env(safe-area-inset-bottom));z-index:80;display:flex;align-items:center;gap:24px;min-height:50px;padding:14px 20px;border:1px solid #777;background:#111;color:#fff;font:15px/1.2 Arial,Helvetica,sans-serif;box-shadow:0 3px 18px #0002;cursor:pointer;text-decoration:none}
+.prime-widget-launcher{position:fixed;right:24px;bottom:max(20px,env(safe-area-inset-bottom));z-index:80;display:flex;align-items:center;gap:24px;min-height:50px;padding:14px 20px;border:1px solid var(--red);background:var(--red);color:#fff;font:15px/1.2 Arial,Helvetica,sans-serif;box-shadow:0 3px 18px #0002;cursor:pointer;text-decoration:none}
 .prime-widget-launcher[hidden]{display:none}
 .prime-widget-launcher svg{width:20px;height:20px}
 .prime-widget-launcher:focus-visible{outline:2px solid currentColor;outline-offset:-4px}

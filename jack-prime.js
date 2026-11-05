@@ -347,17 +347,21 @@
   });
   if(previousOwner)clearOwnedImages(previousOwner);
   const tesla=!embedded&&/\bTesla\b/i.test(navigator.userAgent);
-  let viewportFrame=0,viewportTimers=[],restingWidth=innerWidth,restingHeight=Math.min(innerHeight,window.visualViewport?.height||innerHeight);
+  let viewportFrame=0,viewportTimers=[],lastLayoutWidth=0,restingWidth=innerWidth,restingHeight=Math.min(innerHeight,window.visualViewport?.height||innerHeight);
   function updateViewport(){
     viewportFrame=0;
-    const view=window.visualViewport;if(view&&view.scale!==1)return;
+    const view=window.visualViewport,layoutWidth=document.documentElement.clientWidth||innerWidth;
+    const changed=!lastLayoutWidth||Math.abs(layoutWidth-lastLayoutWidth)>1,scaled=Boolean(view&&Math.abs(view.scale-1)>.01);
+    if(scaled&&!changed)return;
     // Safari can pan the outer document while its keyboard is open, even with
     // an overflow-hidden body. Keep that separate from the chat's own scroll.
     if(window.scrollX||window.scrollY)window.scrollTo(0,0);
     const atBottom=scroll.scrollHeight-scroll.scrollTop-scroll.clientHeight<24;
-    const measuredHeight=Math.min(innerHeight,view?.height||innerHeight);
-    const top=Math.min(Math.max(0,view?.offsetTop||0),Math.max(0,innerHeight-measuredHeight));
-    const width=Math.min(innerWidth,view?.width||innerWidth),left=Math.min(Math.max(0,view?.offsetLeft||0),Math.max(0,innerWidth-width));
+    const layoutHeight=scaled?(document.documentElement.clientHeight||innerHeight):innerHeight;
+    const measuredHeight=scaled?layoutHeight:Math.min(layoutHeight,view?.height||layoutHeight);
+    const top=scaled?0:Math.min(Math.max(0,view?.offsetTop||0),Math.max(0,layoutHeight-measuredHeight));
+    // Safari's split-view inset is outside the page; keep the chat at its own origin.
+    const width=Math.max(1,Math.min(layoutWidth,scaled?layoutWidth:(view?.width||layoutWidth))),left=0;
     const typing=document.activeElement===input,keyboard=navigator.virtualKeyboard?.boundingRect;
     const keyboardVisible=keyboard?.height>0&&keyboard.width>0;
     if(!typing||restingWidth!==width){restingHeight=measuredHeight;restingWidth=width;}
@@ -369,12 +373,13 @@
     document.documentElement.style.setProperty('--prime-top',`${top}px`);
     document.documentElement.style.setProperty('--prime-height',`${height}px`);
     document.documentElement.style.setProperty('--prime-left',`${left}px`);
-    document.documentElement.style.setProperty('--prime-right',`${innerWidth-left-width}px`);
+    document.documentElement.style.setProperty('--prime-right',`${layoutWidth-width}px`);
     document.documentElement.style.setProperty('--prime-width',`${width}px`);
     document.body.classList.toggle('prime-width-compact',width<=1000);document.body.classList.toggle('prime-width-narrow',width<=640);
     document.body.classList.toggle('prime-tesla-typing',tesla&&typing);
     document.body.classList.toggle('prime-compact-viewport',height<480||(tesla&&typing));
     document.body.classList.toggle('prime-tight-viewport',height<380);
+    lastLayoutWidth=layoutWidth;
     resize();
     if(atBottom)scroll.scrollTop=scroll.scrollHeight;
   }
