@@ -1,0 +1,64 @@
+/* Fit the visible Safari pane, including folded and unfolded window sizes. */
+.home-page{width:var(--home-width,100%);margin-left:var(--home-left,0px);--pad:var(--home-gutter,5.5vw)}
+.home-page .header{left:var(--home-left,0px);right:var(--home-right,0px);top:var(--home-top,0px);padding-left:max(var(--pad),env(safe-area-inset-left));padding-right:max(var(--pad),env(safe-area-inset-right))}
+.home-page .hero{height:var(--home-hero,100svh);min-height:min(720px,var(--home-hero,100svh));max-height:1200px}
+.home-page .hero h1{left:max(var(--pad),env(safe-area-inset-left));right:max(var(--pad),env(safe-area-inset-right));font-size:clamp(78px,calc(var(--home-width,100vw)*.126),226px)}
+.home-page:not(.home-narrow) .prime-feature h2{font-size:clamp(100px,calc(var(--home-width,100vw)*.125),190px)}
+.home-page .prime-feature-body{gap:calc(var(--home-width,100vw)*.08)}
+.home-page .hero-bottom{left:max(var(--pad),env(safe-area-inset-left));right:max(var(--pad),env(safe-area-inset-right))}
+.hero-actions{display:flex;align-items:stretch;flex-wrap:wrap;gap:12px;min-width:0}
+.hero-prime-trigger{display:inline-flex;align-items:center;justify-content:center;gap:14px;height:54px;min-height:54px;padding:12px 22px;border:1px solid #ffffff80;background:#111;color:#fff;font:15px/1.2 Arial,Helvetica,sans-serif;white-space:nowrap}
+.hero-prime-trigger:hover,.hero-prime-trigger:active{border-color:#fff;transform:none}
+.hero-prime-trigger[hidden]{display:none}
+.prime-launcher-icon{display:grid;place-items:center;width:26px;height:26px;flex:none;background:#111;line-height:0}
+.prime-launcher-icon>svg{width:20px;height:20px}
+.home-page .prime-widget-launcher{right:var(--launcher-right,24px);bottom:calc(var(--launcher-bottom,20px) + env(safe-area-inset-bottom,0px));gap:12px;min-height:48px;padding:10px 15px;background:#111;border:1px solid #777;color:#fff;font-size:14px;box-shadow:0 3px 16px #0002}
+.home-page .prime-widget-launcher:hover{border-color:#fff}
+.home-page .prime-widget-launcher[hidden]{display:none}
+.home-page .menu-dialog{left:var(--home-left,0px);right:auto;width:var(--home-width,100%);height:var(--home-height,100dvh)}
+.home-page :is(.release-dialog,.video-dialog){left:var(--home-left,0px);right:var(--home-right,0px);max-width:calc(var(--home-width,100vw) - 32px);max-height:calc(var(--home-height,100dvh) - 32px)}
+.home-compact .header .desktop-nav{display:none}
+.home-compact .header .wordmark{width:min(310px,62%);min-width:0;flex-shrink:1}
+.home-compact .header .menu-toggle{margin-left:auto;flex-shrink:0}
+.home-compact .hero-bottom{display:block;bottom:calc(clamp(40px,8svh,80px) + env(safe-area-inset-bottom,0px))}
+.home-compact .hero-index{display:none}
+.home-compact .hero-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:510px}
+.home-compact .hero-actions>.button,.home-compact .hero-prime-trigger{min-width:0;height:50px;min-height:50px;padding:10px 16px;font-size:14px;white-space:normal;text-align:center}
+.home-narrow .header{height:70px}
+.home-narrow .hero h1{font-size:calc(var(--home-width,100vw)*.136)}
+.home-narrow .header .menu-toggle{min-height:42px;padding:10px 12px}
+.home-narrow .hero-actions{gap:10px}
+.home-narrow .hero-actions>.button,.home-narrow .hero-prime-trigger{font-size:13px;padding:10px 12px;gap:8px;height:48px;min-height:48px}
+.home-narrow .prime-launcher-icon{width:24px;height:24px}
+.home-narrow .featured-release,.home-narrow .merch-grid,.home-narrow .soboda-section{grid-template-columns:1fr}
+.home-narrow .prime-feature-body{grid-template-columns:1fr;gap:36px}
+.home-narrow .prime-feature h2{font-size:clamp(88px,calc(var(--home-width,100vw)*.29),160px)}
+.home-narrow .section-heading h2{font-size:calc(var(--home-width,100vw)*.18)}
+.home-narrow .live-heading{display:block}
+.home-narrow .live-heading h2{font-size:calc(var(--home-width,100vw)*.24)}
+.home-narrow .live-side{max-width:none;margin-top:30px;gap:20px}
+.home-narrow .soboda-copy h2{font-size:calc(var(--home-width,100vw)*.20)}
+.home-short .hero-bottom{bottom:calc(40px + env(safe-area-inset-bottom,0px))}
+.home-short .hero-actions>.button,.home-short .hero-prime-trigger{height:46px;min-height:46px;padding-block:8px}
+.home-short.home-compact:not(.home-narrow) .hero h1{top:130px;max-width:min(50%,calc(var(--home-hero,100svh)*.65));font-size:clamp(40px,calc(var(--home-width,100vw)*.063),70px)}
+
+/* The chat and its image viewer use the same visible horizontal bounds. */
+.prime-page{left:var(--prime-left,0px);right:auto;width:var(--prime-width,100%);--pad:clamp(18px,calc(var(--prime-width,100vw)*.055),92px)}
+.prime-page .header{left:var(--prime-left,0px);right:var(--prime-right,0px);padding-inline:max(var(--pad),env(safe-area-inset-left)) max(var(--pad),env(safe-area-inset-right))}
+.prime-page .prime-main{left:var(--prime-left,0px);right:auto;width:var(--prime-width,100%);padding-inline:max(var(--pad),env(safe-area-inset-left)) max(var(--pad),env(safe-area-inset-right))}
+.prime-page .prime-heading h1{font-size:clamp(60px,calc(var(--prime-width,100vw)*.085),144px)}
+.prime-page .menu-dialog,.prime-page .prime-image-viewer{left:var(--prime-left,0px);right:auto;width:var(--prime-width,100%)}
+.prime-width-compact .header .desktop-nav{display:none}
+.prime-width-compact .header .wordmark{width:min(310px,62%);min-width:0;flex-shrink:1}
+.prime-width-compact .header .menu-toggle{margin-left:auto;flex-shrink:0}
+.prime-width-narrow{--pad:clamp(18px,calc(var(--prime-width,100vw)*.06),40px);--prime-header:70px}
+.prime-width-narrow .prime-heading h1{font-size:calc(var(--prime-width,100vw)*.18)}
+.prime-width-narrow .prime-cover-starters{grid-template-columns:1fr}
+.prime-width-narrow .prime-toolbar{min-height:62px;gap:15px}
+.prime-width-narrow .prime-message{font-size:17px;max-width:95%}
+.prime-page.prime-has-messages .prime-heading h1,.prime-page.prime-cover-selected .prime-heading h1{font-size:32px}
+.prime-width-narrow.prime-has-messages .prime-heading h1,.prime-width-narrow.prime-cover-selected .prime-heading h1{font-size:28px}
+.prime-page.prime-compact-viewport{--prime-header:52px}
+.prime-page.prime-tight-viewport{--prime-header:0px}
+html.prime-embedded .prime-page{--prime-header:0px}
+html.prime-embedded .prime-main{padding-inline:18px}

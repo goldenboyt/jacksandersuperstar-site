@@ -11,7 +11,6 @@
   const storage='superstar:jack-prime:conversation',imageStorage=`${storage}:image-request`,ownerStorage=`${storage}:image-owner`;
   const catalog=new Map((window.SuperstarCatalog?.releases||[]).map(release=>[release.page,release]));
   const imageURLs=new Map();
-  const signalMarkup='<picture class="prime-signal" aria-hidden="true"><source type="image/avif" srcset="/assets/prime-signal-hdr-v2.avif"><img src="/assets/prime-signal.svg" alt="" width="96" height="12"></picture>';
   const imageTimingStorage='superstar:jack-prime:image-times';
   let imageTimings=[];
   try{const saved=JSON.parse(localStorage.getItem(imageTimingStorage));if(Array.isArray(saved))imageTimings=saved.filter(value=>Number.isFinite(value)&&value>=5000&&value<=175000).slice(-6)}catch{}
@@ -162,7 +161,7 @@
   function activity(kind){
     const follow=nearBottom(),node=document.createElement('div');
     node.className=`prime-message prime-message--assistant prime-activity prime-activity--${kind}`;
-    node.innerHTML='<span class="prime-message-label">jack prime</span>'+(kind==='image'?`<div class="prime-render"><span aria-hidden="true">prime</span><i aria-hidden="true">${signalMarkup}</i><div class="prime-render-progress" role="progressbar" aria-label="Estimated image generation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0% complete, estimated" title="Estimated image generation progress"><strong>0%</strong>${signalMarkup}</div></div>`:'<span class="prime-thinking-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>')+`<span class="prime-activity-label" role="status">${kind==='image'?'making your image':'thinking'}</span>`;
+    node.innerHTML='<span class="prime-message-label">jack prime</span>'+(kind==='image'?'<div class="prime-render"><span aria-hidden="true">prime</span><i aria-hidden="true"></i><div class="prime-render-progress" role="progressbar" aria-label="Estimated image generation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0% complete, estimated" title="Estimated image generation progress"><strong>0%</strong></div></div>':'<span class="prime-thinking-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>')+`<span class="prime-activity-label" role="status">${kind==='image'?'making your image':'thinking'}</span>`;
     log.append(node);followBottom(follow);
     let timer,completed=false;
     const started=performance.now();
@@ -358,9 +357,10 @@
     const atBottom=scroll.scrollHeight-scroll.scrollTop-scroll.clientHeight<24;
     const measuredHeight=Math.min(innerHeight,view?.height||innerHeight);
     const top=Math.min(Math.max(0,view?.offsetTop||0),Math.max(0,innerHeight-measuredHeight));
+    const width=Math.min(innerWidth,view?.width||innerWidth),left=Math.min(Math.max(0,view?.offsetLeft||0),Math.max(0,innerWidth-width));
     const typing=document.activeElement===input,keyboard=navigator.virtualKeyboard?.boundingRect;
     const keyboardVisible=keyboard?.height>0&&keyboard.width>0;
-    if(!typing||restingWidth!==innerWidth){restingHeight=measuredHeight;restingWidth=innerWidth;}
+    if(!typing||restingWidth!==width){restingHeight=measuredHeight;restingWidth=width;}
     let height=measuredHeight;
     if(keyboardVisible&&keyboard.top>top)height=Math.min(height,keyboard.top-top);
     // Some in-car keyboards overlay the page without reporting resized bounds.
@@ -368,6 +368,10 @@
     if(tesla&&typing&&!keyboardVisible&&restingHeight-height<96)height=Math.min(height,Math.floor(restingHeight/2));
     document.documentElement.style.setProperty('--prime-top',`${top}px`);
     document.documentElement.style.setProperty('--prime-height',`${height}px`);
+    document.documentElement.style.setProperty('--prime-left',`${left}px`);
+    document.documentElement.style.setProperty('--prime-right',`${innerWidth-left-width}px`);
+    document.documentElement.style.setProperty('--prime-width',`${width}px`);
+    document.body.classList.toggle('prime-width-compact',width<=1000);document.body.classList.toggle('prime-width-narrow',width<=640);
     document.body.classList.toggle('prime-tesla-typing',tesla&&typing);
     document.body.classList.toggle('prime-compact-viewport',height<480||(tesla&&typing));
     document.body.classList.toggle('prime-tight-viewport',height<380);

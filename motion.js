@@ -86,7 +86,9 @@
   }
   function requestFrame(){if(!ticking){ticking=true;requestAnimationFrame(frame)}}
   window.addEventListener('scroll',requestFrame,{passive:true});
-  window.addEventListener('resize',()=>{cancelAnimationFrame(resizeTick);resizeTick=requestAnimationFrame(()=>{placeTitle();frame()})});
+  function queueLayout(){cancelAnimationFrame(resizeTick);resizeTick=requestAnimationFrame(()=>{placeTitle();frame()})}
+  window.addEventListener('resize',queueLayout);
+  if('ResizeObserver' in window)new ResizeObserver(queueLayout).observe(hero);
   preference.addEventListener('change',()=>{placeTitle();frame()});
   placeTitle();frame();
   if(document.fonts)document.fonts.ready.then(placeTitle);
