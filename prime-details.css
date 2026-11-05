@@ -28,18 +28,8 @@ html .prime-page .prime-cover-starter[aria-pressed=true]{border-color:var(--page
 @keyframes prime-image-arrive{from{opacity:.9;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 @keyframes prime-photo-arrive{from{transform:translateY(2px)}to{transform:translateY(0)}}
 
-/* A white specular edge lights a ready action. Text and arrows remain SDR. */
-html [data-prime-hdr-surface]{position:relative;background:#111;color:#fff;border:1px solid #555}
-html [data-prime-hdr-surface]:hover{background:#111;color:#fff;border-color:#aaa}
-[data-prime-hdr-surface]>svg,[data-prime-hdr-surface]>span{position:relative;z-index:1}
-[data-prime-hdr-surface]>.prime-hdr-light,[data-prime-hdr-surface]>.prime-hdr-light-video{position:absolute;inset:0;z-index:0;display:block;width:100%;height:100%;pointer-events:none;visibility:hidden;dynamic-range-limit:no-limit;object-fit:fill}
-.prime-hdr-light>img{display:block;width:100%;height:100%;object-fit:fill;dynamic-range-limit:no-limit}
-.prime-hdr-active.prime-hdr-image-loaded>.prime-hdr-light,.prime-hdr-active.prime-hdr-video-ready>.prime-hdr-light-video{visibility:visible}
-html .prime-page .prime-form #prime-send[data-prime-hdr-surface],html .prime-feature-composer button[data-prime-hdr-surface]{background:#111;color:#fff;border:1px solid #555}
-html .prime-page .prime-form #prime-send.prime-hdr-active,html .prime-feature-composer button.prime-hdr-active{border-color:#aaa}
 @media(prefers-reduced-motion:reduce){
  .prime-page .prime-composer,.prime-page #prime-send,.prime-page .prime-cover-starter,.prime-starters svg,.prime-cover-starter>svg,.prime-feature-composer button svg,.prime-widget-launcher svg{transition:none}
  .prime-image--ready .prime-image-open::after,.prime-image--ready .prime-image-open>img,.prime-photo:not([hidden])>.prime-photo-open{animation:none}
  .prime-page .prime-cover-starter:active,.prime-starters .text-button:hover svg,.prime-cover-starter:hover>svg,.prime-feature-composer button:active svg,.prime-widget-launcher:active svg,.prime-widget-launcher:hover svg{transform:none}
 }
-@media(forced-colors:active){[data-prime-hdr-surface]>.prime-hdr-light,[data-prime-hdr-surface]>.prime-hdr-light-video{display:none}}

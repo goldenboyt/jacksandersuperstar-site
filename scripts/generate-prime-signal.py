@@ -43,7 +43,7 @@ def action_light(x, y):
     return [1.14 + (750 - 1.14) * min(1, top + side)] * 3
 
 
-def encode(name, height, color, width=96, video=False, peak=1000):
+def encode(name, height, color, width=96, video=False, peak=1000, input_primaries='bt2020'):
     pixels = bytearray()
     for y in range(height):
         for x in range(width):
@@ -58,7 +58,7 @@ def encode(name, height, color, width=96, video=False, peak=1000):
         '-color_primaries', 'bt2020', '-color_trc', 'smpte2084',
         '-colorspace', 'bt2020nc', '-color_range', 'tv'
         ]
-        color_filter = ('zscale=matrixin=gbr:transferin=smpte2084:primariesin=bt2020:rangein=full:'
+        color_filter = (f'zscale=matrixin=gbr:transferin=smpte2084:primariesin={input_primaries}:rangein=full:'
                         'matrix=bt2020nc:transfer=smpte2084:primaries=bt2020:range=limited,format=yuv420p10le')
         subprocess.run(base + [
         '-vf', color_filter, '-frames:v', '1',

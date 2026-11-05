@@ -1,11 +1,11 @@
 /* Fit the visible Safari pane, including folded and unfolded window sizes. */
-.home-page{width:min(var(--home-width,100%),calc(100% - var(--home-left,0px)));margin-left:var(--home-left,0px);--home-span:min(var(--home-width,100vw),100vw);--pad:min(var(--home-gutter,5.5vw),max(6vw,calc((100vw - 1660px)/2)))}
+.home-page{width:min(var(--home-width,100%),calc(100% - var(--home-left,0px)));margin-left:var(--home-left,0px);overflow-x:visible;--home-span:min(var(--home-width,100vw),100vw);--pad:min(var(--home-gutter,5.5vw),max(6vw,calc((100vw - 1660px)/2)))}
 .home-page .header{left:var(--home-left,0px);right:var(--home-right,0px);top:var(--home-top,0px);padding-left:max(var(--pad),env(safe-area-inset-left));padding-right:max(var(--pad),env(safe-area-inset-right))}
-.home-page .hero{height:var(--home-hero,100svh);min-height:min(720px,var(--home-hero,100svh));max-height:1200px}
-.home-page .hero h1{left:max(var(--pad),env(safe-area-inset-left));right:max(var(--pad),env(safe-area-inset-right));font-size:clamp(78px,calc(var(--home-span)*.126),226px)}
+.home-page .hero{width:min(var(--home-bleed,100vw),100vw);height:var(--home-hero,100svh);min-height:min(720px,var(--home-hero,100svh));max-height:1200px}
+.home-page .hero h1{left:max(var(--pad),env(safe-area-inset-left));right:calc(var(--home-bleed-right,0px) + max(var(--pad),env(safe-area-inset-right)));font-size:clamp(78px,calc(var(--home-span)*.126),226px)}
 .home-page:not(.home-narrow) .prime-feature h2{font-size:clamp(100px,calc(var(--home-span)*.125),190px)}
 .home-page .prime-feature-body{gap:calc(var(--home-span)*.08)}
-.home-page .hero-bottom{left:max(var(--pad),env(safe-area-inset-left));right:max(var(--pad),env(safe-area-inset-right))}
+.home-page .hero-bottom{left:max(var(--pad),env(safe-area-inset-left));right:calc(var(--home-bleed-right,0px) + max(var(--pad),env(safe-area-inset-right)))}
 .prime-launcher-icon{display:grid;place-items:center;width:26px;height:26px;flex:none;line-height:0}
 .prime-launcher-icon>svg{width:20px;height:20px}
 .home-page .prime-widget-launcher{right:var(--launcher-right,24px);bottom:calc(var(--launcher-bottom,20px) + env(safe-area-inset-bottom,0px));gap:12px;min-height:48px;padding:10px 15px;background:var(--red);border:1px solid var(--red);color:#fff;font-size:14px;box-shadow:0 3px 16px #0002}

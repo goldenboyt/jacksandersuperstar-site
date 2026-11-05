@@ -49,6 +49,8 @@
     const area = document.createElement('div'); area.className = 'release-share';
     const button = document.createElement('button'); button.type = 'button';
     button.className = 'button release-share-button'; button.textContent = 'copy link';
+    button.dataset.hdr = 'feedback'; button.dataset.hdrShape = 'wide';
+    let feedbackTimer;
     button.setAttribute('aria-label', `Copy link to ${release.title}`);
     const status = document.createElement('span'); status.className = 'release-share-status';
     status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
@@ -60,7 +62,10 @@
       try {
         if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
         await navigator.clipboard.writeText(fallback.value); fallback.hidden = true; status.textContent = 'link copied';
+        button.dataset.hdrState = 'copied'; clearTimeout(feedbackTimer);
+        feedbackTimer = setTimeout(() => { delete button.dataset.hdrState; }, 2400);
       } catch {
+        delete button.dataset.hdrState;
         fallback.hidden = false; fallback.focus(); fallback.select(); status.textContent = 'Select and copy this link.';
       } finally { button.disabled = false; }
     });

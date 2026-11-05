@@ -15,9 +15,10 @@
   <link rel="stylesheet" href="song-previews.css?v=2">
   <link rel="stylesheet" href="prime-feature.css?v=3">
   <link rel="stylesheet" href="prime-widget.css?v=4">
-  <link rel="stylesheet" href="prime-details.css?v=4">
+  <link rel="stylesheet" href="prime-details.css?v=5">
 <link rel="stylesheet" href="theme.css?v=1">
-<link rel="stylesheet" href="viewport-layout.css?v=3">
+<link rel="stylesheet" href="viewport-layout.css?v=4">
+<link rel="stylesheet" href="site-hdr.css?v=1">
 </head>
 <body class="home-page">
 <div class="site-intro" id="site-intro" aria-hidden="true" hidden>
@@ -79,7 +80,7 @@
   </h1></div>
   <div class="hero-cut hero-depth" aria-hidden="true"><div class="photo-canvas subject-canvas"><img src="assets/hero-stage-v2.webp" alt="" width="1152" height="1536" fetchpriority="high"></div></div>
   <div class="hero-shade" aria-hidden="true"></div>
-  <div class="hero-bottom"><a class="button button-outline" href="#music">explore the music</a><div class="hero-index"><a href="#music" class="scroll-label">scroll to explore <span class="scroll-line" aria-hidden="true"></span></a></div></div>
+  <div class="hero-bottom"><a class="button button-outline" data-hdr="primary" data-hdr-shape="wide" href="#music">explore the music</a><div class="hero-index"><a href="#music" class="scroll-label">scroll to explore <span class="scroll-line" aria-hidden="true"></span></a></div></div>
 </section>
 <section class="section music" id="music" aria-labelledby="music-title">
   <div class="section-heading"><h2 id="music-title">music<span class="asterisk" aria-hidden="true">*</span></h2><span class="rule"></span><span class="section-number">01 / discography</span></div>
@@ -99,7 +100,7 @@
       <div class="video-top"><p class="eyebrow">official music video</p></div>
       <div class="video-bottom">
         <div class="video-heading"><h2 id="music-video-title">magic <span>(tragic)</span></h2></div>
-        <div class="music-video-links"><a class="button button-white video-full-link" href="https://www.youtube.com/watch?v=a4_ZlWzaq2s" target="_blank" rel="noopener">watch full video <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a class="video-library-link" href="https://www.youtube.com/@jacksander1" target="_blank" rel="noopener">all videos &amp; clips <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+        <div class="music-video-links"><a class="button button-white video-full-link" data-hdr="primary" data-hdr-shape="wide" href="https://www.youtube.com/watch?v=a4_ZlWzaq2s" target="_blank" rel="noopener">watch full video <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a class="video-library-link" href="https://www.youtube.com/@jacksander1" target="_blank" rel="noopener">all videos &amp; clips <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
       </div>
     </div>
     <button class="preview-toggle" id="preview-toggle" type="button" hidden aria-label="Pause video preview"><span class="preview-pause-icon" aria-hidden="true">Ⅱ</span></button>
@@ -138,7 +139,7 @@
   <div class="prime-feature-body">
     <div class="prime-feature-identity"><h2 id="prime-feature-title">jack <span>prime.</span></h2><p class="prime-feature-tagline">it’s almost as good as the real thing.</p></div>
     <div class="prime-feature-copy">
-      <form class="prime-feature-form" id="prime-feature-form" action="/jackprime"><label for="prime-feature-input">your message</label><div class="prime-feature-composer"><input id="prime-feature-input" type="text" maxlength="1600" placeholder="talk to jack prime" autocomplete="off" enterkeyhint="send" required><button type="submit" data-prime-hdr-surface="send" aria-label="Send to Jack Prime" disabled><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></button></div></form>
+      <form class="prime-feature-form" id="prime-feature-form" action="/jackprime"><label for="prime-feature-input">your message</label><div class="prime-feature-composer"><input id="prime-feature-input" type="text" maxlength="1600" placeholder="talk to jack prime" autocomplete="off" enterkeyhint="send" required><button type="submit" data-prime-hdr-surface="send" data-hdr="ready" data-hdr-shape="square" aria-label="Send to Jack Prime" disabled><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></button></div></form>
       <a class="text-button" href="/jackprime">open conversation <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a>
     </div>
   </div>
@@ -163,15 +164,15 @@
 <dialog class="release-dialog" id="release-dialog" aria-labelledby="release-dialog-title"><div class="dialog-toolbar"><span>the catalog</span><button class="close-button" data-close="release-dialog" aria-label="Close album details">close <span aria-hidden="true">×</span></button></div><div id="release-content"></div></dialog>
 <dialog class="video-dialog" id="video-dialog" aria-labelledby="video-title"><div class="dialog-toolbar"><h2 id="video-title">live in dallas</h2><button class="close-button" data-close="video-dialog" aria-label="Close video">close <span aria-hidden="true">×</span></button></div><div class="video-frame" id="video-frame"></div><a href="https://www.youtube.com/watch?v=pZm5ldOVBnI" target="_blank" rel="noopener">watch on youtube</a></dialog>
 
-<a class="prime-widget-launcher" id="prime-widget-open" href="/jackprime" hidden>jack prime <span class="prime-launcher-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 18 18 6M6 6h12v12"/></svg></span></a>
-<script src="viewport-layout.js?v=2" defer></script>
+<a class="prime-widget-launcher" data-hdr="primary" data-hdr-theme="red" data-hdr-shape="wide" id="prime-widget-open" href="/jackprime" hidden>jack prime <span class="prime-launcher-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 18 18 6M6 6h12v12"/></svg></span></a>
+<script src="viewport-layout.js?v=3" defer></script>
 <script src="site-motion.js?v=25" defer></script>
 <script src="prime-feature.js?v=1" defer></script>
-<script src="prime-hdr.js?v=3" defer></script>
+<script src="prime-hdr.js?v=4" defer></script>
 <script src="prime-widget.js?v=5" defer></script>
 <script src="release-data.js?v=2" defer></script>
-<script src="release-ui.js?v=1" defer></script>
-<script src="song-previews.js?v=1" defer></script>
+<script src="release-ui.js?v=2" defer></script>
+<script src="song-previews.js?v=2" defer></script>
 <script src="app.js?v=3" defer></script>
 <script src="motion.js?v=28" defer></script>
 <script src="video.js?v=2" defer></script>

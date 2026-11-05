@@ -133,6 +133,7 @@
       open.addEventListener('click',()=>window.SuperstarImageViewer?.open(details));
       const actions=document.createElement('figcaption');actions.className='prime-image-actions';
       const save=document.createElement('button');save.type='button';save.className='prime-image-save';save.textContent='save image ↗';
+      save.dataset.hdr='primary';save.dataset.hdrShape='wide';
       const saveStatus=document.createElement('span');saveStatus.className='prime-image-save-status';saveStatus.setAttribute('role','status');
       save.addEventListener('click',()=>window.SuperstarImageViewer?.save({...details,opener:save},saveStatus,save));
       const download=document.createElement('a');download.href=url;download.download=details.name;download.className='prime-image-download';download.textContent='download file ↗';
@@ -161,7 +162,7 @@
   function activity(kind){
     const follow=nearBottom(),node=document.createElement('div');
     node.className=`prime-message prime-message--assistant prime-activity prime-activity--${kind}`;
-    node.innerHTML='<span class="prime-message-label">jack prime</span>'+(kind==='image'?'<div class="prime-render"><span aria-hidden="true">prime</span><i aria-hidden="true"></i><div class="prime-render-progress" role="progressbar" aria-label="Estimated image generation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0% complete, estimated" title="Estimated image generation progress"><strong>0%</strong></div></div>':'<span class="prime-thinking-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>')+`<span class="prime-activity-label" role="status">${kind==='image'?'making your image':'thinking'}</span>`;
+    node.innerHTML='<span class="prime-message-label">jack prime</span>'+(kind==='image'?'<div class="prime-render" data-hdr="busy" data-hdr-shape="frame"><span aria-hidden="true">prime</span><i aria-hidden="true"></i><div class="prime-render-progress" role="progressbar" aria-label="Estimated image generation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0% complete, estimated" title="Estimated image generation progress"><strong>0%</strong></div></div>':'<span class="prime-thinking-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>')+`<span class="prime-activity-label" role="status">${kind==='image'?'making your image':'thinking'}</span>`;
     log.append(node);followBottom(follow);
     let timer,completed=false;
     const started=performance.now();
