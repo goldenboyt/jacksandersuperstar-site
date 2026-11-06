@@ -12,7 +12,7 @@
    Text fill leaves currentColor intact, so adjacent SVG strokes stay visible. */
 @media(dynamic-range:high){
  @supports (background-clip:text) or (-webkit-background-clip:text){
-  .hdr-active>.hdr-label{background-color:#fff;background-image:url('/assets/hdr-action-ink.avif');background-size:100% 100%;background-repeat:no-repeat;background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;dynamic-range-limit:no-limit}
+  .hdr-active>.hdr-label{background-color:#fff;background-image:url('/assets/hdr-action-ink-v2.avif');background-size:100% 100%;background-repeat:no-repeat;background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;dynamic-range-limit:no-limit}
  }
 }
 @media(forced-colors:active){.hdr-surface>.hdr-media{display:none}}

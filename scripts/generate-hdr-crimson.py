@@ -9,8 +9,9 @@ spec.loader.exec_module(encoder)
 
 # Grade the surface and lettering together. The red has less than half the
 # previous channel intensity; small white labels retain enough contrast.
-encoder.encode('hdr-action-crimson-v2', 64, lambda x,y: [360, 2, 6], width=128, video=True, peak=450, input_primaries='bt2020', max_average=100)
-(encoder.root / 'assets/hdr-action-crimson-v2.svg').write_text('<svg xmlns="http://www.w3.org/2000/svg" width="128" height="64" viewBox="0 0 128 64"><path fill="#ed1730" d="M0 0h128v64H0z"/></svg>')
+if '--ink-only' not in sys.argv:
+    encoder.encode('hdr-action-crimson-v2', 64, lambda x,y: [360, 2, 6], width=128, video=True, peak=450, input_primaries='bt2020', max_average=100)
+    (encoder.root / 'assets/hdr-action-crimson-v2.svg').write_text('<svg xmlns="http://www.w3.org/2000/svg" width="128" height="64" viewBox="0 0 128 64"><path fill="#ed1730" d="M0 0h128v64H0z"/></svg>')
 # A native PQ image can fill live HTML text through background-clip. The label
 # stays selectable and accessible, including labels that change after a tap.
-encoder.encode('hdr-action-ink', 8, lambda x,y: [450, 450, 450], width=8, peak=450, input_primaries='bt2020', max_average=450)
+encoder.encode('hdr-action-ink-v2', 8, lambda x,y: [750, 750, 750], width=8, peak=750, input_primaries='bt2020', max_average=750)
