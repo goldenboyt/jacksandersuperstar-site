@@ -80,3 +80,7 @@ html.site-duo-strip .prime-widget-launcher{right:calc(100% - var(--site-visible-
 .site-duo-strip .site-intro{left:var(--site-canvas-left)}
 
 .site-duo-strip body:not(.home-page):not(.prime-page) main>section{padding-left:calc(var(--site-strip-left) + var(--pad));padding-right:calc(var(--site-strip-right) + var(--pad))}
+
+/* Let the music carousel run to both edges on small screens. */
+@media(max-width:900px){.home-page .catalog{padding:0;margin-left:calc(-1 * var(--pad));margin-right:calc(-1 * var(--pad))}}
+.site-duo-strip .home-page .catalog{padding:0;margin-left:calc(-1 * (var(--site-strip-left) + var(--pad)));margin-right:calc(-1 * (var(--site-strip-right) + var(--pad)))}
