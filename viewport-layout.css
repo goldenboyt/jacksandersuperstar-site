@@ -67,7 +67,8 @@ html.site-duo-strip .prime-widget-launcher{right:calc(100% - var(--site-visible-
 
 /* Paint every section across the canvas; keep text and controls in the clear band. */
 .site-duo-strip .home-page main>section:not(.hero),.site-duo-strip .home-page>footer{width:var(--site-canvas-width);margin-left:calc(-1*var(--site-strip-left));padding-left:calc(var(--site-strip-left) + var(--pad));padding-right:calc(var(--site-strip-right) + var(--pad))}
-.site-duo-strip .home-page .music-video-section{padding-inline:0}
+/* Match the general section rule's specificity: only the copy needs insets. */
+.site-duo-strip .home-page main>section.music-video-section{padding-inline:0}
 .site-duo-strip .video-panel-copy{padding-left:calc(var(--site-strip-left) + var(--pad));padding-right:calc(var(--site-strip-right) + var(--pad))}
 .site-duo-strip .music-video-stage :is(.preview-toggle,.preview-sound){right:calc(var(--site-strip-right) + var(--pad))}
 .site-duo-strip .music-video-stage .preview-sound{right:calc(var(--site-strip-right) + var(--pad) + 62px)}
