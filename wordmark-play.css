@@ -1,21 +1,14 @@
-/* The real header wordmark remains a link until it is actually dragged. */
-#header>.wordmark{touch-action:none;cursor:grab;-webkit-user-drag:none;user-select:none}
-#header>.wordmark{position:relative}
+#header>.wordmark{position:relative;touch-action:none;cursor:grab;-webkit-user-drag:none;user-select:none}
 #header>.wordmark:before,.wordmark-play-object:before{content:"";position:absolute;inset:-12px -6px}
 #header>.wordmark img,.wordmark-play-object img{-webkit-user-drag:none;user-select:none;pointer-events:none}
 .wordmark-play-object img{pointer-events:auto}
 .wordmark-play-slot{display:inline-block;flex:none;pointer-events:none}
 .wordmark-play-object{position:fixed!important;left:0!important;top:0!important;right:auto!important;z-index:75!important;display:block!important;margin:0!important;padding:0!important;max-width:none!important;touch-action:none;cursor:grab;-webkit-user-drag:none;user-select:none;-webkit-user-select:none;will-change:transform}
-.wordmark-play-object.is-held{cursor:grabbing}.wordmark-play-object img{display:block;width:100%;height:100%;max-width:none;transform:rotate(var(--wm-rotation,0deg)) scale(var(--wm-sx,1),var(--wm-sy,1));transform-origin:var(--wm-origin,center);will-change:transform}
-.wordmark-play-object:focus-visible,.wordmark-play-controls button:focus-visible{outline:2px solid #e51e25;outline-offset:4px}
-.wordmark-play-controls{position:fixed;z-index:76;left:16px;bottom:max(16px,env(safe-area-inset-bottom));display:flex;gap:1px;background:#111;box-shadow:0 2px 12px #0003}
-.wordmark-play-controls[hidden]{display:none}.wordmark-play-controls button{min-height:40px;padding:8px 12px;border:1px solid #888;background:#111;color:#fff;font:12px Arial,Helvetica,sans-serif}
-.wordmark-play-controls button:active{background:#e51e25}
-.wordmark-play-fragment{position:fixed;z-index:74;pointer-events:none;background-repeat:no-repeat}
-html:has(dialog[open]) .wordmark-play-object,html:has(dialog[open]) .wordmark-play-controls{visibility:hidden;pointer-events:none}
-@media(prefers-reduced-motion:reduce){.wordmark-play-object img{will-change:auto}}
-
-.wordmark-game[hidden],.wordmark-game-result[hidden]{display:none}.wordmark-game{position:fixed;inset:0;z-index:74;pointer-events:none;color:#fff;font:14px Arial,Helvetica,sans-serif}.wordmark-game-goal{position:absolute;top:0;left:50%;height:12px;transform:translateX(-50%);border:2px solid #e51e25;border-top:0;background:#e51e2533}.wordmark-game-score{position:absolute;top:16px;left:50%;transform:translateX(-50%);display:flex;gap:16px;padding:8px 12px;background:#111}.wordmark-game-result{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);min-width:220px;padding:22px;background:#111;color:#fff;pointer-events:auto;text-align:center}.wordmark-game-result div{display:flex;justify-content:center;gap:8px;margin-top:15px}.wordmark-game-result button{min-height:44px;padding:8px 12px;border:1px solid #aaa;background:#111;color:#fff;font:12px Arial,Helvetica,sans-serif}
-
-.wordmark-game-leaders{margin:14px 0 0;padding:0;list-style:none;color:#bbb;font-size:12px;line-height:1.7}.wordmark-game-sign{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;font-size:12px}.wordmark-game-sign[hidden]{display:none}.wordmark-game-sign input{width:48px;height:44px;padding:6px;border:1px solid #aaa;background:#111;color:#fff;text-align:center;text-transform:uppercase;font:16px Arial,Helvetica,sans-serif}
-@media(max-width:640px){.wordmark-play-controls{bottom:calc(80px + env(safe-area-inset-bottom));max-width:calc(100vw - 32px);flex-wrap:wrap}}
+.wordmark-play-object.is-held{cursor:grabbing}
+.wordmark-play-object img{display:block;width:100%;height:100%;max-width:none;will-change:transform;filter:drop-shadow(0 1px 2px #0006)}
+.wordmark-play-object:focus-visible{outline:2px solid #e51e25;outline-offset:4px}
+.wordmark-letters{position:fixed;left:-9999px;top:0;display:flex;width:max-content;white-space:nowrap;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:-.055em;line-height:1;visibility:hidden}
+.wordmark-letter{position:fixed;z-index:74;display:block;white-space:nowrap;line-height:1;letter-spacing:-.055em;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;pointer-events:none;user-select:none;will-change:transform;text-shadow:0 1px 2px #0006}
+.wordmark-letter-mark{font-size:.35em;letter-spacing:0;align-self:flex-start}
+html:has(dialog[open]) .wordmark-play-object,html:has(dialog[open]) .wordmark-letter{visibility:hidden;pointer-events:none}
+@media(prefers-reduced-motion:reduce){.wordmark-play-object img,.wordmark-letter{will-change:auto}}
