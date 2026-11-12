@@ -8,7 +8,9 @@
 .wordmark-play-object img{display:block;width:100%;height:100%;max-width:none;will-change:transform;filter:drop-shadow(0 1px 2px #0006)}
 .wordmark-play-object:focus-visible{outline:2px solid #e51e25;outline-offset:4px}
 .wordmark-letters{position:fixed;left:-9999px;top:0;display:flex;width:max-content;white-space:nowrap;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:-.055em;line-height:1;visibility:hidden}
-.wordmark-letter{position:fixed;z-index:74;display:block;white-space:nowrap;line-height:1;letter-spacing:-.055em;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;pointer-events:none;user-select:none;will-change:transform;text-shadow:0 1px 2px #0006}
+.wordmark-letter{position:fixed;z-index:74;display:block;white-space:nowrap;line-height:1;letter-spacing:-.055em;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;pointer-events:auto;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;will-change:transform;text-shadow:0 1px 2px #0006}
 .wordmark-letter-mark{font-size:.35em;letter-spacing:0;align-self:flex-start}
 html:has(dialog[open]) .wordmark-play-object,html:has(dialog[open]) .wordmark-letter{visibility:hidden;pointer-events:none}
 @media(prefers-reduced-motion:reduce){.wordmark-play-object img,.wordmark-letter{will-change:auto}}
+
+.wordmark-letter.is-held{cursor:grabbing}
