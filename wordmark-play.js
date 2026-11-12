@@ -63,7 +63,7 @@
   function finishPinch(state){
     const target=clamp(zoom,state.minimum,state.maximum),centerX=x+width/2,centerY=y+height/2;let velocity=clamp(state.scaleVelocity,-2.5,2.5),previous=performance.now(),started=previous;
     function place(){applySize();const b=bounds();x=clamp(centerX-width/2,b.left,b.right);y=clamp(centerY-height/2,b.top,b.bottom);paint()}
-    function finish(){springFrame=0;zoom=target;place();pinch=null;if(pointers.size===1){const [id,p]=pointers.entries().next().value;drag={id,startX:p.x,startY:p.y,dx:p.x-x,dy:p.y-y,lastX:p.x,lastY:p.y,time:performance.now(),overX:0,overY:0}}else{drag=null;start()}}
+    function finish(){springFrame=0;zoom=target;place();pinch=null;if(pointers.size===1){const [id,p]=pointers.entries().next().value;drag={id,startX:p.x,startY:p.y,dx:p.x-x,dy:p.y-y,lastX:p.x,lastY:p.y,time:performance.now(),overX:0,overY:0}}else{drag=null;logo.classList.remove('is-held');start()}}
     if(reduced.matches||Math.abs(zoom-target)<.001){finish();return}
     pinch={...state,finishing:true};function spring(time){const dt=Math.min(.032,Math.max(.001,(time-previous)/1000));previous=time;velocity+=(-210*(zoom-target)-20*velocity)*dt;zoom+=velocity*dt;place();if((Math.abs(zoom-target)<.0005&&Math.abs(velocity)<.006)||time-started>700)finish();else springFrame=requestAnimationFrame(spring)}springFrame=requestAnimationFrame(spring);
   }
