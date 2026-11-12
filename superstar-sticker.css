@@ -1,0 +1,9 @@
+.sticker-home{width:92px;height:92px;margin:0 0 30px}
+.superstar-sticker{display:block;width:92px;height:92px;padding:0;border:0;border-radius:50%;background:transparent;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;isolation:isolate}
+.sticker-face{position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:50%;background:#fff;border:1px solid #bdbdbd;box-shadow:0 3px 10px #0003;overflow:hidden;transform:scale(var(--sticker-scale-x,1),var(--sticker-scale-y,1)) rotate(var(--sticker-rotation,0deg));transform-origin:var(--sticker-origin,center);will-change:transform}
+.sticker-face:after{content:"";position:absolute;inset:0;border-radius:50%;opacity:var(--sticker-fold,0);background:linear-gradient(var(--sticker-fold-angle,90deg),#0005,transparent 27%),repeating-linear-gradient(135deg,transparent 0 9px,#0004 10px,#fff9 11px,transparent 13px);pointer-events:none}
+.sticker-wordmark{font:12px/.94 Arial,Helvetica,sans-serif;letter-spacing:-.055em;color:#111;text-align:center;white-space:nowrap;pointer-events:none}.sticker-wordmark b{font-weight:700}.sticker-wordmark sup{font-size:5px;vertical-align:top}.sticker-star{position:absolute;top:16%;right:18%;color:#e51e25;font:700 19px/1 Arial,Helvetica,sans-serif}
+.superstar-sticker.is-free{position:fixed;left:0;top:0;margin:0;z-index:70;transform:translate3d(var(--sticker-x),var(--sticker-y),0)}
+.superstar-sticker.is-grabbed{cursor:grabbing}.superstar-sticker:focus-visible{outline:3px solid #e51e25;outline-offset:4px}
+html:has(dialog[open]) .superstar-sticker.is-free{visibility:hidden;pointer-events:none}
+@media(max-width:640px){.sticker-home,.superstar-sticker{width:76px;height:76px}}
