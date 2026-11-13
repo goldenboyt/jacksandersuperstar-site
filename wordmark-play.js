@@ -11,7 +11,7 @@
   let active=false,burst=false,resetting=false,drag=null,pinch=null,pieceDrag=null,moved=false,overlay=null,glyphs=[],pieces=[];
   let x=0,y=0,w=0,h=0,baseW=0,baseH=0,bleedX=0,bleedY=0,scale=1,desiredScale=1,angle=0,spin=0,vx=0,vy=0,bend=0,bendVelocity=0,pressure=0,edge='',charge=0,lineData=[];
   let frame=0,previous=0,idle=0,resetTimer=0,audio=null,lastSound=0,lastScroll=scrollY;
-  const soundBuffers={},soundLoads={},soundBytes={},soundFetches={},soundRetryAfter={};let squeezeSource=null,squeezeGain=null,squeezeFallback=false,audioPrimed=false,resuming=null;
+  const soundBuffers={},soundLoads={},soundBytes={},soundFetches={},soundRetryAfter={};let squeezeSource=null,squeezeGain=null,squeezeFallback=false,audioPrimed=false,resuming=null,mediaUnlocked=false,unlockPlayer=null,unlockPending=null;
   function prefetchSound(name){
     if(soundBytes[name])return Promise.resolve(soundBytes[name]);
     if(soundFetches[name])return soundFetches[name];
@@ -32,13 +32,24 @@
   // Fetch while the page loads; decode only after a gesture creates the audio context.
   prefetchSound('pop');prefetchSound('squeeze');
   function resumeAudio(){if(!audio)return Promise.resolve(false);if(audio.state==='running')return Promise.resolve(true);if(!resuming){try{resuming=audio.resume().then(()=>audio.state==='running').catch(()=>false).finally(()=>{resuming=null})}catch{return Promise.resolve(false)}}return resuming}
-  function audioReady(){
-    try{if(navigator.audioSession)navigator.audioSession.type='transient'}catch{}
+  function unlockMedia(){
+    if(mediaUnlocked||unlockPending)return;
+    const video=document.getElementById('magic-preview-player');
+    if(video&&!video.paused&&!video.muted){mediaUnlocked=true;return}
     try{
-      if(audio?.state==='closed'){squeezeSource=squeezeGain=null;squeezeFallback=false;audio=null;audioPrimed=false;resuming=null}
+      unlockPlayer ||= new Audio('data:audio/wav;base64,UklGRrQBAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YZABAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA');
+      unlockPlayer.preload='auto';unlockPlayer.setAttribute('playsinline','');try{unlockPlayer.currentTime=0}catch{}
+      const playing=unlockPlayer.play();if(!playing?.then){mediaUnlocked=true;return}
+      unlockPending=playing.then(()=>{mediaUnlocked=true;const pending=resuming;if(pending)pending.finally(()=>resumeAudio());else resumeAudio()}).catch(()=>{mediaUnlocked=false}).finally(()=>{unlockPending=null});
+    }catch{mediaUnlocked=false}
+  }
+  function audioReady(){
+    try{
+      if(audio?.state==='closed'){squeezeSource=squeezeGain=null;squeezeFallback=false;audio=null;audioPrimed=false;mediaUnlocked=false;resuming=null}
       audio ||= new (window.AudioContext||window.webkitAudioContext)();
-      // Resume and start a silent buffer in the trusted touch callback for iOS.
-      const needsPrime=!audioPrimed||audio.state!=='running';resumeAudio();if(needsPrime)try{const source=audio.createBufferSource(),gain=audio.createGain();source.buffer=audio.createBuffer(1,1,audio.sampleRate);gain.gain.value=0;source.connect(gain).connect(audio.destination);source.onended=()=>{source.disconnect();gain.disconnect()};source.start();audioPrimed=true}catch{}
+      if(audio.state!=='running')mediaUnlocked=false;
+      // Open the same unmuted media route as the video during the user's gesture.
+      unlockMedia();const needsPrime=!audioPrimed||audio.state!=='running';resumeAudio();if(needsPrime)try{const source=audio.createBufferSource(),gain=audio.createGain();source.buffer=audio.createBuffer(1,1,audio.sampleRate);gain.gain.value=0;source.connect(gain).connect(audio.destination);source.onended=()=>{source.disconnect();gain.disconnect()};source.start();audioPrimed=true}catch{}
       loadSound('squeeze');loadSound('pop');
     }catch{}
   }
@@ -119,6 +130,27 @@
     const v=view(),r=p.angle*Math.PI/180,ex=(Math.abs(Math.cos(r))*p.w+Math.abs(Math.sin(r))*p.h-p.w)/2,ey=(Math.abs(Math.sin(r))*p.w+Math.abs(Math.cos(r))*p.h-p.h)/2,curve=Math.abs(p.bend||0),padX=Math.min(v.w*.05,Math.max(0,(v.w-p.w-2*ex)/2),curve*.35),padY=Math.min(v.h*.12,Math.max(0,(v.h-p.h-2*ey)/2),curve*.9);
     return{left:v.left+ex+padX,right:Math.max(v.left+ex+padX,v.left+v.w-p.w-ex-padX),top:v.top+ey+padY,bottom:Math.max(v.top+ey+padY,v.top+v.h-p.h-ey-padY)};
   }
+  // Use the font's actual ink bounds, not the much taller line box around it.
+  const inkContext=document.createElement('canvas').getContext('2d');
+  function measurePieceInk(p){
+    const size=parseFloat(p.node.style.fontSize),weight=p.node.style.fontWeight||'400',text=p.node.textContent;
+    inkContext.font=`${weight} ${size}px Helvetica Neue, Helvetica, Arial, sans-serif`;const m=inkContext.measureText(text),spacing=-size*.035*Math.max(0,[...text].length-1);
+    const ascent=Number.isFinite(m.fontBoundingBoxAscent)?m.fontBoundingBoxAscent:size*.9,descent=Number.isFinite(m.fontBoundingBoxDescent)?m.fontBoundingBoxDescent:size*.22,baseline=(p.h-ascent-descent)/2+ascent;
+    const left=Number.isFinite(m.actualBoundingBoxLeft)?-m.actualBoundingBoxLeft*p.ratio:0,right=Number.isFinite(m.actualBoundingBoxRight)?(m.actualBoundingBoxRight+spacing)*p.ratio:p.w,top=Number.isFinite(m.actualBoundingBoxAscent)?baseline-m.actualBoundingBoxAscent:p.h*.12,bottom=Number.isFinite(m.actualBoundingBoxDescent)?baseline+m.actualBoundingBoxDescent:p.h*.88;
+    p.ink={left:Math.min(left,right-1)-.5,right:Math.max(right,left+1)+.5,top:Math.min(top,bottom-1)-.5,bottom:Math.max(bottom,top+1)+.5};
+  }
+  function pieceShape(p){
+    const ink=p.ink||{left:0,right:p.w,top:0,bottom:p.h},curve=Math.abs(p.bend||0)*.5,sx=1+p.squash*.35,sy=1-p.squash,l=(ink.left-p.w/2)*sx,r=(ink.right-p.w/2)*sx,t=(ink.top-curve-p.h/2)*sy,b=(ink.bottom+curve-p.h/2)*sy,theta=p.angle*Math.PI/180,c=Math.cos(theta),s=Math.sin(theta),ox=(l+r)/2,oy=(t+b)/2,cx=p.x+p.w/2+c*ox-s*oy,cy=p.y+p.h/2+s*ox+c*oy,hx=Math.max(.5,(r-l)/2),hy=Math.max(.5,(b-t)/2),ex=Math.abs(c)*hx+Math.abs(s)*hy,ey=Math.abs(s)*hx+Math.abs(c)*hy;
+    return{cx,cy,hx,hy,ux:c,uy:s,vx:-s,vy:c,left:cx-ex,right:cx+ex,top:cy-ey,bottom:cy+ey};
+  }
+  function pieceContact(a,b){
+    const dx=b.cx-a.cx,dy=b.cy-a.cy;let overlap=Infinity,nx=0,ny=0;
+    for(const [ax,ay] of [[a.ux,a.uy],[a.vx,a.vy],[b.ux,b.uy],[b.vx,b.vy]]){
+      const distance=dx*ax+dy*ay,ra=a.hx*Math.abs(a.ux*ax+a.uy*ay)+a.hy*Math.abs(a.vx*ax+a.vy*ay),rb=b.hx*Math.abs(b.ux*ax+b.uy*ay)+b.hy*Math.abs(b.vx*ax+b.vy*ay),depth=ra+rb-Math.abs(distance);
+      if(depth<-.2)return null;if(depth<overlap){overlap=depth;const sign=distance<0?-1:1;nx=ax*sign;ny=ay*sign}
+    }
+    return{nx,ny,depth:Math.max(0,overlap)};
+  }
   function preparePieceBend(p){
     if(p.letters||[...p.node.textContent].length<2)return;
     const chars=[...p.node.textContent],ctx=document.createElement('canvas').getContext('2d'),size=parseFloat(p.node.style.fontSize),weight=p.node.style.fontWeight||'400';ctx.font=`${weight} ${size}px Helvetica Neue, Helvetica, Arial, sans-serif`;
@@ -132,9 +164,9 @@
   }
   function settleReduced(){
     stop();if(!burst){angle=spin=vx=vy=bend=bendVelocity=0;const b=bounds();x=clamp(x,b.left,b.right);y=b.bottom;paint();return}
-    const v=view(),placed=[];for(const p of pieces){p.angle=p.spin=p.vx=p.vy=p.squash=p.bend=p.bendVelocity=0;p.x=clamp(p.x,v.left,Math.max(v.left,v.left+v.w-p.w));p.y=v.top+v.h-p.h;
-      for(const q of placed)if(Math.min(p.x+p.w,q.x+q.w)-Math.max(p.x,q.x)>5)p.y=Math.min(p.y,q.y-p.h);
-      p.y=Math.max(v.top,p.y);placed.push(p);paintPiece(p);
+    const v=view(),placed=[];for(const p of pieces){p.angle=p.spin=p.vx=p.vy=p.squash=p.bend=p.bendVelocity=0;let shape=pieceShape(p);p.x+=clamp(0,v.left-shape.left,v.left+v.w-shape.right);shape=pieceShape(p);p.y+=v.top+v.h-shape.bottom;
+      for(const q of placed){const a=pieceShape(p),b=pieceShape(q);if(Math.min(a.right,b.right)-Math.max(a.left,b.left)>1&&a.bottom>b.top)p.y-=a.bottom-b.top}
+      shape=pieceShape(p);if(shape.top<v.top)p.y+=v.top-shape.top;placed.push(p);paintPiece(p);
     }
   }
   function popBurst(cx,cy){
@@ -160,7 +192,7 @@
       const t=clamp((cursor+advances[index]/2)/total,0,1),target=p.w*advances[index]/total,localX=p.w*t-p.w/2,localY=2*(p.bend||0)*t*(1-t),worldX=c*localX-s*localY,worldY=s*localX+c*localY,px=cx+worldX-target/2,py=cy+worldY-p.h/2;
       const node=document.createElement('span');node.className='hero-play-piece';node.setAttribute('aria-hidden','true');node.textContent=char;
       Object.assign(node.style,{left:px+'px',top:py+'px',fontSize:fontSize+'px',fontWeight:weight});document.body.append(node);const measured=node.getBoundingClientRect(),ratio=target/Math.max(1,measured.width);node.style.left=(px+(target-measured.width)/2)+'px';node.style.width=measured.width+'px';node.style.height=(measured.height+2)+'px';
-      const direction=(index-(chars.length-1)/2)/Math.max(1,chars.length/2),piece={node,x:px,y:py,originX:px,originY:py,w:target,h:measured.height+2,vx:clamp(direction*.8+(Math.random()-.5)*.28,-1.1,1.1),vy:-.35-Math.random()*.4,angle:p.angle+Math.atan(2*(p.bend||0)*(1-2*t)/Math.max(1,p.w))*180/Math.PI,spin:direction*.09+(Math.random()-.5)*.025,ratio,squash:0};pieces.push(piece);paintPiece(piece);attachPiece(piece);cursor+=advances[index]+spacing;
+      const direction=(index-(chars.length-1)/2)/Math.max(1,chars.length/2),piece={node,x:px,y:py,originX:px,originY:py,w:target,h:measured.height+2,vx:clamp(direction*.8+(Math.random()-.5)*.28,-1.1,1.1),vy:-.35-Math.random()*.4,angle:p.angle+Math.atan(2*(p.bend||0)*(1-2*t)/Math.max(1,p.w))*180/Math.PI,spin:direction*.09+(Math.random()-.5)*.025,ratio,squash:0};measurePieceInk(piece);pieces.push(piece);paintPiece(piece);attachPiece(piece);cursor+=advances[index]+spacing;
     });
     activity();if(reduced.matches)settleReduced();else start();
   }
@@ -178,34 +210,54 @@
       Object.assign(node.style,{left:px+'px',top:py+'px',fontSize:(line.h*scale*1.09*(part.small ? .32 : 1))+'px',fontWeight:String(part.weight)});document.body.append(node);
       const measured=node.getBoundingClientRect(),ratio=target/Math.max(1,measured.width);
       node.style.left=(px+(target-measured.width)/2)+'px';node.style.width=measured.width+'px';node.style.height=(measured.height+2)+'px';
-      const offsetX=(px+target/2)-(x+w/2),offsetY=(py+(measured.height+2)/2)-(y+h/2),p={node,x:px,y:py,originX:px,originY:py,w:target,h:measured.height+2,vx:clamp(offsetX*.0025+vx*.25,-1.1,1.1),vy:clamp(offsetY*.0025-.32,-.85,.45),angle,spin:(i-1.5)*.045,ratio,squash:0};pieces.push(p);paintPiece(p);attachPiece(p);
+      const offsetX=(px+target/2)-(x+w/2),offsetY=(py+(measured.height+2)/2)-(y+h/2),p={node,x:px,y:py,originX:px,originY:py,w:target,h:measured.height+2,vx:clamp(offsetX*.0025+vx*.25,-1.1,1.1),vy:clamp(offsetY*.0025-.32,-.85,.45),angle,spin:(i-1.5)*.045,ratio,squash:0};measurePieceInk(p);pieces.push(p);paintPiece(p);attachPiece(p);
     });activity();if(reduced.matches)settleReduced();else start();
   }
   function tick(now){
     frame=0;const dt=previous?Math.min(32,now-previous):16;previous=now;
-    if(burst){const v=view();let moving=false;for(const p of pieces){p.supported=false;if(pieceDrag?.piece===p){const d=pieceDrag,n=Math.max(Math.abs(d.overX||0),Math.abs(d.overY||0));squeezeSound(n,now-d.time<120);if(p.letters){const target=clamp((d.overY||0)*.8+(d.overX||0)*.35+p.vy*16,-p.h*.65,p.h*.65);bendPiece(p,target,dt);const safe=pieceBounds(p);p.x=clamp(p.x,safe.left,safe.right);p.y=clamp(p.y,safe.top,safe.bottom);paintPiece(p)}if([...p.node.textContent].length>1&&n>Math.max(25,p.h*.48)){if(!d.charge)d.charge=now;if(now-d.charge>=900){splitWord(p);return}}else d.charge=0;moving=true;continue}p.vy+=.0012*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;const oldAngle=p.angle;p.angle+=p.spin*dt;
-      let trial=p.angle*Math.PI/180;if(Math.abs(Math.cos(trial))*p.w+Math.abs(Math.sin(trial))*p.h>v.w||Math.abs(Math.sin(trial))*p.w+Math.abs(Math.cos(trial))*p.h>v.h){p.angle=oldAngle;p.spin*=-.65}
-      if(p.letters)bendPiece(p,0,dt);const {left,right,top,bottom}=pieceBounds(p);
-      if(p.x<left||p.x>right){const impact=Math.abs(p.vx);p.x=clamp(p.x,left,right);p.vx*=-.58;p.spin*=.8;p.squash=Math.min(.24,impact*.3);if(impact>.25)sound('bounce',impact)}
-      if(p.y<top){p.y=top;p.vy=Math.abs(p.vy)*.94}
-      if(p.y>bottom){const impact=Math.abs(p.vy);p.y=bottom;p.vy=impact<.13?0:-p.vy*.48;p.vx*=.86;p.spin*=.72;p.squash=Math.max(p.squash,Math.min(.25,impact*.35));if(impact>.25)sound('bounce',impact)}
-      if(p.y>=bottom-1&&Math.abs(p.vy)<.25){const flat=Math.round(p.angle/180)*180;p.angle+=(flat-p.angle)*Math.min(1,dt*.008);p.spin*=Math.pow(.82,dt/16.667)}
-      p.vx*=Math.pow(.975,dt/16.667);p.spin*=Math.pow(.98,dt/16.667);p.squash*=Math.pow(.8,dt/16);paintPiece(p);if(Math.abs(p.vx)+Math.abs(p.vy)+Math.abs(p.spin)>.025||p.y<bottom-.5||Math.abs(p.angle-Math.round(p.angle/180)*180)>.3)moving=true;
-    }
-      // Let the words rest on each other instead of piling into the same floor position.
-      const rect=p=>{const r=p.angle*Math.PI/180,rw=Math.abs(Math.cos(r))*p.w+Math.abs(Math.sin(r))*p.h,rh=Math.abs(Math.sin(r))*p.w+Math.abs(Math.cos(r))*p.h;return {left:p.x+p.w/2-rw/2,right:p.x+p.w/2+rw/2,top:p.y+p.h/2-rh/2,bottom:p.y+p.h/2+rh/2}};
-      const ordered=[...pieces].sort((a,b)=>(b.y+b.h/2)-(a.y+a.h/2));
-      for(let i=0;i<ordered.length;i++)for(let j=i+1;j<ordered.length;j++){
-        const lower=ordered[i],upper=ordered[j];if(pieceDrag?.piece===upper)continue;
-        const a=rect(lower),b=rect(upper),overlap=Math.min(a.right,b.right)-Math.max(a.left,b.left);
-        if(overlap>Math.min(8,upper.w*.1)&&b.bottom>a.top&&b.top<a.bottom&&upper.vy>=0){
-          const shift=Math.min(b.bottom-a.top,Math.max(0,b.top-v.top));upper.y-=shift;
-          if(upper.vy>.2)upper.vy*=-.28;else upper.vy=0;
-          upper.spin*=.75;upper.supported=true;if(Math.abs(upper.vy)<.1){const flat=Math.round(upper.angle/180)*180;upper.angle+=(flat-upper.angle)*Math.min(1,dt*.008)}paintPiece(upper);
+    if(burst){
+      const v=view();
+      if(pieceDrag){const d=pieceDrag,p=d.piece,n=Math.max(Math.abs(d.overX||0),Math.abs(d.overY||0));squeezeSound(n,now-d.time<120);if(p.letters){const target=clamp((d.overY||0)*.8+(d.overX||0)*.35+p.vy*16,-p.h*.65,p.h*.65);bendPiece(p,target,dt);const safe=pieceBounds(p);p.x=clamp(p.x,safe.left,safe.right);p.y=clamp(p.y,safe.top,safe.bottom)}if([...p.node.textContent].length>1&&n>Math.max(25,p.h*.48)){if(!d.charge)d.charge=now;if(now-d.charge>=900){splitWord(p);return}}else d.charge=0}
+      const steps=Math.max(1,Math.ceil(dt/8)),step=dt/steps;
+      for(let pass=0;pass<steps;pass++){
+        for(const p of pieces){
+          p.supported=false;if(pieceDrag?.piece===p)continue;
+          p.vy+=.0012*step;p.x+=p.vx*step;p.y+=p.vy*step;p.angle+=p.spin*step;if(p.letters)bendPiece(p,0,step);
+          let shape=pieceShape(p),impact=0;
+          if(shape.right-shape.left>v.w||shape.bottom-shape.top>v.h){p.angle-=p.spin*step;p.spin*=-.5;shape=pieceShape(p)}
+          if(shape.left<v.left){p.x+=v.left-shape.left;impact=Math.abs(p.vx);p.vx=Math.abs(p.vx)*.5;p.spin*=.85}
+          else if(shape.right>v.left+v.w){p.x-=shape.right-(v.left+v.w);impact=Math.abs(p.vx);p.vx=-Math.abs(p.vx)*.5;p.spin*=.85}
+          shape=pieceShape(p);
+          if(shape.top<v.top){p.y+=v.top-shape.top;p.vy=Math.abs(p.vy)*.5}
+          else if(shape.bottom>v.top+v.h){p.y-=shape.bottom-(v.top+v.h);impact=Math.max(impact,Math.abs(p.vy));p.vy=Math.abs(p.vy)<.12?0:-Math.abs(p.vy)*.42;p.vx*=.9;p.spin*=.8;p.supported=true}
+          if(impact>.3){p.squash=Math.max(p.squash,Math.min(.18,impact*.2));sound('bounce',impact)}
+          p.vx*=Math.pow(.983,step/16.667);p.spin*=Math.pow(.985,step/16.667);p.squash*=Math.pow(.8,step/16.667);
+        }
+        // Oriented boxes meet at their ink edges, not at rotated line-box corners.
+        for(let iteration=0;iteration<2;iteration++){
+          const shapes=pieces.map(pieceShape);
+          for(let i=0;i<pieces.length;i++)for(let j=i+1;j<pieces.length;j++){
+            const a=pieces[i],b=pieces[j];let sa=shapes[i],sb=shapes[j];
+            if(sa.right<sb.left-.2||sb.right<sa.left-.2||sa.bottom<sb.top-.2||sb.bottom<sa.top-.2)continue;
+            const contact=pieceContact(sa,sb);if(!contact)continue;
+            const ia=pieceDrag?.piece===a?0:1/clamp(Math.sqrt(sa.hx*sa.hy)/35,.4,4),ib=pieceDrag?.piece===b?0:1/clamp(Math.sqrt(sb.hx*sb.hy)/35,.4,4),sum=ia+ib;if(!sum)continue;
+            const correction=Math.max(0,contact.depth-.05)*.9/sum;
+            a.x-=contact.nx*correction*ia;a.y-=contact.ny*correction*ia;b.x+=contact.nx*correction*ib;b.y+=contact.ny*correction*ib;
+            const relative=(b.vx-a.vx)*contact.nx+(b.vy-a.vy)*contact.ny;
+            if(relative<0){const impulse=-(1+(relative < -.2 ? .18 : 0))*relative/sum;a.vx-=contact.nx*impulse*ia;a.vy-=contact.ny*impulse*ia;b.vx+=contact.nx*impulse*ib;b.vy+=contact.ny*impulse*ib;if(relative<-.35)sound('bounce',-relative)}
+            if(contact.ny>.6)a.supported=true;else if(contact.ny<-.6)b.supported=true;
+            a.spin*=.98;b.spin*=.98;shapes[i]=pieceShape(a);shapes[j]=pieceShape(b);
+          }
         }
       }
-      moving=pieces.some(p=>{if(pieceDrag?.piece===p)return true;const r=rect(p),flat=Math.abs(p.angle-Math.round(p.angle/180)*180);return Math.abs(p.vx)+Math.abs(p.vy)+Math.abs(p.spin)>.025||(!p.supported&&r.bottom<v.top+v.h-.5)||flat>.3||Math.abs(p.bend||0)>.1||Math.abs(p.bendVelocity||0)>.1});
-      if(moving)frame=requestAnimationFrame(tick);else previous=0;return}
+      let moving=false;
+      for(const p of pieces){
+        if(pieceDrag?.piece!==p&&p.supported&&Math.abs(p.vy)<.1){const flat=Math.round(p.angle/180)*180;p.angle+=(flat-p.angle)*Math.min(1,dt*.006);p.spin*=Math.pow(.82,dt/16.667)}
+        paintPiece(p);const shape=pieceShape(p),flat=Math.abs(p.angle-Math.round(p.angle/180)*180);
+        if(pieceDrag?.piece===p||Math.abs(p.vx)+Math.abs(p.vy)+Math.abs(p.spin)>.025||(!p.supported&&shape.bottom<v.top+v.h-.5)||flat>.3||Math.abs(p.bend||0)>.1||Math.abs(p.bendVelocity||0)>.1)moving=true;
+      }
+      if(moving)frame=requestAnimationFrame(tick);else previous=0;return;
+    }
     if(drag){const n=Math.max(Math.abs(drag.overX),Math.abs(drag.overY));squeezeSound(n,now-drag.time<120);if(n>Math.max(30,h*.51)){if(!charge)charge=now;if(now-charge>=900){explode();return}}else charge=0;
       const target=clamp(drag.overY*.8+(drag.overX?Math.sign(drag.overX)*Math.abs(drag.overX)*.35:0)+vy*24,-baseH*.42,baseH*.42);bendVelocity+=(target-bend)*.018*dt;bendVelocity*=Math.pow(.78,dt/16.667);bend+=bendVelocity*dt/16.667;paint();frame=requestAnimationFrame(tick);return}
     if(pinch||!active)return;
@@ -260,5 +312,5 @@
   title.addEventListener('keydown',event=>{if(event.key==='Escape'&&active){event.preventDefault();reset();return}const d={ArrowLeft:[-20,0],ArrowRight:[20,0],ArrowUp:[0,-20],ArrowDown:[0,20]}[event.key];if(!d)return;event.preventDefault();stop();if(!active)makeOverlay();const b=bounds();x=clamp(x+d[0],b.left,b.right);y=clamp(y+d[1],b.top,b.bottom);paint();activity()});
   addEventListener('scroll',()=>{const current=scrollY,delta=current-lastScroll;lastScroll=current;if(!active||resetting||!delta)return;const v=view(),shift=clamp(delta,-v.h*.7,v.h*.7);if(burst){for(const p of pieces){if(pieceDrag?.piece===p)continue;p.y=clamp(p.y-shift,v.top,Math.max(v.top,v.top+v.h-p.h));paintPiece(p)}}else if(!drag&&!pinch){const b=bounds();y=clamp(y-shift,b.top,b.bottom);paint()}activity();if(reduced.matches&&!drag&&!pinch&&!pieceDrag)settleReduced();else start()},{passive:true});
   function resize(){if(!active||drag||pinch||burst)return;const b=bounds();x=clamp(x,b.left,b.right);y=clamp(y,b.top,b.bottom);paint()}
-  addEventListener('resize',resize);window.visualViewport?.addEventListener('resize',resize);addEventListener('pagehide',()=>reset(true));
+  addEventListener('resize',resize);window.visualViewport?.addEventListener('resize',resize);document.addEventListener('visibilitychange',()=>{if(document.hidden){mediaUnlocked=false;stopSqueeze()}});addEventListener('pagehide',()=>reset(true));
 })();
