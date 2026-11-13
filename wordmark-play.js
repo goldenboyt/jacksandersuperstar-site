@@ -11,14 +11,26 @@
   let active=false,burst=false,resetting=false,drag=null,pinch=null,pieceDrag=null,moved=false,overlay=null,glyphs=[],pieces=[];
   let x=0,y=0,w=0,h=0,baseW=0,baseH=0,bleedX=0,bleedY=0,scale=1,desiredScale=1,angle=0,spin=0,vx=0,vy=0,bend=0,bendVelocity=0,pressure=0,edge='',charge=0,lineData=[];
   let frame=0,previous=0,idle=0,resetTimer=0,audio=null,lastSound=0,lastScroll=scrollY;
-  const soundBuffers={},soundLoads={},soundRetryAfter={};let squeezeSource=null,squeezeGain=null,squeezeFallback=false,audioPrimed=false,resuming=null;
+  const soundBuffers={},soundLoads={},soundBytes={},soundFetches={},soundRetryAfter={};let squeezeSource=null,squeezeGain=null,squeezeFallback=false,audioPrimed=false,resuming=null;
+  function prefetchSound(name){
+    if(soundBytes[name])return Promise.resolve(soundBytes[name]);
+    if(soundFetches[name])return soundFetches[name];
+    if(performance.now()<(soundRetryAfter[name]||0))return Promise.resolve(null);
+    const early=window.__heroSoundPreload?.[name];if(early)delete window.__heroSoundPreload[name];
+    const request=early||fetch(`/assets/wordmark-sounds/${name}.mp3`).then(r=>r.ok?r.arrayBuffer():null);
+    soundFetches[name]=request.then(bytes=>{if(!bytes)throw new Error('sound unavailable');return soundBytes[name]=bytes}).catch(()=>{soundRetryAfter[name]=performance.now()+4000;return null}).finally(()=>{delete soundFetches[name]});
+    return soundFetches[name];
+  }
   function loadSound(name){
     if(soundBuffers[name])return Promise.resolve(soundBuffers[name]);
     if(soundLoads[name])return soundLoads[name];
-    if(performance.now()<(soundRetryAfter[name]||0))return Promise.resolve(null);
-    soundLoads[name]=fetch(`/assets/wordmark-sounds/${name}.mp3`).then(r=>{if(!r.ok)throw new Error('sound unavailable');return r.arrayBuffer()}).then(bytes=>audio.decodeAudioData(bytes)).then(buffer=>(soundBuffers[name]=buffer)).catch(()=>{soundRetryAfter[name]=performance.now()+4000;return null}).finally(()=>{delete soundLoads[name]});
+    if(!audio)return Promise.resolve(null);
+    const context=audio;
+    soundLoads[name]=prefetchSound(name).then(bytes=>bytes?context.decodeAudioData(bytes.slice(0)):null).then(buffer=>{if(buffer)soundBuffers[name]=buffer;return buffer}).catch(()=>{if(context===audio&&context.state!=='closed')soundRetryAfter[name]=performance.now()+4000;return null}).finally(()=>{delete soundLoads[name]});
     return soundLoads[name];
   }
+  // Fetch while the page loads; decode only after a gesture creates the audio context.
+  prefetchSound('pop');prefetchSound('squeeze');
   function resumeAudio(){if(!audio)return Promise.resolve(false);if(audio.state==='running')return Promise.resolve(true);if(!resuming){try{resuming=audio.resume().then(()=>audio.state==='running').catch(()=>false).finally(()=>{resuming=null})}catch{return Promise.resolve(false)}}return resuming}
   function audioReady(){
     try{if(navigator.audioSession)navigator.audioSession.type='transient'}catch{}

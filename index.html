@@ -2,6 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <script>
+    // Start the tiny sound downloads immediately; playback still requires a gesture.
+    window.__heroSoundPreload = {};
+    if (window.fetch) for (const name of ['pop','squeeze']) {
+      window.__heroSoundPreload[name] = fetch(`/assets/wordmark-sounds/${name}.mp3`).then(r => r.ok ? r.arrayBuffer() : null).catch(() => null);
+    }
+  </script>
 <script src="theme.js?v=1"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"><script src="duo-viewport.js?v=2"></script>
   <meta name="theme-color" content="#131313"><meta name="description" content="Music, live performances, merch, and #jacksandersuperstar®.">
@@ -167,7 +174,7 @@
 
 <a class="prime-widget-launcher" id="prime-widget-open" href="/jackprime" hidden>jack prime <span class="prime-launcher-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 18 18 6M6 6h12v12"/></svg></span></a>
 <script src="viewport-layout.js?v=5" defer></script>
-<script src="wordmark-play.js?v=11" defer></script>
+<script src="wordmark-play.js?v=12" defer></script>
 <script src="site-motion.js?v=25" defer></script>
 <script src="prime-feature.js?v=1" defer></script>
 
