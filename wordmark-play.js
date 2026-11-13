@@ -15,11 +15,12 @@
   function activity(){clearTimeout(idle);idle=setTimeout(()=>{if(drag||pinch||pieceDrag||pointers.size){activity();return}reset()},10000)}
   function stop(){cancelAnimationFrame(frame);frame=0;previous=0}
   function start(){if(!frame&&active&&(!reduced.matches||drag||pieceDrag)){previous=0;frame=requestAnimationFrame(tick)}}
-  function bounds(){const v=view(),r=angle*Math.PI/180,ex=Math.max(0,(Math.abs(Math.cos(r))*w+Math.abs(Math.sin(r))*h-w)/2),ey=Math.max(0,(Math.abs(Math.sin(r))*w+Math.abs(Math.cos(r))*h-h)/2);return{left:v.left+ex,right:Math.max(v.left+ex,v.left+v.w-w-ex),top:v.top+ey,bottom:Math.max(v.top+ey,v.top+v.h-h-ey)}}
+  function bounds(){const v=view(),r=angle*Math.PI/180,ex=Math.max(0,(Math.abs(Math.cos(r))*w+Math.abs(Math.sin(r))*h-w)/2),ey=Math.max(0,(Math.abs(Math.sin(r))*w+Math.abs(Math.cos(r))*h-h)/2),padX=Math.min(v.w*.06,Math.max(0,(v.w-w-2*ex)/2),(drag?16:6)+Math.abs(bend)*scale*.35),padY=Math.min(v.h*.23,Math.max(0,(v.h-h-2*ey)/2),(drag?24:6)+Math.abs(bend)*scale*.95+(drag?(lineData[0]?.h||0)*scale*.2:0));return{left:v.left+ex+padX,right:Math.max(v.left+ex+padX,v.left+v.w-w-ex-padX),top:v.top+ey+padY,bottom:Math.max(v.top+ey+padY,v.top+v.h-h-ey-padY)}}
   function setSize(){w=baseW*scale;h=baseH*scale;overlay.style.width=w+'px';overlay.style.height=h+'px'}
   function pathData(line,deflection){const y=line.y+line.h*.86,mid=line.x+line.w/2,inset=line.h*.10;return `M ${line.x+inset} ${y} Q ${mid} ${y+deflection} ${line.x+line.w-inset} ${y}`}
   function paint(){
     if(!overlay)return;
+    const safe=bounds();x=clamp(x,safe.left,safe.right);y=clamp(y,safe.top,safe.bottom);
     overlay.style.transform=`translate3d(${x}px,${y}px,0) rotate(${angle}deg)`;
     for(let i=0;i<paths.length;i++)paths[i].setAttribute('d',pathData(lineData[i],bend));
   }
@@ -46,32 +47,53 @@
   function paintPiece(p){p.node.style.transform=`translate3d(${p.x-p.originX}px,${p.y-p.originY}px,0) rotate(${p.angle}deg) scale(${p.ratio*(1+p.squash*.35)},${1-p.squash})`}
   function explode(){
     if(!active||burst)return;burst=true;sound('pop',1.5);drag=pinch=null;pointers.clear();overlay.style.visibility='hidden';
-    lineData.forEach((line,i)=>{
-      const node=document.createElement('span');node.className='hero-play-piece';node.setAttribute('aria-hidden','true');if(i===1){node.append(document.createTextNode('superstar'));const mark=document.createElement('sup');mark.textContent='®';node.append(mark)}else node.textContent=words[i];
-      Object.assign(node.style,{left:(x+line.x*scale)+'px',top:(y+line.y*scale)+'px',fontSize:(line.h*scale*1.09)+'px',fontWeight:i===0?'700':'300'});document.body.append(node);
-      const measured=node.getBoundingClientRect(),target=line.w*scale,ratio=target/Math.max(1,measured.width),px=x+line.x*scale,py=y+line.y*scale;
-      node.style.left=(px+(target-measured.width)/2)+'px';node.style.width=measured.width+'px';node.style.height=line.h*scale+'px';
-      const p={node,x:px,y:py,originX:px,originY:py,w:target,h:line.h*scale,vx:(i?1:-1)*.22+vx*.5,vy:-.25-Math.random()*.18,angle,spin:(i?1:-1)*.12,ratio,squash:0};pieces.push(p);paintPiece(p);
+    const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+    ctx.font=`700 ${lineData[0].h*scale*1.09}px Helvetica Neue, Helvetica, Arial, sans-serif`;
+    const hashPart=clamp(ctx.measureText('#').width/ctx.measureText('#jacksander').width,.07,.2);
+    const parts=[{text:'#',line:lineData[0],offset:0,fraction:hashPart,weight:700},{text:'jacksander',line:lineData[0],offset:hashPart,fraction:1-hashPart,weight:700},{text:'superstar®',line:lineData[1],offset:0,fraction:1,weight:300}];
+    parts.forEach((part,i)=>{
+      const {line}=part,node=document.createElement('span');node.className='hero-play-piece';node.setAttribute('aria-hidden','true');
+      if(i===2){node.append(document.createTextNode('superstar'));const mark=document.createElement('sup');mark.textContent='®';node.append(mark)}else node.textContent=part.text;
+      const px=x+(line.x+line.w*part.offset)*scale,py=y+line.y*scale,target=line.w*part.fraction*scale;
+      Object.assign(node.style,{left:px+'px',top:py+'px',fontSize:(line.h*scale*1.09)+'px',fontWeight:String(part.weight)});document.body.append(node);
+      const measured=node.getBoundingClientRect(),ratio=target/Math.max(1,measured.width);
+      node.style.left=(px+(target-measured.width)/2)+'px';node.style.width=measured.width+'px';node.style.height=(measured.height+2)+'px';
+      const p={node,x:px,y:py,originX:px,originY:py,w:target,h:measured.height+2,vx:(i-1)*.18+vx*.4,vy:-.08-Math.random()*.08,angle,spin:(i-1)*.025,ratio,squash:0};pieces.push(p);paintPiece(p);
       node.addEventListener('pointerdown',event=>{if(resetting||event.button!==0||pieceDrag)return;event.preventDefault();event.stopPropagation();audioReady();activity();pieceDrag={piece:p,id:event.pointerId,dx:event.clientX-p.x,dy:event.clientY-p.y,lastX:event.clientX,lastY:event.clientY,time:event.timeStamp};p.vx=p.vy=p.spin=0;node.classList.add('is-held');try{node.setPointerCapture(event.pointerId)}catch{}start()});
     });activity();start();
   }
   function tick(now){
     frame=0;const dt=previous?Math.min(32,now-previous):16;previous=now;
-    if(burst){const v=view();let moving=false;for(const p of pieces){if(pieceDrag?.piece===p){moving=true;continue}p.vy+=.0004*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;const oldAngle=p.angle;p.angle+=p.spin*dt;
+    if(burst){const v=view();let moving=false;for(const p of pieces){p.supported=false;if(pieceDrag?.piece===p){moving=true;continue}p.vy+=.0012*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;const oldAngle=p.angle;p.angle+=p.spin*dt;
       let trial=p.angle*Math.PI/180;if(Math.abs(Math.cos(trial))*p.w+Math.abs(Math.sin(trial))*p.h>v.w||Math.abs(Math.sin(trial))*p.w+Math.abs(Math.cos(trial))*p.h>v.h){p.angle=oldAngle;p.spin*=-.65}
       const radians=p.angle*Math.PI/180,ex=Math.max(0,(Math.abs(Math.cos(radians))*p.w+Math.abs(Math.sin(radians))*p.h-p.w)/2),ey=Math.max(0,(Math.abs(Math.sin(radians))*p.w+Math.abs(Math.cos(radians))*p.h-p.h)/2);const left=v.left+ex,right=Math.max(left,v.left+v.w-p.w-ex),top=v.top+ey,bottom=Math.max(top,v.top+v.h-p.h-ey);
-      if(p.x<left||p.x>right){const impact=Math.abs(p.vx);p.x=clamp(p.x,left,right);p.vx*=-.94;p.spin*=.9;p.squash=Math.min(.24,impact*.3);if(impact>.25)sound('bounce',impact)}
+      if(p.x<left||p.x>right){const impact=Math.abs(p.vx);p.x=clamp(p.x,left,right);p.vx*=-.58;p.spin*=.8;p.squash=Math.min(.24,impact*.3);if(impact>.25)sound('bounce',impact)}
       if(p.y<top){p.y=top;p.vy=Math.abs(p.vy)*.94}
-      if(p.y>bottom){const impact=Math.abs(p.vy);p.y=bottom;p.vy=impact<.06?0:-p.vy*.94;p.vx*=.971;p.spin*=.95;p.squash=Math.max(p.squash,Math.min(.25,impact*.35));if(impact>.25)sound('bounce',impact)}
-      p.vx*=Math.pow(.971,dt/16.667);p.spin*=Math.pow(.985,dt/16.667);p.squash*=Math.pow(.8,dt/16);paintPiece(p);if(Math.abs(p.vx)+Math.abs(p.vy)+Math.abs(p.spin)>.025||p.y<bottom-.5)moving=true;
-    }if(moving)frame=requestAnimationFrame(tick);else previous=0;return}
+      if(p.y>bottom){const impact=Math.abs(p.vy);p.y=bottom;p.vy=impact<.13?0:-p.vy*.48;p.vx*=.86;p.spin*=.72;p.squash=Math.max(p.squash,Math.min(.25,impact*.35));if(impact>.25)sound('bounce',impact)}
+      if(p.y>=bottom-1&&Math.abs(p.vy)<.25){const flat=Math.round(p.angle/180)*180;p.angle+=(flat-p.angle)*Math.min(1,dt*.008);p.spin*=Math.pow(.82,dt/16.667)}
+      p.vx*=Math.pow(.975,dt/16.667);p.spin*=Math.pow(.98,dt/16.667);p.squash*=Math.pow(.8,dt/16);paintPiece(p);if(Math.abs(p.vx)+Math.abs(p.vy)+Math.abs(p.spin)>.025||p.y<bottom-.5||Math.abs(p.angle-Math.round(p.angle/180)*180)>.3)moving=true;
+    }
+      // Let the words rest on each other instead of piling into the same floor position.
+      const rect=p=>{const r=p.angle*Math.PI/180,rw=Math.abs(Math.cos(r))*p.w+Math.abs(Math.sin(r))*p.h,rh=Math.abs(Math.sin(r))*p.w+Math.abs(Math.cos(r))*p.h;return {left:p.x+p.w/2-rw/2,right:p.x+p.w/2+rw/2,top:p.y+p.h/2-rh/2,bottom:p.y+p.h/2+rh/2}};
+      const ordered=[...pieces].sort((a,b)=>(b.y+b.h/2)-(a.y+a.h/2));
+      for(let i=0;i<ordered.length;i++)for(let j=i+1;j<ordered.length;j++){
+        const lower=ordered[i],upper=ordered[j];if(pieceDrag?.piece===upper)continue;
+        const a=rect(lower),b=rect(upper),overlap=Math.min(a.right,b.right)-Math.max(a.left,b.left);
+        if(overlap>Math.min(8,upper.w*.1)&&b.bottom>a.top&&b.top<a.bottom&&upper.vy>=0){
+          const shift=Math.min(b.bottom-a.top,Math.max(0,b.top-v.top));upper.y-=shift;
+          if(upper.vy>.2)upper.vy*=-.28;else upper.vy=0;
+          upper.spin*=.75;upper.supported=true;if(Math.abs(upper.vy)<.1){const flat=Math.round(upper.angle/180)*180;upper.angle+=(flat-upper.angle)*Math.min(1,dt*.008)}paintPiece(upper);
+        }
+      }
+      moving=pieces.some(p=>{if(pieceDrag?.piece===p)return true;const r=rect(p),flat=Math.abs(p.angle-Math.round(p.angle/180)*180);return Math.abs(p.vx)+Math.abs(p.vy)+Math.abs(p.spin)>.025||(!p.supported&&r.bottom<v.top+v.h-.5)||flat>.3});
+      if(moving)frame=requestAnimationFrame(tick);else previous=0;return}
     if(drag){const n=Math.max(Math.abs(drag.overX),Math.abs(drag.overY));if(n>Math.max(30,h*.51)){if(!charge)charge=now;if(now-charge>=900){explode();return}}else charge=0;
       const target=clamp(drag.overY*.8+(drag.overX?Math.sign(drag.overX)*Math.abs(drag.overX)*.35:0)+vy*24,-baseH*.42,baseH*.42);bendVelocity+=(target-bend)*.018*dt;bendVelocity*=Math.pow(.78,dt/16.667);bend+=bendVelocity*dt/16.667;paint();frame=requestAnimationFrame(tick);return}
     if(pinch||!active)return;
-    vy+=.0004*dt;x+=vx*dt;y+=vy*dt;const oldAngle=angle;angle+=spin*dt;const v=view(),trial=angle*Math.PI/180;if(Math.abs(Math.cos(trial))*w+Math.abs(Math.sin(trial))*h>v.w||Math.abs(Math.sin(trial))*w+Math.abs(Math.cos(trial))*h>v.h){angle=oldAngle;spin*=-.65}
+    vy+=.0008*dt;x+=vx*dt;y+=vy*dt;const oldAngle=angle;angle+=spin*dt;const v=view(),trial=angle*Math.PI/180;if(Math.abs(Math.cos(trial))*w+Math.abs(Math.sin(trial))*h>v.w||Math.abs(Math.sin(trial))*w+Math.abs(Math.cos(trial))*h>v.h){angle=oldAngle;spin*=-.65}
     const b=bounds();let hit=false,impact=0;
     if(x<b.left||x>b.right){edge=x<b.left?'left':'right';impact=Math.abs(vx);x=clamp(x,b.left,b.right);vx*=-.94;hit=true}
-    if(y<b.top||y>b.bottom){edge=y<b.top?'top':'bottom';impact=Math.max(impact,Math.abs(vy));const floor=y>b.bottom;y=clamp(y,b.top,b.bottom);vy=floor&&impact<.045?0:-vy*.94;hit=true}
+    if(y<b.top||y>b.bottom){edge=y<b.top?'top':'bottom';impact=Math.max(impact,Math.abs(vy));const floor=y>b.bottom;y=clamp(y,b.top,b.bottom);vy=floor&&impact<.08?0:-vy*.68;hit=true}
     if(hit){bendVelocity+=(edge==='top'?-1:1)*Math.min(baseH*.12,impact*25);spin+=clamp(vx*.035,-.06,.06);if(impact>.13)sound('bounce',impact)}
     bendVelocity+=-bend*.017*dt;bendVelocity*=Math.pow(.79,dt/16.667);bend+=bendVelocity*dt/16.667;
     const damping=Math.pow(.971,dt/16.667);vx*=damping;spin*=Math.pow(.991,dt/16.667);paint();
