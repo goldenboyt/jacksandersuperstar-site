@@ -10,3 +10,5 @@ html:has(dialog[open]) .hero-play-object,html:has(dialog[open]) .hero-play-piece
 .hero-play-piece sup{font-size:.32em;line-height:0;vertical-align:super}
 
 .hero-play-object text{pointer-events:visiblePainted}
+
+.hero-pop-spark{position:fixed;z-index:76;width:11px;height:2px;border-radius:2px;background:#fff;pointer-events:none;will-change:transform,opacity}.hero-pop-spark.is-red{background:#e51e25}
