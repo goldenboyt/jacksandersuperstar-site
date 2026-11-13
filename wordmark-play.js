@@ -11,7 +11,7 @@
   let active=false,burst=false,resetting=false,drag=null,pinch=null,pieceDrag=null,moved=false,overlay=null,glyphs=[],pieces=[];
   let x=0,y=0,w=0,h=0,baseW=0,baseH=0,bleedX=0,bleedY=0,scale=1,desiredScale=1,angle=0,spin=0,vx=0,vy=0,bend=0,bendVelocity=0,pressure=0,edge='',charge=0,lineData=[];
   let frame=0,previous=0,idle=0,resetTimer=0,audio=null,lastSound=0,lastScroll=scrollY;
-  const soundBuffers={},soundLoads={},soundBytes={},soundFetches={},soundRetryAfter={};let squeezeSource=null,squeezeGain=null,squeezeFallback=false,audioPrimed=false,resuming=null,mediaUnlocked=false,unlockPlayer=null,unlockPending=null;
+  const soundBuffers={},soundLoads={},soundBytes={},soundFetches={},soundRetryAfter={};let squeezeSource=null,squeezeGain=null,squeezeFallback=false,resuming=null,output=null,mediaSink=null,effectsPlayer=null,mediaPending=null,directOutput=false,previousSession=null,audioActive=false;
   function prefetchSound(name){
     if(soundBytes[name])return Promise.resolve(soundBytes[name]);
     if(soundFetches[name])return soundFetches[name];
@@ -32,46 +32,68 @@
   // Fetch while the page loads; decode only after a gesture creates the audio context.
   prefetchSound('pop');prefetchSound('squeeze');
   function resumeAudio(){if(!audio)return Promise.resolve(false);if(audio.state==='running')return Promise.resolve(true);if(!resuming){try{resuming=audio.resume().then(()=>audio.state==='running').catch(()=>false).finally(()=>{resuming=null})}catch{return Promise.resolve(false)}}return resuming}
-  function unlockMedia(){
-    if(mediaUnlocked||unlockPending)return;
-    const video=document.getElementById('magic-preview-player');
-    if(video&&!video.paused&&!video.muted){mediaUnlocked=true;return}
+  function createAudio(){
+    if(audio&&audio.state!=='closed')return;
+    effectsPlayer?.pause();effectsPlayer?.remove();
+    audio=new (window.AudioContext||window.webkitAudioContext)({latencyHint:'interactive'});
+    output=audio.createGain();mediaSink=null;effectsPlayer=null;mediaPending=null;directOutput=false;resuming=null;
+    squeezeSource=squeezeGain=null;squeezeFallback=false;
     try{
-      unlockPlayer ||= new Audio('data:audio/wav;base64,UklGRrQBAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YZABAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA');
-      unlockPlayer.preload='auto';unlockPlayer.setAttribute('playsinline','');try{unlockPlayer.currentTime=0}catch{}
-      const playing=unlockPlayer.play();if(!playing?.then){mediaUnlocked=true;return}
-      unlockPending=playing.then(()=>{mediaUnlocked=true;const pending=resuming;if(pending)pending.finally(()=>resumeAudio());else resumeAudio()}).catch(()=>{mediaUnlocked=false}).finally(()=>{unlockPending=null});
-    }catch{mediaUnlocked=false}
+      // The effects themselves travel through an unmuted media element. A short
+      // silent clip cannot keep iOS's media route open for a separate Web Audio graph.
+      mediaSink=audio.createMediaStreamDestination();output.connect(mediaSink);
+      effectsPlayer=document.createElement('audio');effectsPlayer.hidden=true;
+      effectsPlayer.dataset.heroAudio='';effectsPlayer.setAttribute('playsinline','');
+      effectsPlayer.setAttribute('aria-hidden','true');effectsPlayer.preload='auto';
+      effectsPlayer.srcObject=mediaSink.stream;document.body.append(effectsPlayer);
+    }catch{output.connect(audio.destination);directOutput=true}
+  }
+  function playEffects(){
+    if(!effectsPlayer||mediaPending||!effectsPlayer.paused)return;
+    const player=effectsPlayer,context=audio;
+    try{
+      // Call play synchronously inside touchstart, not after fetch/decode/resume.
+      mediaPending=Promise.resolve(player.play()).then(()=>{
+        if(context!==audio||!audioActive)return;
+        if(directOutput){output.disconnect(audio.destination);directOutput=false}
+        resumeAudio();
+      }).catch(()=>{
+        if(context===audio&&audioActive&&!directOutput){output.connect(audio.destination);directOutput=true}
+      }).finally(()=>{if(context===audio)mediaPending=null});
+    }catch{if(!directOutput){output.connect(audio.destination);directOutput=true}}
+  }
+  function stopAudio(){
+    audioActive=false;stopSqueeze();effectsPlayer?.pause();
+    // Release playback focus when the toy resets or the page is hidden.
+    try{if(previousSession!==null&&navigator.audioSession?.type==='playback')navigator.audioSession.type=previousSession}catch{}
+    previousSession=null;
   }
   function audioReady(){
     try{
-      if(audio?.state==='closed'){squeezeSource=squeezeGain=null;squeezeFallback=false;audio=null;audioPrimed=false;mediaUnlocked=false;resuming=null}
-      audio ||= new (window.AudioContext||window.webkitAudioContext)();
-      if(audio.state!=='running')mediaUnlocked=false;
-      // Open the same unmuted media route as the video during the user's gesture.
-      unlockMedia();const needsPrime=!audioPrimed||audio.state!=='running';resumeAudio();if(needsPrime)try{const source=audio.createBufferSource(),gain=audio.createGain();source.buffer=audio.createBuffer(1,1,audio.sampleRate);gain.gain.value=0;source.connect(gain).connect(audio.destination);source.onended=()=>{source.disconnect();gain.disconnect()};source.start();audioPrimed=true}catch{}
-      loadSound('squeeze');loadSound('pop');
+      createAudio();audioActive=true;
+      try{if(navigator.audioSession){previousSession??=navigator.audioSession.type;navigator.audioSession.type='playback'}}catch{}
+      playEffects();resumeAudio();loadSound('squeeze');loadSound('pop');
     }catch{}
   }
-  function playSample(buffer,volume){if(!audio||!buffer)return;if(audio.state!=='running'){const requested=performance.now();resumeAudio().then(ok=>{if(ok&&performance.now()-requested<2500)playSample(buffer,volume)});return}const source=audio.createBufferSource(),gain=audio.createGain();source.buffer=buffer;gain.gain.value=volume;source.connect(gain).connect(audio.destination);source.onended=()=>{source.disconnect();gain.disconnect()};source.start()}
+  function playSample(buffer,volume){if(!audio||!buffer)return;if(audio.state!=='running'){const requested=performance.now();resumeAudio().then(ok=>{if(ok&&performance.now()-requested<2500)playSample(buffer,volume)});return}const source=audio.createBufferSource(),gain=audio.createGain();source.buffer=buffer;gain.gain.value=volume;source.connect(gain).connect(output);source.onended=()=>{source.disconnect();gain.disconnect()};source.start()}
   function stopSqueeze(){if(!squeezeSource)return;const source=squeezeSource,gain=squeezeGain;squeezeSource=squeezeGain=null;squeezeFallback=false;try{gain.gain.setTargetAtTime(.0001,audio.currentTime,.015);source.stop(audio.currentTime+.06)}catch{}}
   function squeezeSound(amount,moving){
     if(!audio||audio.state!=='running'||amount<4||(burst&&!pieceDrag)){stopSqueeze();return}
-    const buffer=soundBuffers.squeeze;if(!buffer&&!soundRetryAfter.squeeze){loadSound('squeeze');return}
+    const buffer=soundBuffers.squeeze;
     if(!buffer&&performance.now()>=(soundRetryAfter.squeeze||0))loadSound('squeeze');
     const level=Math.min(1,amount/Math.max(30,h*.51)),now=audio.currentTime;
     if(buffer&&squeezeSource&&squeezeFallback)stopSqueeze();
-    if(!squeezeSource){const source=buffer?audio.createBufferSource():audio.createOscillator(),gain=audio.createGain();if(buffer){source.buffer=buffer;source.loop=true}else source.type='triangle';gain.gain.value=.0001;source.connect(gain).connect(audio.destination);source.onended=()=>{source.disconnect();gain.disconnect();if(squeezeSource===source){squeezeSource=null;squeezeGain=null;squeezeFallback=false}};source.start();squeezeSource=source;squeezeGain=gain;squeezeFallback=!buffer}
+    if(!squeezeSource){const source=buffer?audio.createBufferSource():audio.createOscillator(),gain=audio.createGain();if(buffer){source.buffer=buffer;source.loop=true}else source.type='triangle';gain.gain.value=.0001;source.connect(gain).connect(output);source.onended=()=>{source.disconnect();gain.disconnect();if(squeezeSource===source){squeezeSource=null;squeezeGain=null;squeezeFallback=false}};source.start();squeezeSource=source;squeezeGain=gain;squeezeFallback=!buffer}
     if(squeezeFallback)squeezeSource.frequency.setTargetAtTime(210+level*180,now,.045);else squeezeSource.playbackRate.setTargetAtTime(.99+level*.42,now,.045);
     squeezeGain.gain.setTargetAtTime(squeezeFallback ? .025+level*.02 : (moving ? .27 : .16)+level*.14,now,.03);
   }
   function sound(kind,intensity=1){
     if(!audio)return;
-    if(kind==='pop'){stopSqueeze();if(soundBuffers.pop)playSample(soundBuffers.pop,.65);else{const started=performance.now();loadSound('pop').then(buffer=>{if(performance.now()-started<3000&&active){if(buffer)playSample(buffer,.65);else synthPop()}})}return}
+    if(kind==='pop'){stopSqueeze();if(soundBuffers.pop)playSample(soundBuffers.pop,.65);else{loadSound('pop');synthPop()}return}
     if(audio.state!=='running'){const requested=performance.now();resumeAudio().then(ok=>{if(ok&&active&&performance.now()-requested<450)sound(kind,intensity)});return}if(performance.now()-lastSound<85)return;lastSound=performance.now();const t=audio.currentTime,o=audio.createOscillator(),g=audio.createGain(),duration=.086;
-    o.type='sine';o.frequency.setValueAtTime(322,t);o.frequency.exponentialRampToValueAtTime(101,t+duration);g.gain.setValueAtTime(.065*Math.min(1,.55+intensity*.12),t);g.gain.exponentialRampToValueAtTime(.0001,t+duration);o.connect(g).connect(audio.destination);o.onended=()=>{o.disconnect();g.disconnect()};o.start(t);o.stop(t+duration+.005);
+    o.type='sine';o.frequency.setValueAtTime(322,t);o.frequency.exponentialRampToValueAtTime(101,t+duration);g.gain.setValueAtTime(.065*Math.min(1,.55+intensity*.12),t);g.gain.exponentialRampToValueAtTime(.0001,t+duration);o.connect(g).connect(output);o.onended=()=>{o.disconnect();g.disconnect()};o.start(t);o.stop(t+duration+.005);
   }
-  function synthPop(){if(!audio)return;if(audio.state!=='running'){resumeAudio().then(ok=>{if(ok&&active)synthPop()});return}const now=audio.currentTime,o=audio.createOscillator(),g=audio.createGain();o.type='triangle';o.frequency.setValueAtTime(330,now);o.frequency.exponentialRampToValueAtTime(65,now+.12);g.gain.setValueAtTime(.14,now);g.gain.exponentialRampToValueAtTime(.0001,now+.16);o.connect(g).connect(audio.destination);o.onended=()=>{o.disconnect();g.disconnect()};o.start(now);o.stop(now+.17)}
+  function synthPop(){if(!audio)return;if(audio.state!=='running'){resumeAudio().then(ok=>{if(ok&&active)synthPop()});return}const now=audio.currentTime,o=audio.createOscillator(),g=audio.createGain();o.type='triangle';o.frequency.setValueAtTime(330,now);o.frequency.exponentialRampToValueAtTime(65,now+.12);g.gain.setValueAtTime(.14,now);g.gain.exponentialRampToValueAtTime(.0001,now+.16);o.connect(g).connect(output);o.onended=()=>{o.disconnect();g.disconnect()};o.start(now);o.stop(now+.17)}
   function activity(){clearTimeout(idle);idle=setTimeout(()=>{if(drag||pinch||pieceDrag||pointers.size){activity();return}reset()},10000)}
   function stop(){cancelAnimationFrame(frame);frame=0;previous=0}
   function start(){if(!frame&&active&&(!reduced.matches||drag||pieceDrag)){previous=0;frame=requestAnimationFrame(tick)}}
@@ -121,7 +143,7 @@
     document.body.append(overlay);setSize();originals.forEach(n=>{n.style.opacity='0';n.style.pointerEvents='none'});active=true;paint();activity();
   }
   function reset(immediate=false){
-    if(!active)return;stopSqueeze();if(resetting&&immediate!==true)return;
+    stopAudio();if(!active)return;if(resetting&&immediate!==true)return;
     if(immediate!==true&&!reduced.matches){resetting=true;clearTimeout(idle);stop();for(const node of burst?pieces.map(p=>p.node):[overlay]){node.style.pointerEvents='none';node.animate([{opacity:1},{opacity:0}],{duration:300,easing:'ease-out',fill:'forwards'})}resetTimer=setTimeout(()=>{reset(true);originals.forEach(n=>n.animate([{opacity:0},{opacity:1}],{duration:300,easing:'ease-out'}))},300);return}
     clearTimeout(resetTimer);clearTimeout(idle);stop();document.querySelectorAll('.hero-pop-spark').forEach(n=>n.remove());pieces.forEach(p=>p.node.remove());pieces=[];overlay?.remove();overlay=null;originals.forEach(n=>{n.style.removeProperty('opacity');n.style.removeProperty('pointer-events')});
     active=burst=resetting=false;drag=pinch=pieceDrag=null;pointers.clear();heroTouches.clear();moved=false;vx=vy=angle=spin=bend=bendVelocity=pressure=charge=0;scale=desiredScale=1;edge='';
@@ -312,5 +334,5 @@
   title.addEventListener('keydown',event=>{if(event.key==='Escape'&&active){event.preventDefault();reset();return}const d={ArrowLeft:[-20,0],ArrowRight:[20,0],ArrowUp:[0,-20],ArrowDown:[0,20]}[event.key];if(!d)return;event.preventDefault();stop();if(!active)makeOverlay();const b=bounds();x=clamp(x+d[0],b.left,b.right);y=clamp(y+d[1],b.top,b.bottom);paint();activity()});
   addEventListener('scroll',()=>{const current=scrollY,delta=current-lastScroll;lastScroll=current;if(!active||resetting||!delta)return;const v=view(),shift=clamp(delta,-v.h*.7,v.h*.7);if(burst){for(const p of pieces){if(pieceDrag?.piece===p)continue;p.y=clamp(p.y-shift,v.top,Math.max(v.top,v.top+v.h-p.h));paintPiece(p)}}else if(!drag&&!pinch){const b=bounds();y=clamp(y-shift,b.top,b.bottom);paint()}activity();if(reduced.matches&&!drag&&!pinch&&!pieceDrag)settleReduced();else start()},{passive:true});
   function resize(){if(!active||drag||pinch||burst)return;const b=bounds();x=clamp(x,b.left,b.right);y=clamp(y,b.top,b.bottom);paint()}
-  addEventListener('resize',resize);window.visualViewport?.addEventListener('resize',resize);document.addEventListener('visibilitychange',()=>{if(document.hidden){mediaUnlocked=false;stopSqueeze()}});addEventListener('pagehide',()=>reset(true));
+  addEventListener('resize',resize);window.visualViewport?.addEventListener('resize',resize);document.addEventListener('visibilitychange',()=>{if(document.hidden)stopAudio()});addEventListener('pagehide',()=>reset(true));
 })();
