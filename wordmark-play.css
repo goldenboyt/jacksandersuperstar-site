@@ -1,6 +1,6 @@
 /* Only the large hero wordmark is interactive; the header remains a normal link. */
 .hero h1 .title-line>svg{pointer-events:auto;touch-action:none;cursor:grab;-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
-.hero-play-object{position:fixed;left:0;top:0;z-index:75;display:block;overflow:visible;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;filter:drop-shadow(0 1px 2px #0006);will-change:transform}
+.hero-play-object{position:fixed;left:0;top:0;z-index:75;display:block;overflow:visible;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;pointer-events:none;filter:none;will-change:transform}
 .hero-play-object.is-held,.hero-play-piece.is-held{cursor:grabbing}
 .hero-play-piece{position:fixed;z-index:74;display:block;white-space:nowrap;line-height:1;letter-spacing:-.035em;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:white;pointer-events:auto;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;will-change:transform;text-shadow:0 1px 2px #0006;transform-origin:center}
 #hero-title:focus-visible{outline:2px solid white;outline-offset:4px}
@@ -8,3 +8,5 @@ html:has(dialog[open]) .hero-play-object,html:has(dialog[open]) .hero-play-piece
 @media(prefers-reduced-motion:reduce){.hero-play-object,.hero-play-piece{will-change:auto}}
 
 .hero-play-piece sup{font-size:.32em;line-height:0;vertical-align:super}
+
+.hero-play-object text{pointer-events:visiblePainted}
