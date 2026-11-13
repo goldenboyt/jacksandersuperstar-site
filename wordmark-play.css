@@ -12,3 +12,5 @@ html:has(dialog[open]) .hero-play-object,html:has(dialog[open]) .hero-play-piece
 .hero-play-object text{pointer-events:visiblePainted}
 
 .hero-pop-spark{position:fixed;z-index:76;width:11px;height:2px;border-radius:2px;background:#fff;pointer-events:none;will-change:transform,opacity}.hero-pop-spark.is-red{background:#e51e25}
+
+.hero-piece-letter{display:inline-block;overflow:visible;pointer-events:none;transform-origin:center bottom;will-change:transform}
