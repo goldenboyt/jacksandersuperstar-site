@@ -1,6 +1,6 @@
 {
   "model": "spacexai/grok-4.20-non-reasoning",
-  "reviewedAt": "2026-10-18",
+  "reviewedAt": "2026-11-15",
   "provider": "xai",
   "pricing": {
     "input": "0.00000125",
@@ -80,7 +80,6 @@
         "min": 200001
       }
     ],
-    "request": "0",
     "image": "0",
     "image_output": "0",
     "web_search": "0.005",
