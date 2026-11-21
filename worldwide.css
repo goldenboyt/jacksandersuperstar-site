@@ -1,4 +1,4 @@
-.worldwide-title{display:grid;grid-template-columns:68% 1fr;align-items:start;min-width:0;white-space:nowrap;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;line-height:1}
+.worldwide-title{display:grid;grid-template-columns:minmax(0,1fr);align-items:start;min-width:0;white-space:nowrap;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;line-height:1}
 .worldwide-title .worldwide-logo{display:block;grid-column:1;width:100%;min-width:0;height:auto;object-fit:contain;transform:translateX(-3.47%)}
 .worldwide-title .worldwide-suffix{grid-column:1;justify-self:end;margin-right:9%;font-size:clamp(15px,1.95vw,31px);font-weight:300;letter-spacing:-.04em}
 html[data-theme=dark] .worldwide-logo{filter:brightness(0) invert(1)}
@@ -16,3 +16,7 @@ html[data-theme=dark] .worldwide-logo{filter:brightness(0) invert(1)}
 
 /* Align the visible start of the artwork with the surrounding copy. */
 .original-superstar-title .release-title-art{transform:translateX(-3.47%)}
+
+/* Inset the first carousel cover so it lines up with the heading. */
+@media(max-width:900px){.home-page .catalog{padding-left:var(--pad);scroll-padding-left:var(--pad)}}
+.site-duo-strip .home-page .catalog{padding-left:calc(var(--site-strip-left) + var(--pad));scroll-padding-left:calc(var(--site-strip-left) + var(--pad))}
