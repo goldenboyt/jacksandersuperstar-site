@@ -3,14 +3,10 @@
 .deluxe-art::before{content:'';position:absolute;inset:0;background:var(--red);transform:translate(12px,12px);z-index:-1}
 .deluxe-art img{display:block;box-shadow:0 20px 60px #0002}
 .deluxe-info{padding-top:clamp(12px,3vw,48px)}
-.deluxe-info>.deluxe-kicker{font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:clamp(25px,4vw,58px)}
-.deluxe-kicker span{padding:0 8px;color:var(--gray)}
 .deluxe-page .deluxe-title{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;line-height:.95;letter-spacing:-.055em;font-weight:400}
-.deluxe-title-brand{display:block;font-size:clamp(26px,3.2vw,51px);font-weight:700;letter-spacing:-.06em;white-space:nowrap}
-.deluxe-title-brand>span{font-weight:300}.deluxe-title-brand sup{font-size:.25em;vertical-align:top;position:relative;top:.1em;margin-left:.1em}
-.deluxe-worldwide{display:block;font-size:clamp(57px,7.6vw,118px);letter-spacing:-.075em;font-weight:300;margin-top:13px}
-.deluxe-period{color:var(--red)}
-.deluxe-meta{margin:27px 0 35px}
+.deluxe-page .deluxe-title-brand{display:block;width:100%;height:auto;max-width:100%;object-fit:contain}
+.deluxe-worldwide{display:block;font-size:clamp(42px,6.2vw,94px);letter-spacing:-.065em;font-weight:300;margin-top:20px;white-space:nowrap}
+.deluxe-info #release-page-sharing{margin-top:35px}
 .deluxe-page .release-track-details{margin-top:34px}
 .deluxe-track-note{border-top:1px solid var(--line);padding:18px 0;color:#777;font-size:13px}
 html[data-theme=dark] .deluxe-track-note{color:var(--theme-muted)}
@@ -20,5 +16,5 @@ html[data-theme=dark] .deluxe-track-note{color:var(--theme-muted)}
  @keyframes deluxe-cover-in{from{opacity:0;transform:translateY(25px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
  @keyframes deluxe-text-in{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 }
-@media(max-width:900px){.deluxe-title-brand{font-size:clamp(24px,3vw,36px)}.deluxe-worldwide{font-size:clamp(50px,7vw,90px)}}
-@media(max-width:640px){.deluxe-page .deluxe-layout{gap:36px}.deluxe-art{margin-right:10px}.deluxe-info{padding:0}.deluxe-info>.deluxe-kicker{margin-bottom:23px}.deluxe-title-brand{font-size:clamp(26px,7vw,46px)}.deluxe-worldwide{font-size:clamp(60px,15vw,100px)}.deluxe-meta{margin:20px 0 27px}}
+@media(max-width:900px){.deluxe-worldwide{font-size:clamp(38px,6.2vw,74px)}}
+@media(max-width:640px){.deluxe-page .deluxe-layout{gap:36px}.deluxe-art{margin-right:10px}.deluxe-info{padding:0}.deluxe-worldwide{font-size:clamp(42px,12.4vw,80px);margin-top:16px}.deluxe-info #release-page-sharing{margin-top:28px}}

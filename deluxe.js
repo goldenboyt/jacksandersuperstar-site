@@ -1,6 +1,6 @@
 (() => {
   // Isolated from the public catalog until the deluxe announcement is ready.
-  const deluxe = {title:'Jack Sander Superstar Worldwide', page:'deluxe'};
+  const deluxe = {title:'#jacksandersuperstar (worldwide)', page:'deluxe'};
   const sharing = document.getElementById('release-page-sharing');
   sharing.append(window.SuperstarReleaseUI.releaseSharing(deluxe, {pageLink:false, nativeShare:true}));
   const original = window.SuperstarCatalog.releases.find(item => item.page === 'jacksandersuperstar');
