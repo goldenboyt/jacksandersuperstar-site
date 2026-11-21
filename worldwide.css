@@ -20,3 +20,5 @@ html[data-theme=dark] .worldwide-logo{filter:brightness(0) invert(1)}
 /* Inset the first carousel cover so it lines up with the heading. */
 @media(max-width:900px){.home-page .catalog{padding-left:var(--pad);scroll-padding-left:var(--pad)}}
 .site-duo-strip .home-page .catalog{padding-left:calc(var(--site-strip-left) + var(--pad));scroll-padding-left:calc(var(--site-strip-left) + var(--pad))}
+/* The artwork has transparent space before the first letter. */
+.home-page .catalog .release-card h3 .release-title-art[src="assets/brand-logo.png"]{transform:translateX(-3.47%)}
