@@ -1,6 +1,6 @@
-.worldwide-title{display:flex;align-items:center;gap:.16em;min-width:0;white-space:nowrap;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;line-height:1}
-.worldwide-title .worldwide-logo{display:block;flex:0 1 68%;width:68%;min-width:0;height:auto;object-fit:contain}
-.worldwide-title .worldwide-suffix{flex:0 0 auto;font-size:clamp(13px,1.7vw,27px);font-weight:300;letter-spacing:-.04em}
+.worldwide-title{display:grid;grid-template-columns:68% 1fr;align-items:start;min-width:0;white-space:nowrap;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;line-height:1}
+.worldwide-title .worldwide-logo{display:block;grid-column:1;width:100%;min-width:0;height:auto;object-fit:contain;transform:translateX(-3.47%)}
+.worldwide-title .worldwide-suffix{grid-column:1;justify-self:end;margin-right:9%;font-size:clamp(13px,1.7vw,27px);font-weight:300;letter-spacing:-.04em}
 html[data-theme=dark] .worldwide-logo{filter:brightness(0) invert(1)}
 .home-worldwide-cover{display:block;min-width:0;position:relative;overflow:hidden}
 .home-worldwide-cover img{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:cover;transition:transform .6s ease}
@@ -13,3 +13,6 @@ html[data-theme=dark] .worldwide-logo{filter:brightness(0) invert(1)}
 @media(min-width:901px){.home-page .catalog{grid-template-columns:repeat(6,minmax(0,1fr))}}
 @media(min-width:641px) and (max-width:900px){.home-page .catalog{grid-template-columns:repeat(6,48vw)}}
 @media(max-width:640px){.home-page .catalog{grid-template-columns:repeat(6,61vw)}}
+
+/* Align the visible start of the artwork with the surrounding copy. */
+.original-superstar-title .release-title-art{transform:translateX(-3.47%)}
