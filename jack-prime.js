@@ -72,6 +72,23 @@
     }
     element.append(document.createTextNode(text.slice(position)));
   }
+  function showStreamText(element,text){
+    const previous=element.dataset.streamText||'';
+    if(!text.startsWith(previous)){element.replaceChildren();element.dataset.streamText=''}
+    const suffix=text.slice((element.dataset.streamText||'').length);
+    for(const chunk of suffix.split(/(\s+)/)){
+      if(!chunk)continue;
+      if(/^\s+$/.test(chunk)){element.append(document.createTextNode(chunk));continue}
+      const span=document.createElement('span');span.className='prime-stream-piece';span.textContent=chunk;element.append(span);
+    }
+    element.dataset.streamText=text;
+  }
+  function animateSend(text){
+    if(!text||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    const ghost=document.createElement('span');ghost.className='prime-send-ghost';ghost.setAttribute('aria-hidden','true');ghost.textContent=text;
+    form.append(ghost);ghost.addEventListener('animationend',()=>ghost.remove(),{once:true});setTimeout(()=>ghost.remove(),700);
+    send.classList.remove('prime-sent');void send.offsetWidth;send.classList.add('prime-sent');
+  }
   function songCards(node,songs){
     if(!window.SuperstarPreviews)return;
     for(const song of validSongs(songs)){
@@ -245,7 +262,7 @@
     const display=template==='superstar'?`make a superstar cover with this text: ${text}`:template==='prodigy'?`put my photo on prodigy genius${text?`: ${text}`:''}`:text;
     let kind=template?'image':'text';
     const before=[...history],request=++turn,sentRevision=draftRevision;
-    const pendingMessage=message('user',display,{},photo?.blob);if(!matchMedia('(prefers-reduced-motion: reduce)').matches){send.classList.remove('prime-sent');void send.offsetWidth;send.classList.add('prime-sent')}history.push({role:'user',content:display,...(kind==='image'?{kind:'image'}:{})});input.value='';resize();
+    const pendingMessage=message('user',display,{},photo?.blob);animateSend(input.value.trim());history.push({role:'user',content:display,...(kind==='image'?{kind:'image'}:{})});input.value='';resize();
     const abort=new AbortController();controller=abort;busy(true);
     let waiting=activity(kind),streamedMessage=null;
     let answered=false,timedOut=false;
@@ -270,7 +287,7 @@
                 if(event.type==='text'&&event.text){
                   if(!streamedMessage){waiting.remove();streamedMessage=message('assistant','');streamedMessage.classList.add('prime-message--streaming');const content=document.createElement('div');content.className='prime-stream-text';streamedMessage.append(content)}
                   const content=streamedMessage.querySelector('.prime-stream-text'),follow=nearBottom();
-                  content.replaceChildren();formattedText(event.text.replace(/\[([^\]\n]+)\]\([^)]*$/,'$1').replace(/\*\*|__/g,''),content);followBottom(follow);
+                  showStreamText(content,event.text.replace(/\[([^\]\n]+)\]\([^)]*$/,'$1').replace(/\*\*|__/g,''));followBottom(follow);
                 }
               }
               if(chunk.done)break;

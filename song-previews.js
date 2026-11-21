@@ -16,9 +16,9 @@
     item.button.classList.toggle('is-playing', playing);
     item.button.setAttribute('aria-pressed', String(playing));
     item.button.setAttribute('aria-label', `${playing ? 'Pause' : 'Play'} preview of ${item.title}`);
-    item.panel.hidden = state === 'idle';
+    item.panel.hidden = state === 'idle' && !item.seek;
     item.message.textContent = state === 'loading' ? 'loading preview' : state === 'error' ? 'preview unavailable — tap to retry' : '';
-    item.progress.hidden = state === 'error'; if(item.seek)item.seek.hidden = state === 'error'; item.time.hidden = state === 'error';
+    item.progress.hidden = state === 'error'; if(item.seek){item.seek.hidden = state === 'error';item.seek.disabled=state === 'idle'||state === 'error'} item.time.hidden = state === 'error'||state === 'idle';
     if (state === 'idle') {
       item.progress.style.setProperty('--preview-progress', '0');
       item.progress.setAttribute('aria-valuenow', '0'); if(item.seek)item.seek.value='0'; item.time.textContent = '';
