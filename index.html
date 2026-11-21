@@ -26,6 +26,7 @@
 <link rel="stylesheet" href="theme.css?v=1">
 <link rel="stylesheet" href="viewport-layout.css?v=8">
 <link rel="stylesheet" href="wordmark-play.css?v=7">
+<link rel="stylesheet" href="worldwide.css?v=1">
 
 </head>
 <body class="home-page">
@@ -92,11 +93,11 @@
 </section>
 <section class="section music" id="music" aria-labelledby="music-title">
   <div class="section-heading"><h2 id="music-title">music<span class="asterisk" aria-hidden="true">*</span></h2><span class="rule"></span><span class="section-number">01 / discography</span></div>
-  <div class="featured-release">
-    <button class="cover-button" data-release="0" aria-label="View jacksandersuperstar album details"><img src="assets/album.webp" alt="Full #jacksandersuperstar album cover" width="1024" height="1024" loading="lazy"><span class="image-action">15 tracks / view tracklist <span aria-hidden="true">+</span></span></button>
-    <div class="release-copy"><p class="eyebrow red">out now</p><h3 class="album-title"><img src="assets/brand-logo.png" alt="#jacksandersuperstar®" width="3284" height="308"></h3><p class="release-meta">album / july 15, 2026 / 15 tracks</p><div class="release-actions"><a class="button button-red" href="https://music.apple.com/us/album/jacksandersuperstar/6787361171" target="_blank" rel="noopener">apple music</a><a class="button button-black" href="https://open.spotify.com/album/0Kg7F6T2gReUAx5563lJ5K" target="_blank" rel="noopener">spotify</a><button class="button streaming-more" type="button" aria-label="More streaming services" aria-expanded="false" aria-controls="featured-streaming-extra">+</button><div class="streaming-extra" id="featured-streaming-extra" hidden><a class="button button-black" href="https://www.youtube.com/playlist?list=PLEoIsNgKzgdo" target="_blank" rel="noopener">youtube</a></div></div><div class="featured-release-details"><button class="text-button" data-release="0">view tracklist <span aria-hidden="true">+</span></button><a class="release-page-link" href="/jacksandersuperstar">release page <svg class="release-link-arrow" viewBox="0 0 24 24" aria-hidden="true" width="14" height="14"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></a></div></div>
-  </div>
-  <div class="catalog-header"><h3>the catalog</h3><span>2020 — 2026</span></div>
+  <article class="featured-release home-worldwide" aria-labelledby="home-worldwide-title">
+    <a class="home-worldwide-cover" href="/deluxe" aria-label="Explore #jacksandersuperstar (worldwide)"><img src="assets/deluxe-cover.jpg" alt="#jacksandersuperstar (worldwide) cover" width="1280" height="1280" loading="lazy"></a>
+    <div class="release-copy home-worldwide-copy"><p class="eyebrow red">coming soon</p><h3 id="home-worldwide-title" class="worldwide-title"><img class="worldwide-logo" src="assets/brand-logo.png" alt="#jacksandersuperstar®" width="3284" height="308"><span class="worldwide-suffix">(worldwide)</span></h3><a class="release-page-link" href="/deluxe">release page <svg class="release-link-arrow" viewBox="0 0 24 24" aria-hidden="true" width="14" height="14"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></a></div>
+  </article>
+  <div class="catalog-header"><h3>discography</h3><span>2020 — 2026</span></div>
   <div class="catalog" id="catalog"></div>
 </section>
 <section class="music-video-section" id="video" aria-labelledby="music-video-title">
@@ -169,7 +170,7 @@
 </main>
 <footer><div class="footer-top"><a class="wordmark" href="#top"><img src="assets/brand-logo.png" alt="#jacksandersuperstar®" width="3284" height="308"></a><a href="https://instagram.com/jack_sanderr" target="_blank" rel="noopener">instagram</a><a href="#top">back to top</a></div><div class="footer-bottom"><span>© 2026</span></div></footer>
 <dialog class="menu-dialog" id="menu" aria-labelledby="menu-title"><div class="menu-head"><span id="menu-title" class="wordmark"><img src="assets/brand-logo.png" alt="#jacksandersuperstar®" width="3284" height="308"></span><button class="close-button" data-close="menu" aria-label="Close menu">close <span aria-hidden="true">×</span></button></div><nav aria-label="Expanded navigation"><a href="#music"><span>01</span>music</a><a href="#live"><span>02</span>live in dallas</a><a href="#merch"><span>03</span>merch</a><a href="#soboda"><span>04</span>soboda</a></nav><div class="menu-footer"><a href="https://instagram.com/jack_sanderr" target="_blank" rel="noopener">instagram</a></div></dialog>
-<dialog class="release-dialog" id="release-dialog" aria-labelledby="release-dialog-title"><div class="dialog-toolbar"><span>the catalog</span><button class="close-button" data-close="release-dialog" aria-label="Close album details">close <span aria-hidden="true">×</span></button></div><div id="release-content"></div></dialog>
+<dialog class="release-dialog" id="release-dialog" aria-labelledby="release-dialog-title"><div class="dialog-toolbar"><span>discography</span><button class="close-button" data-close="release-dialog" aria-label="Close album details">close <span aria-hidden="true">×</span></button></div><div id="release-content"></div></dialog>
 <dialog class="video-dialog" id="video-dialog" aria-labelledby="video-title"><div class="dialog-toolbar"><h2 id="video-title">live in dallas</h2><button class="close-button" data-close="video-dialog" aria-label="Close video">close <span aria-hidden="true">×</span></button></div><div class="video-frame" id="video-frame"></div><a href="https://www.youtube.com/watch?v=pZm5ldOVBnI" target="_blank" rel="noopener">watch on youtube</a></dialog>
 
 <a class="prime-widget-launcher" id="prime-widget-open" href="/jackprime" hidden>jack prime <span class="prime-launcher-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 18 18 6M6 6h12v12"/></svg></span></a>
@@ -182,7 +183,7 @@
 <script src="release-data.js?v=2" defer></script>
 <script src="release-ui.js?v=3" defer></script>
 <script src="song-previews.js?v=3" defer></script>
-<script src="app.js?v=3" defer></script>
+<script src="app.js?v=4" defer></script>
 <script src="motion.js?v=28" defer></script>
 <script src="video.js?v=2" defer></script>
 <script src="tees.js?v=4" defer></script>

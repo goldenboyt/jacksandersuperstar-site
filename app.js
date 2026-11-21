@@ -1,10 +1,7 @@
 const releases = window.SuperstarCatalog.releases;
 const {brandTitle, releaseSharing, streamingLinks} = window.SuperstarReleaseUI;
-const featuredStreaming = document.querySelector('.featured-release .release-actions');
-featuredStreaming.replaceChildren(streamingLinks(releases[0], 'featured'));
 const catalog = document.getElementById('catalog');
 for (const [i,release] of releases.entries()) {
-  if (!i) continue;
   const card = document.createElement('article');card.className='release-card';
   const button = document.createElement('button');
   button.className='release-cover-button';button.type='button';button.dataset.release=i;button.setAttribute('aria-label',`View ${release.title} details`);
