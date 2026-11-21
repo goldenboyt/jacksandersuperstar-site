@@ -129,6 +129,7 @@
       const image=document.createElement('img');image.src=url;image.alt=`Image made by Jack Prime: ${prompt}`;image.width=1024;image.height=1024;image.loading='lazy';
       image.addEventListener('load',()=>{box.classList.add('prime-image--ready');followBottom(nearBottom())},{once:true});
       const open=document.createElement('button');open.type='button';open.className='prime-image-open';open.setAttribute('aria-label','Open generated image full-screen');open.append(image);
+      const reveal=document.createElement('span');reveal.className='prime-image-grid';reveal.setAttribute('aria-hidden','true');for(let i=0;i<16;i++){const tile=document.createElement('i');tile.style.setProperty('--tile',String((i*5)%16));reveal.append(tile)}open.append(reveal);
       const details={url,blob:source,name:`jack-prime-${entry.imageId.slice(0,8)}.png`,alt:image.alt,opener:open};
       open.addEventListener('click',()=>window.SuperstarImageViewer?.open(details));
       const actions=document.createElement('figcaption');actions.className='prime-image-actions';
@@ -161,7 +162,7 @@
   function activity(kind){
     const follow=nearBottom(),node=document.createElement('div');
     node.className=`prime-message prime-message--assistant prime-activity prime-activity--${kind}`;
-    node.innerHTML='<span class="prime-message-label">jack prime</span>'+(kind==='image'?'<div class="prime-render"><span aria-hidden="true">prime</span><i aria-hidden="true"></i><div class="prime-render-progress" role="progressbar" aria-label="Estimated image generation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0% complete, estimated" title="Estimated image generation progress"><strong>0%</strong></div></div>':'<span class="prime-thinking-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>')+`<span class="prime-activity-label" role="status">${kind==='image'?'making your image':'thinking'}</span>`;
+    node.innerHTML='<span class="prime-message-label">jack prime</span>'+(kind==='image'?'<div class="prime-render"><div class="prime-render-grid" aria-hidden="true">'+Array.from({length:16},(_,i)=>`<i style="--tile:${(i*5)%16}"></i>`).join('')+'</div><div class="prime-render-progress" role="progressbar" aria-label="Estimated image generation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0% complete, estimated" title="Estimated image generation progress"><strong>0%</strong></div></div>':'<span class="prime-thinking-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>')+`<span class="prime-activity-label" role="status">${kind==='image'?'making your image':'thinking'}</span>`;
     log.append(node);followBottom(follow);
     let timer,completed=false;
     const started=performance.now();
@@ -244,27 +245,48 @@
     const display=template==='superstar'?`make a superstar cover with this text: ${text}`:template==='prodigy'?`put my photo on prodigy genius${text?`: ${text}`:''}`:text;
     let kind=template?'image':'text';
     const before=[...history],request=++turn,sentRevision=draftRevision;
-    const pendingMessage=message('user',display,{},photo?.blob);history.push({role:'user',content:display,...(kind==='image'?{kind:'image'}:{})});input.value='';resize();
+    const pendingMessage=message('user',display,{},photo?.blob);if(!matchMedia('(prefers-reduced-motion: reduce)').matches){send.classList.remove('prime-sent');void send.offsetWidth;send.classList.add('prime-sent')}history.push({role:'user',content:display,...(kind==='image'?{kind:'image'}:{})});input.value='';resize();
     const abort=new AbortController();controller=abort;busy(true);
-    let waiting=activity(kind);
+    let waiting=activity(kind),streamedMessage=null;
     let answered=false,timedOut=false;
     let timeout=setTimeout(()=>{timedOut=true;abort.abort()},kind==='image'?175000:35000);
     try{
       if(kind==='text'){
         let payload,headers;
-        if(photo){payload=new FormData();payload.set('messages',JSON.stringify(recentMessages()));payload.set('photo',photo.blob,'attachment.jpg');}
-        else{headers={'Content-Type':'application/json'};payload=JSON.stringify({messages:recentMessages()});}
+        if(photo){headers={'X-Prime-Stream':'1'};payload=new FormData();payload.set('messages',JSON.stringify(recentMessages()));payload.set('photo',photo.blob,'attachment.jpg');}
+        else{headers={'Content-Type':'application/json','X-Prime-Stream':'1'};payload=JSON.stringify({messages:recentMessages()});}
         const response=await fetch('/api/jack-prime',{method:'POST',headers,body:payload,signal:abort.signal});
-        const data=await response.json();
+        let data;
+        if(response.ok&&response.headers.get('content-type')?.includes('application/x-ndjson')&&response.body){
+          const reader=response.body.getReader(),decoder=new TextDecoder();let buffer='',doneEvent=null;
+          try{
+            while(true){
+              const chunk=await reader.read();buffer+=decoder.decode(chunk.value||new Uint8Array(),{stream:!chunk.done});
+              let split;while((split=buffer.indexOf('\n'))>=0){
+                const line=buffer.slice(0,split);buffer=buffer.slice(split+1);if(!line)continue;
+                const event=JSON.parse(line);if(request!==turn){await reader.cancel();return}
+                if(event.type==='error')throw new Error(event.error||"Can't reach Jack Prime right now.");
+                if(event.type==='done')doneEvent=event;
+                if(event.type==='text'&&event.text){
+                  if(!streamedMessage){waiting.remove();streamedMessage=message('assistant','');streamedMessage.classList.add('prime-message--streaming');const content=document.createElement('div');content.className='prime-stream-text';streamedMessage.append(content)}
+                  const content=streamedMessage.querySelector('.prime-stream-text'),follow=nearBottom();
+                  content.replaceChildren();formattedText(event.text.replace(/\[([^\]\n]+)\]\([^)]*$/,'$1').replace(/\*\*|__/g,''),content);followBottom(follow);
+                }
+              }
+              if(chunk.done)break;
+            }
+          }finally{reader.releaseLock()}
+          if(!doneEvent)throw new Error("Can't reach Jack Prime right now.");data=doneEvent;
+        }else data=await response.json();
         if(!response.ok)throw new Error(data.error||"Can't reach Jack Prime right now.");
         if(request!==turn)return;
         if(data.action==='image'){
-          kind='image';history.at(-1).kind='image';
+          kind='image';history.at(-1).kind='image';streamedMessage?.remove();streamedMessage=null;
           clearTimeout(timeout);timeout=setTimeout(()=>{timedOut=true;abort.abort()},175000);
           waiting.remove();waiting=activity('image');
         }else{
           if(typeof data.text!=='string'||!data.text.trim())throw new Error("Can't reach Jack Prime right now.");
-          waiting.remove();const entry={role:'assistant',content:data.text,songs:validSongs(data.songs)};message(entry.role,entry.content,entry);history.push(entry);
+          waiting.remove();const entry={role:'assistant',content:data.text,songs:validSongs(data.songs)};if(streamedMessage){const body=streamedMessage.querySelector('.prime-stream-text');body.replaceChildren();formattedText(entry.content,body);streamedMessage.classList.remove('prime-message--streaming');songCards(streamedMessage,entry.songs);followBottom(nearBottom())}else message(entry.role,entry.content,entry);history.push(entry);
         }
       }
       if(kind==='image'){
@@ -297,7 +319,7 @@
       answered=true;
     }catch(error){
       if(request!==turn)return;
-      pendingMessage.remove();history=before;if(draftRevision===sentRevision)input.value=text;resize();
+      streamedMessage?.remove();pendingMessage.remove();history=before;if(draftRevision===sentRevision)input.value=text;resize();
       if(!history.length){intro.hidden=false;intro.style.removeProperty('display');document.body.classList.remove('prime-has-messages');}
       status.textContent=timedOut?'that took too long. you can try again.':error.name==='AbortError'?(kind==='image'?'stopped waiting. your image may still finish.':'stopped. your message is ready to try again.'):error.message;
     }finally{

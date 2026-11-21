@@ -33,3 +33,16 @@ html .prime-page .prime-cover-starter[aria-pressed=true]{border-color:var(--page
  .prime-image--ready .prime-image-open::after,.prime-image--ready .prime-image-open>img,.prime-photo:not([hidden])>.prime-photo-open{animation:none}
  .prime-page .prime-cover-starter:active,.prime-starters .text-button:hover svg,.prime-cover-starter:hover>svg,.prime-feature-composer button:active svg,.prime-widget-launcher:active svg,.prime-widget-launcher:hover svg{transform:none}
 }
+/* Subtle feedback for replies, images and song previews. */
+.prime-stream-text{min-height:1em}.prime-message--streaming .prime-stream-text:after{content:'';display:inline-block;width:4px;height:4px;background:var(--red);border-radius:50%;margin-left:4px;vertical-align:middle;animation:prime-stream-dot .8s ease-in-out infinite alternate}
+.prime-waveform{--preview-progress:0;display:block;flex:1;min-width:55px;height:24px;appearance:none;-webkit-appearance:none;background:linear-gradient(to right,var(--red) calc(var(--preview-progress)*100%),#8888 0);mask:repeating-linear-gradient(90deg,#000 0 2px,transparent 2px 5px);-webkit-mask:repeating-linear-gradient(90deg,#000 0 2px,transparent 2px 5px);cursor:pointer}
+.prime-waveform::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:1px;height:24px;background:transparent}.prime-waveform::-moz-range-thumb{width:1px;height:24px;border:0;background:transparent}.prime-waveform:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.prime-page .prime-render{background-image:none}.prime-page .prime-render:before{display:none}.prime-render-grid,.prime-image-grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);pointer-events:none}
+.prime-render-grid i{border:1px solid #8882;background:var(--page-ink,#111);opacity:.035;animation:prime-grid-pulse 2.8s ease-in-out infinite;animation-delay:calc(var(--tile)*-0.11s)}
+.prime-image-grid i{background:var(--page-bg,#fff);opacity:1}.prime-image--ready .prime-image-grid i{animation:prime-grid-reveal .5s ease both;animation-delay:calc(var(--tile)*.018s)}
+.prime-sent svg{animation:prime-send-nudge .25s ease}.prime-page .rare-credit{font:10px/1.4 Arial,sans-serif;color:inherit;opacity:.65;margin-left:auto;white-space:nowrap}.prime-page .rare-credit:hover{opacity:1;text-decoration:underline}
+@keyframes prime-stream-dot{to{opacity:.25}}
+@keyframes prime-grid-pulse{50%{opacity:.14}}
+@keyframes prime-grid-reveal{to{opacity:0}}
+@keyframes prime-send-nudge{50%{transform:translate(2px,-2px)}}
+@media(prefers-reduced-motion:reduce){.prime-message--streaming .prime-stream-text:after,.prime-render-grid i,.prime-image--ready .prime-image-grid i,.prime-sent svg{animation:none}.prime-image-grid{display:none}}

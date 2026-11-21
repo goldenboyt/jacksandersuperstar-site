@@ -18,10 +18,10 @@
     item.button.setAttribute('aria-label', `${playing ? 'Pause' : 'Play'} preview of ${item.title}`);
     item.panel.hidden = state === 'idle';
     item.message.textContent = state === 'loading' ? 'loading preview' : state === 'error' ? 'preview unavailable — tap to retry' : '';
-    item.progress.hidden = state === 'error'; item.time.hidden = state === 'error';
+    item.progress.hidden = state === 'error'; if(item.seek)item.seek.hidden = state === 'error'; item.time.hidden = state === 'error';
     if (state === 'idle') {
       item.progress.style.setProperty('--preview-progress', '0');
-      item.progress.setAttribute('aria-valuenow', '0'); item.time.textContent = '';
+      item.progress.setAttribute('aria-valuenow', '0'); if(item.seek)item.seek.value='0'; item.time.textContent = '';
     }
   }
   function stop() {
@@ -37,6 +37,7 @@
     const length = duration(), position = Math.min(length, audio.currentTime || 0);
     if (position >= length && length > 0) { stop(); return; }
     active.progress.style.setProperty('--preview-progress', String(position / (length || 30)));
+    if(active.seek){active.seek.value=String(position);active.seek.max=String(length);active.seek.style.setProperty('--preview-progress',String(position/(length||30)))}
     const seconds = String(Math.floor(position)), total = String(length);
     if (active.progress.getAttribute('aria-valuemax') !== total) active.progress.setAttribute('aria-valuemax', total);
     if (active.progress.getAttribute('aria-valuenow') !== seconds) active.progress.setAttribute('aria-valuenow', seconds);
@@ -71,7 +72,7 @@
       status.textContent = `The ${item.title} preview couldn't play. Try again or use a streaming link.`;
     });
   }
-  function bind(button, release, index = 0) {
+  function bind(button, release, index = 0, waveform = false) {
     const title = release.tracks[index], url = release.previews?.[index];
     const panel = document.createElement('span'); panel.className = 'song-preview-panel';
     panel.id = `song-preview-${++serial}`; panel.hidden = true;
@@ -84,8 +85,13 @@
     bar.setAttribute('aria-valuemin', '0'); bar.setAttribute('aria-valuemax', '30'); bar.setAttribute('aria-valuenow', '0');
     const time = document.createElement('span'); time.className = 'song-preview-time'; time.setAttribute('aria-hidden', 'true');
     const message = document.createElement('span'); message.className = 'song-preview-message';
-    panel.append(bar, time, message);
-    const item = {button, panel, progress:bar, time, message, url, title, state:'idle'};
+    let seek=null;
+    if(waveform){
+      seek=document.createElement('input');seek.type='range';seek.min='0';seek.max='30';seek.value='0';seek.step='.1';seek.className='prime-waveform';seek.setAttribute('aria-label',`Seek ${title} preview`);
+      seek.addEventListener('input',()=>{if(active===item&&Number.isFinite(audio.duration)){audio.currentTime=Math.min(duration(),Number(seek.value));progress()}});
+      bar.hidden=true;panel.append(seek,time,message);
+    }else panel.append(bar, time, message);
+    const item = {button, panel, progress:bar, seek, time, message, url, title, state:'idle'};
     paint(item, 'idle'); button.addEventListener('click', () => toggle(item));
     return panel;
   }
@@ -98,7 +104,7 @@
       if (release.previews?.[index]) {
         const button = document.createElement('button'), name = document.createElement('span');
         name.className = 'song-preview-name'; name.textContent = title; button.append(name);
-        const panel = bind(button, release, index); content.append(button, panel);
+        const panel = bind(button, release, index, className === 'prime-song-tracklist'); content.append(button, panel);
       } else content.textContent = title;
       row.append(content); list.append(row);
     });
