@@ -7,6 +7,7 @@
   document.body.append(status);
   let active = null, request = 0, frame = 0, serial = 0;
   const icon = '<svg class="song-preview-icon" viewBox="0 0 24 24" aria-hidden="true"><path class="song-preview-play" d="M8 5v14l12-7Z"/><path class="song-preview-pause" d="M6 5h4v14H6zm8 0h4v14h-4Z"/></svg>';
+  const waveformNS = 'http://www.w3.org/2000/svg';
   const clock = value => `0:${String(Math.floor(value || 0)).padStart(2, '0')}`;
   const duration = () => Math.min(30, Number.isFinite(audio.duration) ? audio.duration : 30);
 
@@ -21,7 +22,7 @@
     item.progress.hidden = state === 'error'; if(item.seek){item.wave.hidden=state === 'error';item.seek.disabled=state === 'idle'||state === 'error'} item.time.hidden = state === 'error'||state === 'idle';
     if (state === 'idle') {
       item.progress.style.setProperty('--preview-progress', '0');
-      item.progress.setAttribute('aria-valuenow', '0'); if(item.seek){item.seek.value='0';item.wave.style.setProperty('--preview-progress','0')} item.time.textContent = '';
+      item.progress.setAttribute('aria-valuenow', '0'); if(item.seek){item.seek.value='0';item.wave.style.setProperty('--preview-progress','0');item.stops?.forEach(stop=>stop.setAttribute('offset','0%'))} item.time.textContent = '';
     }
   }
   function stop() {
@@ -37,7 +38,7 @@
     const length = duration(), position = Math.min(length, audio.currentTime || 0);
     if (position >= length && length > 0) { stop(); return; }
     active.progress.style.setProperty('--preview-progress', String(position / (length || 30)));
-    if(active.seek){active.seek.value=String(position);active.seek.max=String(length);active.wave.style.setProperty('--preview-progress',String(position/(length||30)))}
+    if(active.seek){active.seek.value=String(position);active.seek.max=String(length);active.wave.style.setProperty('--preview-progress',String(position/(length||30)));active.stops?.forEach(stop=>stop.setAttribute('offset',`${100*position/(length||30)}%`))}
     const seconds = String(Math.floor(position)), total = String(length);
     if (active.progress.getAttribute('aria-valuemax') !== total) active.progress.setAttribute('aria-valuemax', total);
     if (active.progress.getAttribute('aria-valuenow') !== seconds) active.progress.setAttribute('aria-valuenow', seconds);
@@ -85,20 +86,32 @@
     bar.setAttribute('aria-valuemin', '0'); bar.setAttribute('aria-valuemax', '30'); bar.setAttribute('aria-valuenow', '0');
     const time = document.createElement('span'); time.className = 'song-preview-time'; time.setAttribute('aria-hidden', 'true');
     const message = document.createElement('span'); message.className = 'song-preview-message';
-    // The bars are a decorative seek track; the native range controls playback.
+    // The bar heights are measured from this exact preview's first 30 seconds.
+    // If a URL changes, use a plain seek line until its audio is analyzed.
     const wave=document.createElement('span');wave.className='song-waveform';
-    const bars=document.createElement('span');bars.className='song-waveform-bars';bars.setAttribute('aria-hidden','true');
+    const shape=window.SuperstarWaveforms?.[url],samples=shape?.samples;let stops=null;
+    if(Array.isArray(samples)&&samples.length===64){
+      const svg=document.createElementNS(waveformNS,'svg');svg.setAttribute('class','song-waveform-graphic');svg.setAttribute('viewBox','0 0 640 100');svg.setAttribute('preserveAspectRatio','none');svg.setAttribute('aria-hidden','true');
+      const defs=document.createElementNS(waveformNS,'defs'),gradient=document.createElementNS(waveformNS,'linearGradient'),id=`song-waveform-gradient-${serial}`;
+      gradient.id=id;gradient.setAttribute('gradientUnits','userSpaceOnUse');gradient.setAttribute('x1','0');gradient.setAttribute('x2','640');gradient.setAttribute('y1','0');gradient.setAttribute('y2','0');
+      stops=['song-waveform-played','song-waveform-remaining'].map(className=>{const stop=document.createElementNS(waveformNS,'stop');stop.setAttribute('class',className);stop.setAttribute('offset','0%');gradient.append(stop);return stop});
+      defs.append(gradient);svg.append(defs);
+      samples.forEach((sample,index)=>{const height=Math.max(0,Math.min(100,Number(sample)/10)),rect=document.createElementNS(waveformNS,'rect');rect.setAttribute('x',String(index*10));rect.setAttribute('y',String((100-height)/2));rect.setAttribute('width','6');rect.setAttribute('height',String(height));rect.setAttribute('rx','2');rect.setAttribute('fill',`url(#${id})`);svg.append(rect)});
+      wave.append(svg);
+    }else{const line=document.createElement('span');line.className='song-waveform-fallback';line.setAttribute('aria-hidden','true');wave.append(line)}
     const seek=document.createElement('input');seek.type='range';seek.min='0';seek.max='30';seek.value='0';seek.step='.1';seek.className='song-waveform-slider';seek.setAttribute('aria-label',`Seek ${title} preview`);
     seek.addEventListener('input',()=>{if(active===item&&Number.isFinite(audio.duration)){audio.currentTime=Math.min(duration(),Number(seek.value));progress()}});
-    wave.append(bars,seek);panel.append(wave,time,message);
-    const item = {button, panel, progress:bar, wave, seek, alwaysShow, time, message, url, title, state:'idle'};
+    wave.append(seek);panel.append(wave,time,message);
+    const item = {button, panel, progress:bar, wave, seek, stops, alwaysShow, time, message, url, title, state:'idle'};
     paint(item, 'idle'); button.addEventListener('click', () => toggle(item));
     return panel;
   }
-  function createTracklist(release, className = 'tracklist') {
+  function createTracklist(release, className = 'tracklist', indices = null) {
     const list = document.createElement('ol'); list.className = className;
     list.setAttribute('aria-label', 'Songs — select a title to preview');
-    release.tracks.forEach((title, index) => {
+    const selected=indices||release.tracks.map((_,index)=>index);
+    selected.forEach(index => {
+      const title=release.tracks[index];if(typeof title!=='string')return;
       const row = document.createElement('li'), content = document.createElement('div');
       content.className = 'song-preview-track';
       if (release.previews?.[index]) {

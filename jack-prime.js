@@ -97,8 +97,7 @@
       const link=document.createElement('a');link.className='prime-song-cover';link.href=release.type==='single'?`/${release.page}`:`/${release.page}#track-${index+1}`;link.setAttribute('aria-label',`Open ${release.tracks[index]}`);
       const cover=document.createElement('img');cover.src=`/assets/${release.image}.webp`;cover.alt='';cover.width=64;cover.height=64;cover.loading='lazy';link.append(cover);
       const details=document.createElement('div');details.className='prime-song-details';
-      const list=window.SuperstarPreviews.createTracklist(release,'prime-song-tracklist');
-      [...list.children].forEach((row,rowIndex)=>{if(rowIndex!==index)row.remove()});
+      const list=window.SuperstarPreviews.createTracklist(release,'prime-song-tracklist',[index]);
       const album=document.createElement('a');album.className='prime-song-release';album.href=`/${release.page}`;album.textContent=`${release.title} · ${release.year}`;
       details.append(list,album);card.append(link,details);node.append(card);
     }
